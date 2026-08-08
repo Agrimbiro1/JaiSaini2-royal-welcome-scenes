@@ -177,7 +177,7 @@ export default function OpeningScene() {
           <div
             data-reel
             data-fade-out
-            className="absolute left-[6%] top-[9%] z-20 h-[38vw] w-[38vw] max-h-44 max-w-44 opacity-0"
+            className="absolute left-[6%] top-[11%] z-20 h-[38vw] w-[38vw] max-h-44 max-w-44 opacity-0"
           >
             <svg viewBox="0 0 100 100" className="h-full w-full drop-shadow-[0_14px_26px_oklch(0.08_0.02_30/0.9)]">
               <defs>
@@ -237,7 +237,7 @@ export default function OpeningScene() {
             className="pointer-events-none absolute inset-0 z-10 bg-[oklch(0.09_0.02_30)]/55 opacity-0"
           />
           <div
-            className="absolute inset-x-0 top-[46%] z-20 -translate-y-1/2"
+            className="absolute inset-x-0 top-[42%] z-20 -translate-y-1/2"
             style={{ transformStyle: "preserve-3d" }}
           >
             <div
@@ -254,7 +254,7 @@ export default function OpeningScene() {
                 <div
                   key={i}
                   ref={f.hero ? heroRef : undefined}
-                  className="relative w-[62vw] max-w-[19rem] shrink-0 border-x border-[oklch(0.1_0.01_40)] bg-[oklch(0.13_0.02_38)] px-[3%] py-[10%]"
+                  className="relative w-[62vw] max-w-[19rem] shrink-0 border-x border-[oklch(0.1_0.01_40)] bg-[oklch(0.13_0.02_38)] px-[3%] py-[7%]"
                 >
                   <Sprockets side="top" />
                   <Sprockets side="bottom" />
