@@ -333,7 +333,7 @@ export default function OpeningScene() {
             type="button"
             onClick={expandIntoWelcome}
             data-fade-out
-            className="absolute bottom-5 right-4 z-40 min-h-11 px-4 py-2 font-sans text-[0.58rem] uppercase tracking-[0.34em] text-ivory/55"
+            className="absolute bottom-5 left-4 z-40 min-h-11 px-4 py-2 font-sans text-[0.58rem] uppercase tracking-[0.34em] text-ivory/55"
           >
             Skip →
           </button>
