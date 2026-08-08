@@ -29,7 +29,8 @@ export const scenes: SceneDef[] = [
     label: "Opening",
     chapterTitle: "Glimpse of Our Forever",
     component: OpeningScene,
-    transitionOut: "jharokha",
+    transitionOut: "light-sweep",
+
   },
   {
     id: "welcome",
