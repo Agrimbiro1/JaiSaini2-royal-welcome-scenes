@@ -19,6 +19,20 @@
  */
 
 @theme inline {
+  --font-display: "Cormorant Garamond", Georgia, serif;
+  --font-sans: "Manrope", system-ui, sans-serif;
+  --font-script: "Great Vibes", cursive;
+  --color-ivory: var(--ivory);
+  --color-ivory-dim: var(--ivory-dim);
+  --color-maroon: var(--maroon);
+  --color-maroon-deep: var(--maroon-deep);
+  --color-sandstone: var(--sandstone);
+  --color-sandstone-dark: var(--sandstone-dark);
+  --color-gold: var(--gold);
+  --color-gold-bright: var(--gold-bright);
+  --color-emerald: var(--emerald);
+  --color-royal: var(--royal);
+  --color-terracotta: var(--terracotta);
   --radius-sm: calc(var(--radius) - 4px);
   --radius-md: calc(var(--radius) - 2px);
   --radius-lg: var(--radius);
@@ -26,6 +40,7 @@
   --radius-2xl: calc(var(--radius) + 8px);
   --radius-3xl: calc(var(--radius) + 12px);
   --radius-4xl: calc(var(--radius) + 16px);
+
   --color-background: var(--background);
   --color-foreground: var(--foreground);
   --color-card: var(--card);
@@ -140,5 +155,176 @@
   body {
     background-color: var(--color-background);
     color: var(--color-foreground);
+  }
+}
+
+/* ── Rajasthani royal design system ───────────────────────────── */
+:root {
+  --ivory: oklch(0.965 0.018 84);
+  --ivory-dim: oklch(0.9 0.024 80);
+  --maroon: oklch(0.33 0.115 20);
+  --maroon-deep: oklch(0.205 0.075 20);
+  --sandstone: oklch(0.83 0.062 68);
+  --sandstone-dark: oklch(0.66 0.075 60);
+  --gold: oklch(0.775 0.108 84);
+  --gold-bright: oklch(0.885 0.105 92);
+  --emerald: oklch(0.47 0.085 162);
+  --royal: oklch(0.4 0.105 262);
+  --terracotta: oklch(0.56 0.125 42);
+
+  --radius: 0.25rem;
+  --background: var(--maroon-deep);
+  --foreground: var(--ivory);
+  --card: oklch(0.26 0.085 20);
+  --card-foreground: var(--ivory);
+  --popover: oklch(0.24 0.08 20);
+  --popover-foreground: var(--ivory);
+  --primary: var(--gold);
+  --primary-foreground: oklch(0.22 0.08 22);
+  --secondary: oklch(0.3 0.09 22);
+  --secondary-foreground: var(--ivory);
+  --muted: oklch(0.29 0.06 24);
+  --muted-foreground: oklch(0.74 0.035 76);
+  --accent: var(--gold);
+  --accent-foreground: oklch(0.22 0.08 22);
+  --border: oklch(0.775 0.108 84 / 24%);
+  --input: oklch(0.775 0.108 84 / 30%);
+  --ring: var(--gold);
+}
+
+html,
+body {
+  overscroll-behavior: none;
+}
+
+body {
+  font-family: var(--font-sans);
+  -webkit-tap-highlight-color: transparent;
+}
+
+/* Jaali lattice pattern */
+@utility bg-jaali {
+  background-image:
+    repeating-linear-gradient(
+      45deg,
+      color-mix(in oklab, var(--gold) 16%, transparent) 0 1px,
+      transparent 1px 14px
+    ),
+    repeating-linear-gradient(
+      -45deg,
+      color-mix(in oklab, var(--gold) 16%, transparent) 0 1px,
+      transparent 1px 14px
+    );
+}
+
+/* Sandstone / handmade paper grain */
+@utility bg-grain {
+  background-image: radial-gradient(
+    color-mix(in oklab, var(--ivory) 8%, transparent) 0.5px,
+    transparent 0.6px
+  );
+  background-size: 3px 3px;
+}
+
+@utility scene-safe {
+  padding-top: max(env(safe-area-inset-top), 0px);
+  padding-bottom: max(env(safe-area-inset-bottom), 0px);
+}
+
+@utility text-gold-leaf {
+  background-image: linear-gradient(
+    100deg,
+    var(--gold) 0%,
+    var(--gold-bright) 38%,
+    var(--gold) 62%,
+    var(--sandstone-dark) 100%
+  );
+  background-clip: text;
+  color: transparent;
+}
+
+@keyframes petal-fall {
+  0% {
+    transform: translate3d(0, -12vh, 0) rotate(0deg);
+    opacity: 0;
+  }
+  12% {
+    opacity: 0.85;
+  }
+  100% {
+    transform: translate3d(var(--drift, 3vw), 108vh, 0) rotate(320deg);
+    opacity: 0;
+  }
+}
+
+@keyframes dust-drift {
+  0% {
+    transform: translate3d(0, 0, 0);
+    opacity: 0;
+  }
+  40% {
+    opacity: 0.55;
+  }
+  100% {
+    transform: translate3d(var(--drift, 2vw), -22vh, 0);
+    opacity: 0;
+  }
+}
+
+@keyframes light-breathe {
+  0%,
+  100% {
+    opacity: 0.42;
+    transform: scale(1);
+  }
+  50% {
+    opacity: 0.72;
+    transform: scale(1.06);
+  }
+}
+
+@keyframes flame-flicker {
+  0%,
+  100% {
+    opacity: 0.85;
+    transform: scaleY(1);
+  }
+  45% {
+    opacity: 1;
+    transform: scaleY(1.12);
+  }
+  70% {
+    opacity: 0.78;
+    transform: scaleY(0.95);
+  }
+}
+
+@keyframes twinkle {
+  0%,
+  100% {
+    opacity: 0.25;
+  }
+  50% {
+    opacity: 1;
+  }
+}
+
+@keyframes sway {
+  0%,
+  100% {
+    transform: rotate(-1.1deg);
+  }
+  50% {
+    transform: rotate(1.1deg);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.001ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.001ms !important;
   }
 }
