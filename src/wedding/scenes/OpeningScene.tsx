@@ -94,11 +94,13 @@ export default function OpeningScene() {
     const q = gsap.utils.selector(el);
 
     // Centre the hero frame in the viewport, whatever the screen width.
+    // Measured with the strip untransformed, so the result is the target x.
     const heroOffset = () => {
+      const current = (gsap.getProperty(stripEl, "x") as number) || 0;
       const r = hero.getBoundingClientRect();
-      const s = stripEl.getBoundingClientRect();
-      return window.innerWidth / 2 - (r.left - s.left + r.width / 2) - s.left;
+      return window.innerWidth / 2 - (r.left - current + r.width / 2);
     };
+
 
     if (reduced) {
       gsap.set(q("[data-o]"), { opacity: 1, y: 0, scale: 1 });
