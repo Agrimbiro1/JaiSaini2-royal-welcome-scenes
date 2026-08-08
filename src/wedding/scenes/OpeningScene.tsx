@@ -254,7 +254,7 @@ export default function OpeningScene() {
                 <div
                   key={i}
                   ref={f.hero ? heroRef : undefined}
-                  className="relative w-[62vw] max-w-[19rem] shrink-0 border-x border-[oklch(0.1_0.01_40)] bg-[oklch(0.13_0.02_38)] px-[3%] py-[7%]"
+                  className="relative w-[70vw] max-w-[21rem] shrink-0 border-x border-[oklch(0.1_0.01_40)] bg-[oklch(0.13_0.02_38)] px-[3%] py-[6%]"
                 >
                   <Sprockets side="top" />
                   <Sprockets side="bottom" />
