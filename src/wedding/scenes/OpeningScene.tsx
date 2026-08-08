@@ -2,364 +2,276 @@ import { useEffect, useRef, useState } from "react";
 import gsap from "gsap";
 import { useScene, usePrefersReducedMotion } from "../engine/SceneProvider";
 import { wedding } from "../data/wedding";
-import { Divider } from "../ui/Ornaments";
-import { Dust, FilmGrain } from "../ui/Ambient";
 
 import reelMehendi from "@/assets/reel-mehendi.jpg";
 import reelJewellery from "@/assets/reel-jewellery.jpg";
 import reelMarigold from "@/assets/reel-marigold.jpg";
 import reelPalace from "@/assets/reel-palace.jpg";
+import palaceNight from "@/assets/palace-night.jpg";
 
-/** Only the frames that are actually on screen — nothing else preloads here. */
-const strip = [
-  { src: reelMarigold, alt: "Marigold garlands in a haveli courtyard" },
-  { src: reelMehendi, alt: "Mehendi and bangles on the bride's hands" },
-  { src: wedding.couple.portrait, alt: `${wedding.couple.groom} and ${wedding.couple.bride}`, hero: true },
-  { src: reelJewellery, alt: "Kundan bridal jewellery on velvet" },
-  { src: reelPalace, alt: "Rajasthani palace at dusk" },
+/** 6-frame film strip with couple photo at the end */
+const reelFrames = [
+  {
+    id: "f1",
+    src: reelPalace,
+    alt: "A wide cinematic shot of a Rajasthani palace at dusk",
+    hero: false,
+  },
+  {
+    id: "f2",
+    src: reelMarigold,
+    alt: "Marigold garlands and traditional lanterns in haveli courtyard",
+    hero: false,
+  },
+  {
+    id: "f3",
+    src: reelMehendi,
+    alt: "Detailed close-up of intricate mehendi designs on bride's hands",
+    hero: false,
+  },
+  {
+    id: "f4",
+    src: reelJewellery,
+    alt: "Kundan bridal jewellery on velvet",
+    hero: false,
+  },
+  {
+    id: "f5",
+    src: palaceNight,
+    alt: "Heritage palace courtyard illuminated at night",
+    hero: false,
+  },
+  {
+    id: "f6",
+    src: wedding.couple.portrait,
+    alt: `${wedding.couple.groom} and ${wedding.couple.bride} in royal Rajasthani attire`,
+    hero: true,
+  },
 ];
-
-function Sprockets({ side }: { side: "top" | "bottom" }) {
-  return (
-    <div
-      className={`pointer-events-none absolute inset-x-0 flex h-[9%] items-center justify-around px-1 ${
-        side === "top" ? "top-0" : "bottom-0"
-      }`}
-      aria-hidden="true"
-    >
-      {Array.from({ length: 26 }, (_, i) => (
-        <span
-          key={i}
-          className="h-[52%] w-[1.6%] rounded-[1px] bg-[oklch(0.14_0.02_40)] shadow-[inset_0_0_1px_oklch(0.5_0.02_60_/_0.6)]"
-        />
-      ))}
-    </div>
-  );
-}
 
 export default function OpeningScene() {
   const { goNext } = useScene();
   const reduced = usePrefersReducedMotion();
   const root = useRef<HTMLDivElement>(null);
-  const stripRef = useRef<HTMLDivElement>(null);
-  const heroRef = useRef<HTMLDivElement>(null);
-  const expandRef = useRef<HTMLDivElement>(null);
+  const filmReelRef = useRef<HTMLDivElement>(null);
+  const filmStripRef = useRef<HTMLDivElement>(null);
+  const heroFrameRef = useRef<HTMLDivElement>(null);
+  const heroImageRef = useRef<HTMLImageElement>(null);
+  const heroSpotlightRef = useRef<HTMLDivElement>(null);
+  const textContainerRef = useRef<HTMLDivElement>(null);
+  const skipBtnRef = useRef<HTMLButtonElement>(null);
   const tlRef = useRef<gsap.core.Timeline | null>(null);
   const [closing, setClosing] = useState(false);
 
-  /** Frame-to-Welcome: the photograph itself grows out of the film. */
-  const expandIntoWelcome = () => {
+  /** Skip or finish transition into full screen and advance scene */
+  const triggerExpandAndNext = () => {
     if (closing) return;
     setClosing(true);
-    tlRef.current?.kill();
-    const hero = heroRef.current;
-    const overlay = expandRef.current;
-    if (!hero || !overlay || reduced) {
+
+    if (tlRef.current) {
+      tlRef.current.kill();
+    }
+
+    if (reduced || !heroFrameRef.current) {
       goNext();
       return;
     }
-    const r = hero.getBoundingClientRect();
-    gsap.set(overlay, {
-      opacity: 1,
-      top: r.top,
-      left: r.left,
-      width: r.width,
-      height: r.height,
-      borderRadius: 2,
-    });
-    gsap
-      .timeline({ onComplete: goNext })
-      .to(root.current!.querySelectorAll("[data-fade-out]"), { opacity: 0, duration: 0.4 }, 0)
+
+    const expandTl = gsap.timeline({ onComplete: goNext });
+    expandTl
+      .to([textContainerRef.current, skipBtnRef.current, filmReelRef.current], {
+        opacity: 0,
+        duration: 0.4,
+        ease: "power2.out",
+      })
       .to(
-        overlay,
+        heroImageRef.current,
         {
-          top: 0,
-          left: 0,
-          width: "100%",
-          height: "100%",
-          borderRadius: 0,
-          duration: 1.15,
-          ease: "power3.inOut",
+          filter: "grayscale(0%)",
+          opacity: 1,
+          scale: 1,
+          duration: 0.8,
         },
         0,
       )
-      .to(overlay.querySelector("[data-veil]"), { opacity: 0.55, duration: 1.1 }, 0.1);
+      .to(
+        heroFrameRef.current,
+        {
+          width: "100vw",
+          height: "100vh",
+          borderWidth: 0,
+          padding: 0,
+          borderRadius: 0,
+          duration: 1.4,
+          ease: "expo.inOut",
+        },
+        0.1,
+      );
   };
 
   useEffect(() => {
-    const el = root.current;
-    const stripEl = stripRef.current;
-    const hero = heroRef.current;
-    if (!el || !stripEl || !hero) return;
-    const q = gsap.utils.selector(el);
-
-    // Centre the hero frame in the viewport, whatever the screen width.
-    // Measured with the strip untransformed, so the result is the target x.
-    const heroOffset = () => {
-      const current = (gsap.getProperty(stripEl, "x") as number) || 0;
-      const r = hero.getBoundingClientRect();
-      return window.innerWidth / 2 - (r.left - current + r.width / 2);
-    };
-
-
-    if (reduced) {
-      gsap.set(q("[data-o]"), { opacity: 1, y: 0, scale: 1 });
-      gsap.set(q("[data-reel]"), { opacity: 1 });
-      gsap.set(stripEl, { x: heroOffset(), opacity: 1 });
-      gsap.set(hero, { scale: 1.06 });
+    if (!root.current || reduced) {
+      if (reduced) {
+        gsap.set(textContainerRef.current, { opacity: 1, y: -20, scale: 1 });
+        gsap.set(heroImageRef.current, { filter: "grayscale(0%)", opacity: 1, scale: 1 });
+        gsap.set(heroSpotlightRef.current, { opacity: 0.8 });
+      }
       return;
     }
 
-    const tl = gsap.timeline({ defaults: { ease: "power3.out" } });
+    const tl = gsap.timeline({ defaults: { ease: "power2.out" } });
     tlRef.current = tl;
 
-    // 0.0–0.7s  darkness → a tiny golden light → the reel silhouette
-    tl.fromTo(q("[data-spark]"), { opacity: 0, scale: 0.2 }, { opacity: 1, scale: 1, duration: 0.45 }, 0)
-      .to(q("[data-spark]"), { opacity: 0, scale: 3, duration: 0.7 }, 0.45)
-      .fromTo(
-        q("[data-reel]"),
-        { opacity: 0, scale: 0.82, filter: "brightness(0.15)" },
-        { opacity: 1, scale: 1, filter: "brightness(1)", duration: 1.1 },
-        0.35,
+    // Phase 1: Reel appearance & spin start, skip button fade in
+    tl.to(filmReelRef.current, { opacity: 1, scale: 1, duration: 1.5, ease: "power2.out" })
+      .to(skipBtnRef.current, { opacity: 0.7, duration: 0.8 }, "-=0.8")
+
+      // Phase 2: Film strip rolls across screen through frames 1 to 5
+      .to(filmStripRef.current, { opacity: 1, x: "10vw", duration: 2.2, ease: "power1.inOut" }, "-=0.6")
+      .to(filmReelRef.current, { rotation: 360, duration: 5.5, ease: "none" }, "-=2.2")
+
+      // Phase 3: Roll continuously to the END of the strip to center Frame 6 (the couple photo)
+      .to(filmStripRef.current, { x: "-42%", duration: 3.2, ease: "power2.inOut" }, "-=3.3")
+
+      // Phase 4: Focus on couple photo at the end - color reveal & spotlight
+      .to(heroImageRef.current, { filter: "grayscale(0%)", opacity: 1, scale: 1, duration: 1.5 }, "-=1.2")
+      .to(heroSpotlightRef.current, { opacity: 0.8, duration: 1.5 }, "-=1.5")
+
+      // Phase 5: Reveal Typography (Stitch Heritage Noir titles)
+      .to(filmReelRef.current, { opacity: 0, duration: 0.8 }, "-=1.0")
+      .to(textContainerRef.current, { opacity: 1, y: -20, duration: 1.6, ease: "power2.out" })
+
+      // Phase 6: Zoom in & expand couple photo into full screen, then transition to Welcome page
+      .to(
+        heroFrameRef.current,
+        {
+          width: "100vw",
+          height: "100vh",
+          borderWidth: 0,
+          padding: 0,
+          duration: 1.8,
+          ease: "expo.inOut",
+          delay: 1.8,
+        },
       )
-      // 0.7–2.0s  the reel turns and feeds the film out
-      .to(q("[data-reel-spin]"), { rotate: 420, duration: 5.2, ease: "none" }, 0.5)
-      .fromTo(q("[data-leader]"), { scaleY: 0 }, { scaleY: 1, duration: 0.7 }, 0.7)
-      .fromTo(
-        stripEl,
-        { x: window.innerWidth * 0.95, opacity: 0 },
-        { x: heroOffset(), opacity: 1, duration: 2.6, ease: "power2.out" },
-        0.9,
-      )
-      // camera pushes in as the hero frame arrives
-      .to(q("[data-camera]"), { scale: 1.12, y: "-4%", duration: 2.4, ease: "power2.inOut" }, 1.5)
-      .to(hero, { scale: 1.08, duration: 0.9, ease: "power2.out" }, 2.4)
-      .to(q("[data-spot]"), { opacity: 1, duration: 0.9 }, 2.3)
-      .to(q("[data-dim]"), { opacity: 1, duration: 0.8 }, 2.4)
-      // light leak sweeps across the film
-      .fromTo(
-        q("[data-leak]"),
-        { xPercent: -140, opacity: 0 },
-        { xPercent: 140, opacity: 0.85, duration: 1.5, ease: "sine.inOut" },
-        2.1,
-      )
-      .to(q("[data-leak]"), { opacity: 0, duration: 0.4 }, 3.3)
-      // 3.0–4.0s  ROHAN × ANANYA
-      .fromTo(q("[data-o=names]"), { opacity: 0, y: 26 }, { opacity: 1, y: 0, duration: 0.9 }, 3.0)
-      // 4.0–4.8s  Glimpse of Our Forever
-      .fromTo(q("[data-o=rule]"), { opacity: 0, scaleX: 0.15 }, { opacity: 1, scaleX: 1, duration: 0.7 }, 3.95)
-      .fromTo(q("[data-o=title]"), { opacity: 0, y: 14 }, { opacity: 1, y: 0, duration: 0.8 }, 4.1)
-      .fromTo(q("[data-o=sub]"), { opacity: 0 }, { opacity: 1, duration: 0.6 }, 4.5)
-      // 4.8–6.0s  the frame becomes the Welcome
-      .add(() => expandIntoWelcome(), 5.2);
+      .to(skipBtnRef.current, { opacity: 0, duration: 0.4 }, "-=1.8")
+      .to(textContainerRef.current, { scale: 1.05, opacity: 0, duration: 1.2, ease: "power1.out" }, "-=1.2")
+      .add(() => {
+        goNext();
+      });
 
     return () => {
       tl.kill();
     };
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [reduced]);
+  }, [reduced, goNext]);
 
   return (
-    <section className="relative h-full w-full overflow-hidden bg-[oklch(0.11_0.03_30)]">
-      <div ref={root} className="absolute inset-0">
-        {/* first spark of projector light */}
-        <span
-          data-spark
-          className="pointer-events-none absolute left-1/2 top-[34%] z-30 h-16 w-16 -translate-x-1/2 -translate-y-1/2 rounded-full opacity-0"
-          style={{
-            background:
-              "radial-gradient(circle, var(--gold-bright), color-mix(in oklab, var(--gold) 35%, transparent) 45%, transparent 70%)",
-          }}
-        />
+    <section
+      ref={root}
+      className="relative w-full h-full overflow-hidden bg-[#0d0f07] text-[#e3e3d5] font-sans select-none"
+    >
+      {/* Cinematic Film Overlays from Stitch MCP */}
+      <div className="film-grain" />
+      <div className="light-leak" id="lightLeak" />
 
-        <div data-camera className="absolute inset-0" style={{ perspective: "900px" }}>
-          {/* ── The reel ───────────────────────────────────────────── */}
+      {/* Main Container for Animation Sequence */}
+      <div className="relative w-full h-full flex items-center justify-center overflow-hidden" id="introContainer">
+        
+        {/* Stitch MCP Typography Container */}
+        <div
+          ref={textContainerRef}
+          className="absolute inset-0 flex flex-col items-center justify-center z-20 opacity-0 pointer-events-none drop-shadow-2xl translate-y-5"
+          id="textContainer"
+        >
+          <h2 className="font-display text-[18px] md:text-[24px] text-[#e9c349] mb-4 md:mb-6 tracking-[0.6em] uppercase drop-shadow-[0_0_15px_rgba(233,195,73,0.6)]">
+            {wedding.couple.groom.toUpperCase()} × {wedding.couple.bride.toUpperCase()}
+          </h2>
+          <h1 className="font-display text-[40px] md:text-[80px] text-[#e3e3d5] text-center px-4 max-w-5xl leading-[1.1] tracking-widest drop-shadow-[0_0_25px_rgba(233,195,73,0.3)]">
+            {wedding.couple.tagline || "Glimpse of Our Forever"}
+          </h1>
+          <p className="mt-4 text-[12px] md:text-[14px] text-[#c4c7c7] font-sans tracking-[0.3em] uppercase opacity-80">
+            {wedding.couple.subtitle || "A Royal Wedding Invitation"}
+          </p>
+        </div>
+
+        {/* Reel & Film Strip Container */}
+        <div className="relative w-full h-full flex items-center justify-center" id="reelSequence">
+          
+          {/* Vintage Reel Silhouette */}
           <div
-            data-reel
-            data-fade-out
-            className="absolute left-[6%] top-[11%] z-20 h-[38vw] w-[38vw] max-h-44 max-w-44 opacity-0"
+            ref={filmReelRef}
+            className="absolute w-[320px] h-[320px] md:w-[600px] md:h-[600px] opacity-0 scale-50 z-10 rounded-full border-[8px] md:border-[12px] border-[#e9c349]/30 flex items-center justify-center shadow-[0_0_80px_rgba(233,195,73,0.15)]"
+            id="filmReel"
           >
-            <svg viewBox="0 0 100 100" className="h-full w-full drop-shadow-[0_14px_26px_oklch(0.08_0.02_30/0.9)]">
-              <defs>
-                <radialGradient id="reelBody" cx="38%" cy="30%" r="75%">
-                  <stop offset="0%" stopColor="oklch(0.42 0.03 60)" />
-                  <stop offset="55%" stopColor="oklch(0.26 0.02 45)" />
-                  <stop offset="100%" stopColor="oklch(0.15 0.02 40)" />
-                </radialGradient>
-                <linearGradient id="reelFilm" x1="0" y1="0" x2="1" y2="1">
-                  <stop offset="0%" stopColor="oklch(0.3 0.04 40)" />
-                  <stop offset="100%" stopColor="oklch(0.17 0.03 35)" />
-                </linearGradient>
-              </defs>
-              <circle cx="50" cy="50" r="49" fill="url(#reelFilm)" />
-              <g data-reel-spin style={{ transformOrigin: "50px 50px" }}>
-                <circle cx="50" cy="50" r="49" fill="none" stroke="oklch(0.24 0.03 40)" strokeWidth="1" />
-                {Array.from({ length: 40 }, (_, i) => (
-                  <line
-                    key={i}
-                    x1="50"
-                    y1="6"
-                    x2="50"
-                    y2="16"
-                    stroke="oklch(0.42 0.03 55)"
-                    strokeWidth="0.5"
-                    opacity="0.5"
-                    transform={`rotate(${i * 9} 50 50)`}
-                  />
-                ))}
-                <circle cx="50" cy="50" r="34" fill="url(#reelBody)" stroke="var(--gold)" strokeWidth="0.8" opacity="0.95" />
-                {Array.from({ length: 6 }, (_, i) => (
-                  <g key={i} transform={`rotate(${i * 60} 50 50)`}>
-                    <path
-                      d="M50 24C57 27 62 33 62 41L50 44Z"
-                      fill="oklch(0.13 0.02 35)"
-                      opacity="0.85"
-                    />
-                    <line x1="50" y1="20" x2="50" y2="42" stroke="var(--gold)" strokeWidth="0.5" opacity="0.55" />
-                  </g>
-                ))}
-                <circle cx="50" cy="50" r="10" fill="oklch(0.2 0.02 40)" stroke="var(--gold)" strokeWidth="1" />
-                <circle cx="50" cy="50" r="3.4" fill="var(--gold-bright)" opacity="0.85" />
-              </g>
-              <circle cx="50" cy="50" r="49" fill="none" stroke="var(--gold)" strokeWidth="0.6" opacity="0.45" />
-              <path d="M18 20A45 45 0 0 1 58 6" stroke="oklch(0.95 0.02 90)" strokeWidth="1.2" opacity="0.18" fill="none" />
-            </svg>
-            {/* film leader dropping from the reel toward the strip */}
-            <div
-              data-leader
-              className="absolute left-1/2 top-full h-[9vh] w-3 origin-top -translate-x-1/2 bg-[linear-gradient(180deg,oklch(0.2_0.03_35),oklch(0.14_0.02_35))]"
-            />
+            <div className="absolute inset-0 border-4 border-dashed border-[#e9c349]/40 rounded-full animate-[spin_20s_linear_infinite]" />
+            <div className="w-12 h-12 md:w-20 md:h-20 bg-[#e9c349]/80 rounded-full shadow-[0_0_40px_rgba(233,195,73,0.5)]" />
           </div>
 
-          {/* ── The film strip ─────────────────────────────────────── */}
+          {/* Long Horizontal Film Strip (6 frames, ending with couple photo) */}
           <div
-            data-dim
-            className="pointer-events-none absolute inset-0 z-10 bg-[oklch(0.09_0.02_30)]/55 opacity-0"
-          />
-          <div
-            className="absolute inset-x-0 top-[42%] z-20 -translate-y-1/2"
-            style={{ transformStyle: "preserve-3d" }}
+            ref={filmStripRef}
+            className="absolute flex gap-6 md:gap-12 items-center opacity-0 z-0 translate-x-[60vw]"
+            id="filmStrip"
           >
-            <div
-              ref={stripRef}
-              data-fade-out
-              className="flex w-max items-stretch gap-0 opacity-0"
-              style={{
-                transform: "rotateY(-8deg) rotateX(3deg)",
-                transformStyle: "preserve-3d",
-                filter: "drop-shadow(0 18px 26px oklch(0.08 0.02 30 / 0.85))",
-              }}
-            >
-              {strip.map((f, i) => (
-                <div
-                  key={i}
-                  ref={f.hero ? heroRef : undefined}
-                  className="relative w-[70vw] max-w-[21rem] shrink-0 border-x border-[oklch(0.1_0.01_40)] bg-[oklch(0.13_0.02_38)] px-[3%] py-[6%]"
-                >
-                  <Sprockets side="top" />
-                  <Sprockets side="bottom" />
-                  <div className="relative aspect-[5/4] overflow-hidden bg-black">
+            {reelFrames.map((frame) => {
+              if (frame.hero) {
+                return (
+                  /* Frame 6 (Final Hero Frame - Couple Photo) */
+                  <div
+                    key={frame.id}
+                    ref={heroFrameRef}
+                    className="w-[340px] h-[226px] md:w-[800px] md:h-[533px] relative shrink-0 border-y-[10px] md:border-y-[16px] border-x-[4px] md:border-x-[6px] border-[#12140c] bg-[#12140c] p-2 md:p-3 flex items-center justify-center overflow-hidden transition-all duration-1000"
+                    id="heroFrame"
+                  >
                     <img
-                      src={f.src}
-                      alt={f.alt}
-                      width={640}
-                      height={512}
-                      loading={f.hero ? "eager" : "lazy"}
-                      decoding="async"
-                      className="h-full w-full object-cover"
+                      ref={heroImageRef}
+                      src={frame.src}
+                      alt={frame.alt}
+                      className="w-full h-full object-cover filter grayscale opacity-70 transition-all duration-1000 scale-105"
+                      id="heroImage"
                     />
-                    {!f.hero && <div className="absolute inset-0 bg-[oklch(0.11_0.03_30)]/45" />}
-                    {f.hero && (
-                      <div
-                        data-spot
-                        className="absolute inset-0 opacity-0"
-                        style={{
-                          background:
-                            "radial-gradient(60% 55% at 50% 42%, color-mix(in oklab, var(--gold-bright) 22%, transparent), transparent 75%)",
-                        }}
-                      />
-                    )}
+                    <div
+                      ref={heroSpotlightRef}
+                      className="absolute inset-0 bg-gradient-to-t from-[#0d0f07] via-transparent to-transparent opacity-0 pointer-events-none"
+                      id="heroSpotlight"
+                    />
                   </div>
+                );
+              }
+
+              return (
+                /* Regular Film Frames 1 to 5 */
+                <div
+                  key={frame.id}
+                  className="w-[320px] h-[213px] md:w-[800px] md:h-[533px] relative shrink-0 border-y-[10px] md:border-y-[16px] border-x-[4px] md:border-x-[6px] border-[#12140c] bg-[#12140c] p-2 md:p-3 flex items-center justify-center"
+                >
+                  <img
+                    src={frame.src}
+                    alt={frame.alt}
+                    className="w-full h-full object-cover filter grayscale opacity-60"
+                  />
                 </div>
-              ))}
-            </div>
-
-            {/* warm light leak passing across the film */}
-            <div
-              data-leak
-              className="pointer-events-none absolute inset-y-[-30%] left-0 z-30 w-1/3 opacity-0"
-              style={{
-                background:
-                  "linear-gradient(100deg, transparent, color-mix(in oklab, var(--gold-bright) 55%, transparent) 45%, oklch(0.72 0.16 45 / 0.45) 65%, transparent)",
-                filter: "blur(14px)",
-              }}
-            />
+              );
+            })}
           </div>
-        </div>
-
-        {/* ── Typography ─────────────────────────────────────────── */}
-        <div
-          data-fade-out
-          className="pointer-events-none absolute inset-x-0 bottom-[15%] z-30 flex flex-col items-center px-8 text-center"
-        >
-          <div data-o="names" className="opacity-0">
-            <p className="font-display text-[clamp(1.6rem,8vw,2.2rem)] font-light leading-[1.1] tracking-[0.14em] text-ivory">
-              {wedding.couple.groom.toUpperCase()}
-            </p>
-            <p className="my-1 font-display text-base text-gold">×</p>
-            <p className="font-display text-[clamp(1.6rem,8vw,2.2rem)] font-light leading-[1.1] tracking-[0.14em] text-ivory">
-              {wedding.couple.bride.toUpperCase()}
-            </p>
-          </div>
-          <Divider data-o="rule" className="mt-4 h-4 w-40 text-gold opacity-0" />
-          <p
-            data-o="title"
-            className="mt-3 font-display text-lg italic tracking-wide text-gold-bright opacity-0"
-          >
-            {wedding.couple.tagline}
-          </p>
-          <p
-            data-o="sub"
-            className="mt-2 font-sans text-[0.55rem] uppercase tracking-[0.38em] text-ivory/55 opacity-0"
-          >
-            {wedding.couple.subtitle}
-          </p>
-        </div>
-
-
-        <Dust count={7} />
-        <FilmGrain />
-
-        {/* Skip — never a hard cut, it just selects the hero frame early. */}
-        {!closing && (
-          <button
-            type="button"
-            onClick={expandIntoWelcome}
-            data-fade-out
-            className="absolute bottom-5 left-4 z-40 min-h-11 px-4 py-2 font-sans text-[0.58rem] uppercase tracking-[0.34em] text-ivory/55"
-          >
-            Skip →
-          </button>
-        )}
-
-        {/* The photograph that continues into the Welcome scene. */}
-        <div
-          ref={expandRef}
-          className="pointer-events-none fixed z-50 overflow-hidden opacity-0"
-          style={{ top: 0, left: 0, width: 0, height: 0 }}
-        >
-          <img
-            src={wedding.couple.portrait}
-            alt=""
-            aria-hidden="true"
-            className="h-full w-full object-cover"
-          />
-          <div
-            data-veil
-            className="absolute inset-0 bg-gradient-to-t from-maroon-deep to-transparent opacity-0"
-          />
         </div>
       </div>
+
+      {/* Skip Button with Stitch MCP styling */}
+      {!closing && (
+        <button
+          ref={skipBtnRef}
+          type="button"
+          onClick={triggerExpandAndNext}
+          className="fixed bottom-6 right-6 md:bottom-12 md:right-12 z-50 text-[#c4c7c7] font-sans text-[11px] md:text-[12px] uppercase tracking-[0.2em] font-semibold hover:text-[#e9c349] transition-colors duration-300 flex items-center gap-2 group opacity-0 cursor-pointer"
+          id="skipBtn"
+        >
+          Skip
+          <span className="text-[14px] md:text-[16px] group-hover:translate-x-1 transition-transform">
+            →
+          </span>
+        </button>
+      )}
     </section>
   );
 }

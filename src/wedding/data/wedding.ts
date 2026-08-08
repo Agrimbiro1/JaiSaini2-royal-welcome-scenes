@@ -1,4 +1,4 @@
-import couplePortrait from "@/assets/couple-portrait.jpg";
+import couplePhoto from "/assets/couple.jpg?url";
 import palaceNight from "@/assets/palace-night.jpg";
 
 export type Milestone = {
@@ -73,7 +73,7 @@ export const wedding: WeddingData = {
     bride: "Ananya",
     tagline: "Glimpse of Our Forever",
     subtitle: "A Rajasthani Wedding Celebration",
-    portrait: couplePortrait,
+    portrait: couplePhoto,
   },
   welcome: {
     guestName: "Meera & Family",
@@ -81,7 +81,7 @@ export const wedding: WeddingData = {
     message:
       "With hearts full of gratitude, we open this window of our home to you. Your presence would turn our celebration into a memory we keep forever.",
   },
-  gallery: [{ image: couplePortrait, caption: "Pre-Wedding" }],
+  gallery: [{ image: couplePhoto, caption: "Pre-Wedding" }],
   story: [
     {
       date: "2019",

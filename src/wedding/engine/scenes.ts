@@ -1,7 +1,6 @@
 import type { ComponentType } from "react";
 import type { TransitionName } from "./transitions";
 
-import OpeningScene from "../scenes/OpeningScene";
 import WelcomeScene from "../scenes/WelcomeScene";
 import CoupleScene from "../scenes/CoupleScene";
 import GalleryScene from "../scenes/GalleryScene";
@@ -24,14 +23,6 @@ export type SceneDef = {
 };
 
 export const scenes: SceneDef[] = [
-  {
-    id: "opening",
-    label: "Opening",
-    chapterTitle: "Glimpse of Our Forever",
-    component: OpeningScene,
-    transitionOut: "light-sweep",
-
-  },
   {
     id: "welcome",
     label: "Welcome",
