@@ -28,7 +28,10 @@ export function JharokhaArch(props: SVGProps<SVGSVGElement>) {
 }
 
 /** Fine ornamental divider rule with a central lotus knot. */
-export function Divider({ className = "" }: { className?: string }) {
+export function Divider({
+  className = "",
+  ...rest
+}: { className?: string } & React.SVGProps<SVGSVGElement>) {
   return (
     <svg
       viewBox="0 0 240 16"
@@ -36,7 +39,9 @@ export function Divider({ className = "" }: { className?: string }) {
       fill="none"
       aria-hidden="true"
       preserveAspectRatio="none"
+      {...rest}
     >
+
       <path d="M0 8h96" stroke="currentColor" strokeWidth="1" opacity="0.7" />
       <path d="M144 8h96" stroke="currentColor" strokeWidth="1" opacity="0.7" />
       <path
