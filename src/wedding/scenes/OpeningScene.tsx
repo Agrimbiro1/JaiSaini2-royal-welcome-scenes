@@ -300,29 +300,32 @@ export default function OpeningScene() {
         {/* ── Typography ─────────────────────────────────────────── */}
         <div
           data-fade-out
-          className="pointer-events-none absolute inset-x-0 bottom-[13%] z-30 flex flex-col items-center px-8 text-center"
+          className="pointer-events-none absolute inset-x-0 bottom-[15%] z-30 flex flex-col items-center px-8 text-center"
         >
           <div data-o="names" className="opacity-0">
-            <p className="font-display text-[2.4rem] font-light leading-[1.05] tracking-[0.16em] text-ivory">
+            <p className="font-display text-[clamp(1.6rem,8vw,2.2rem)] font-light leading-[1.1] tracking-[0.14em] text-ivory">
               {wedding.couple.groom.toUpperCase()}
-              <span className="mx-3 align-middle font-display text-xl text-gold">×</span>
+            </p>
+            <p className="my-1 font-display text-base text-gold">×</p>
+            <p className="font-display text-[clamp(1.6rem,8vw,2.2rem)] font-light leading-[1.1] tracking-[0.14em] text-ivory">
               {wedding.couple.bride.toUpperCase()}
             </p>
           </div>
-          <Divider data-o="rule" className="mt-4 h-4 w-48 text-gold opacity-0" />
+          <Divider data-o="rule" className="mt-4 h-4 w-40 text-gold opacity-0" />
           <p
             data-o="title"
-            className="mt-4 font-display text-xl italic tracking-wide text-gold-bright opacity-0"
+            className="mt-3 font-display text-lg italic tracking-wide text-gold-bright opacity-0"
           >
             {wedding.couple.tagline}
           </p>
           <p
             data-o="sub"
-            className="mt-3 font-sans text-[0.58rem] uppercase tracking-[0.42em] text-ivory/55 opacity-0"
+            className="mt-2 font-sans text-[0.55rem] uppercase tracking-[0.38em] text-ivory/55 opacity-0"
           >
             {wedding.couple.subtitle}
           </p>
         </div>
+
 
         <Dust count={7} />
         <FilmGrain />
