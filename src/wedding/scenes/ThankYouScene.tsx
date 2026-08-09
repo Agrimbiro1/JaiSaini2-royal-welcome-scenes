@@ -1,101 +1,126 @@
+import { useEffect, useRef } from "react";
+import gsap from "gsap";
 import { wedding } from "../data/wedding";
-import { useSceneEnter } from "../engine/useSceneEnter";
-import { SceneShell } from "../ui/SceneShell";
+import { usePrefersReducedMotion } from "../engine/SceneProvider";
+import { AmbientLayer, WarmGlow } from "../ui/Ambient";
 import { Divider } from "../ui/Ornaments";
-import { FilmGrain } from "../ui/Ambient";
+import thankYouBg from "/assets/thankyou-night-palace.png";
 
 export default function ThankYouScene() {
-  const ref = useSceneEnter<HTMLDivElement>();
-  const { message, signOff, background } = wedding.thankYou;
+  const reduced = usePrefersReducedMotion();
+  const rootRef = useRef<HTMLDivElement>(null);
+  const bgRef = useRef<HTMLDivElement>(null);
+  const contentRef = useRef<HTMLDivElement>(null);
+  const lanternsRef = useRef<(HTMLDivElement | null)[]>([]);
+
+  const { message, signOff } = wedding.thankYou;
+
+  useEffect(() => {
+    if (!rootRef.current || reduced) return;
+
+    const tl = gsap.timeline({ defaults: { ease: "power2.out" } });
+
+    tl.to(bgRef.current, { opacity: 1, duration: 1.2 })
+      .fromTo(
+        contentRef.current,
+        { y: 40, opacity: 0 },
+        { y: 0, opacity: 1, duration: 1.0 },
+        "-=0.5"
+      );
+
+    // Floating Sky Lanterns continuous animation
+    lanternsRef.current.filter(Boolean).forEach((lantern, i) => {
+      gsap.to(lantern, {
+        y: "-15vh",
+        x: (i % 2 === 0 ? 1 : -1) * 20,
+        rotation: (i % 2 === 0 ? 3 : -3),
+        duration: 4 + i * 1.5,
+        ease: "sine.inOut",
+        yoyo: true,
+        repeat: -1,
+      });
+    });
+
+    return () => {
+      tl.kill();
+    };
+  }, [reduced]);
 
   return (
-    <SceneShell tone="night">
-      <img
-        src={background}
-        alt="Rajasthani palace at night"
-        loading="lazy"
-        width={1024}
-        height={1024}
-        className="absolute inset-0 h-full w-full object-cover opacity-80"
-        style={{ animation: "light-breathe 18s ease-in-out infinite" }}
-      />
-      <div className="absolute inset-0 bg-gradient-to-b from-[oklch(0.17_0.06_265)]/70 via-transparent to-[oklch(0.15_0.05_265)]/92" />
-
-      {/* Stars */}
-      <div className="pointer-events-none absolute inset-0" aria-hidden="true">
-        {Array.from({ length: 22 }, (_, i) => (
-          <span
-            key={i}
-            className="absolute h-[2px] w-[2px] rounded-full bg-ivory"
-            style={{
-              left: `${(i * 41) % 96 + 2}%`,
-              top: `${(i * 29) % 46 + 4}%`,
-              animation: `twinkle ${2.5 + (i % 5) * 0.7}s ease-in-out ${i * 0.2}s infinite`,
-            }}
-          />
-        ))}
-      </div>
-
-      {/* Lanterns */}
-      <div className="pointer-events-none absolute inset-x-8 top-16 flex justify-between">
-        {[0, 1].map((i) => (
-          <span key={i} className="flex flex-col items-center">
-            <span className="h-10 w-px bg-gold/40" />
-            <span
-              className="h-5 w-3 rounded-sm bg-gold-bright/85"
-              style={{
-                boxShadow: "0 0 16px 6px color-mix(in oklab, var(--gold) 45%, transparent)",
-                animation: `flame-flicker ${2.4 + i * 0.6}s ease-in-out infinite`,
-              }}
-            />
-          </span>
-        ))}
-      </div>
-
+    <section
+      ref={rootRef}
+      className="relative w-full h-full overflow-hidden bg-[#0d0f07] text-[#e3e3d5] font-sans select-none flex flex-col items-center justify-between py-8 px-4"
+    >
+      {/* Background Image */}
       <div
-        ref={ref}
-        className="relative z-10 flex h-full flex-col items-center justify-end px-8 pb-28 text-center"
+        ref={bgRef}
+        className="absolute inset-0 z-0 pointer-events-none opacity-0 transition-opacity duration-1000 overflow-hidden"
       >
-        <p
-          className="font-sans text-[0.6rem] uppercase tracking-[0.45em] text-gold/80"
-          data-enter
-          data-enter-order={1}
-        >
-          ✦
-        </p>
-        <h2
-          className="mt-3 font-display text-[2.4rem] font-light tracking-[0.16em] text-ivory"
-          data-enter
-          data-enter-order={2}
-        >
+        <img
+          src={thankYouBg}
+          alt="Starlit Royal Palace at Night"
+          className="w-full h-full object-cover object-center scale-105"
+        />
+        <div className="absolute inset-0 bg-gradient-to-t from-[#0d0f07]/95 via-[#0d0f07]/50 to-[#0d0f07]/75" />
+      </div>
+
+      {/* Floating Royal Sky Lanterns (Kandils) */}
+      <div className="absolute inset-0 z-10 pointer-events-none overflow-hidden">
+        {[
+          { left: "15%", top: "60%" },
+          { left: "80%", top: "55%" },
+          { left: "30%", top: "75%" },
+          { left: "70%", top: "70%" },
+        ].map((pos, i) => (
+          <div
+            key={i}
+            ref={(el) => {
+              lanternsRef.current[i] = el;
+            }}
+            style={{ left: pos.left, top: pos.top }}
+            className="absolute flex flex-col items-center"
+          >
+            {/* Glowing Lantern Disc */}
+            <div className="w-6 h-9 sm:w-8 sm:h-12 rounded-t-lg bg-gradient-to-b from-[#fef08a] via-[#f59e0b] to-[#ea580c] border border-[#fef08a] shadow-[0_0_25px_rgba(245,158,11,0.85)] flex items-center justify-center">
+              <div className="w-2 h-2 rounded-full bg-[#ffffff] animate-pulse" />
+            </div>
+            {/* Lantern Tassel */}
+            <div className="w-0.5 h-4 bg-[#fef08a]/70" />
+          </div>
+        ))}
+      </div>
+
+      <WarmGlow className="left-1/2 top-1/2 h-96 w-96 -translate-x-1/2 -translate-y-1/2 opacity-50 pointer-events-none" />
+
+      {/* Main Content */}
+      <div
+        ref={contentRef}
+        className="relative z-20 flex flex-col items-center text-center my-auto max-w-md px-4"
+      >
+        <span className="font-sans text-[10px] uppercase tracking-[0.4em] text-[#e9c349] font-medium">
+          Chapter Eleven • The Story Continues
+        </span>
+
+        <h1 className="mt-2 font-display text-3xl sm:text-4xl md:text-5xl text-[#fef08a] font-light tracking-widest drop-shadow-md">
           THANK YOU
-        </h2>
-        <Divider className="mt-4 h-3 w-40 text-gold/70" />
-        <p
-          className="mt-4 max-w-[18rem] font-display text-base italic leading-relaxed text-ivory/80"
-          data-enter
-          data-enter-order={3}
-        >
-          {message}
+        </h1>
+
+        <Divider className="mt-3 h-3 w-40 text-[#e9c349]" />
+
+        <p className="mt-4 font-display text-base sm:text-lg italic leading-relaxed text-[#e3e3d5]/90">
+          “{message}”
         </p>
-        <p
-          className="mt-6 font-script text-2xl text-gold-bright"
-          data-enter
-          data-enter-order={4}
-        >
+
+        <p className="mt-6 font-script text-2xl text-[#fef08a]">
           {signOff},
         </p>
-        <p
-          className="mt-1 font-display text-xl tracking-[0.18em] text-ivory"
-          data-enter
-          data-enter-order={5}
-        >
-          {wedding.couple.groom.toUpperCase()} <span className="text-gold">×</span>{" "}
-          {wedding.couple.bride.toUpperCase()}
+
+        <p className="mt-1 font-display text-xl tracking-[0.2em] text-[#e9c349] font-medium">
+          {wedding.couple.groom.toUpperCase()} <span className="text-[#ffffff]">×</span> {wedding.couple.bride.toUpperCase()}
         </p>
       </div>
 
-      <FilmGrain />
-    </SceneShell>
+      <AmbientLayer dust={8} petals={3} />
+    </section>
   );
 }

@@ -4,6 +4,10 @@ import { useScene, usePrefersReducedMotion } from "../engine/SceneProvider";
 import { wedding } from "../data/wedding";
 import { Divider, JaaliPanel, JharokhaArch } from "../ui/Ornaments";
 import { AmbientLayer, WarmGlow } from "../ui/Ambient";
+import { PeacockFeathers } from "../ui/PeacockFeathers";
+
+import welcomeBg from "/assets/welcome-background.png";
+import coupleFrame from "/assets/couple-frame.png";
 
 import reelMehendi from "@/assets/reel-mehendi.jpg";
 import reelJewellery from "@/assets/reel-jewellery.jpg";
@@ -321,46 +325,75 @@ export default function WelcomeScene() {
       {/* ── STAGE 2: Welcome Page & Open Invitation Button ─────── */}
       <div
         ref={welcomeCardRef}
-        className="absolute inset-0 z-20 flex flex-col items-center justify-center px-6 pb-20 pt-10 opacity-0 scale-95 transition-all duration-700"
+        className="absolute inset-0 z-20 flex flex-col items-center justify-center px-6 pb-20 pt-10 opacity-0 scale-95 transition-all duration-700 overflow-hidden"
       >
-        {/* Jharokha Couple Arch */}
-        <div className="relative w-[58%] max-w-[14rem] md:max-w-[17rem]">
-          <JharokhaArch className="absolute -inset-x-4 -top-6 bottom-0 h-[calc(100%+1.5rem)] w-[calc(100%+2rem)] text-[#e9c349]/70 pointer-events-none" />
-          <div className="relative mt-2 overflow-hidden rounded-t-[999px] border border-[#e9c349]/50 shadow-[0_0_30px_rgba(233,195,73,0.2)]">
-            <img
-              src={wedding.couple.portrait}
-              alt={`${wedding.couple.groom} and ${wedding.couple.bride}`}
-              width={768}
-              height={1024}
-              className="h-full w-full object-cover"
-            />
-            <div className="absolute inset-0 bg-gradient-to-t from-[#0d0f07]/60 to-transparent" />
-          </div>
+        {/* Full Cover Welcome Background Image (z-0) */}
+        <div className="absolute inset-0 z-0 pointer-events-none overflow-hidden">
+          <img
+            src={welcomeBg}
+            alt="Welcome Background"
+            className="w-full h-full object-cover object-center scale-105"
+          />
+          {/* Elegant dark vignette overlay to ensure text readability */}
+          <div className="absolute inset-0 bg-gradient-to-t from-[#0d0f07]/85 via-[#0d0f07]/50 to-[#0d0f07]/65" />
         </div>
 
-        {/* Guest Greeting */}
-        <p className="mt-6 font-display text-xl md:text-2xl tracking-wide text-[#e3e3d5]">
-          Dear <span className="text-[#e9c349]">{guestName}</span>
-        </p>
-        <Divider className="mt-2.5 h-3 w-32 text-[#e9c349]/70" />
+        {/* Falling Particles Layer (z-10): Peacock Feathers & Golden Petals (falling BEHIND couple image & text) */}
+        <div className="absolute inset-0 z-10 pointer-events-none overflow-hidden">
+          <PeacockFeathers active={welcomeRevealed} count={16} />
+        </div>
 
-        <p className="mt-3.5 max-w-[20rem] md:max-w-[24rem] text-center font-display text-sm md:text-base italic leading-relaxed text-[#e9c349]/90">
-          “{quote}”
-        </p>
-        <p className="mt-3 max-w-[21rem] md:max-w-[26rem] text-center font-sans text-[0.75rem] md:text-[0.82rem] leading-relaxed text-[#e3e3d5]/70">
-          {message}
-        </p>
+        {/* Foreground Content Layer (z-20): Couple Image, Text & Button */}
+        <div className="relative z-20 flex flex-col items-center justify-center w-full max-w-xl">
+          {/* Royal Couple Frame (couple-frame.png) */}
+          <div className="relative w-[86%] max-w-[22rem] md:max-w-[27rem] aspect-[4/3] flex items-center justify-center my-2">
+            {/* Inner Photo - precisely positioned inside the frame's golden border window */}
+            <div className="absolute top-[16%] bottom-[16%] left-[16%] right-[16%] overflow-hidden rounded-sm z-0 bg-[#0d0f07]">
+              <img
+                src={wedding.couple.portrait}
+                alt={`${wedding.couple.groom} and ${wedding.couple.bride}`}
+                width={768}
+                height={1024}
+                className="h-full w-full object-cover object-[center_25%]"
+              />
+              <div className="absolute inset-0 bg-gradient-to-t from-[#0d0f07]/30 via-transparent to-transparent pointer-events-none" />
+            </div>
 
-        {/* Open Invitation Button */}
-        <button
-          type="button"
-          onClick={goNext}
-          className="mt-6 group relative inline-flex items-center gap-3 px-8 py-3.5 rounded-full bg-gradient-to-r from-[#e9c349] via-[#f7e08b] to-[#e9c349] text-[#12140c] font-sans text-[12px] md:text-[13px] font-semibold uppercase tracking-[0.3em] shadow-[0_0_25px_rgba(233,195,73,0.4)] hover:shadow-[0_0_35px_rgba(233,195,73,0.7)] hover:scale-105 active:scale-95 transition-all duration-300 cursor-pointer"
-        >
-          <span>Open Invitation</span>
-          <span className="text-[14px] group-hover:translate-x-1 transition-transform">→</span>
-        </button>
+            {/* couple-frame.png Ornate Frame Overlay */}
+            <img
+              src={coupleFrame}
+              alt="Royal Couple Frame"
+              className="absolute inset-0 w-full h-full object-contain pointer-events-none z-10 filter drop-shadow-[0_6px_25px_rgba(233,195,73,0.45)]"
+            />
+          </div>
+
+
+
+          {/* Guest Greeting */}
+          <p className="mt-6 font-display text-xl md:text-2xl tracking-wide text-[#e3e3d5]">
+            Dear <span className="text-[#e9c349]">{guestName}</span>
+          </p>
+          <Divider className="mt-2.5 h-3 w-32 text-[#e9c349]/70" />
+
+          <p className="mt-3.5 max-w-[20rem] md:max-w-[24rem] text-center font-display text-sm md:text-base italic leading-relaxed text-[#e9c349]/90">
+            “{quote}”
+          </p>
+          <p className="mt-3 max-w-[21rem] md:max-w-[26rem] text-center font-sans text-[0.75rem] md:text-[0.82rem] leading-relaxed text-[#e3e3d5]/70">
+            {message}
+          </p>
+
+          {/* Open Invitation Button */}
+          <button
+            type="button"
+            onClick={goNext}
+            className="mt-6 group relative inline-flex items-center gap-3 px-8 py-3.5 rounded-full bg-gradient-to-r from-[#e9c349] via-[#f7e08b] to-[#e9c349] text-[#12140c] font-sans text-[12px] md:text-[13px] font-semibold uppercase tracking-[0.3em] shadow-[0_0_25px_rgba(233,195,73,0.4)] hover:shadow-[0_0_35px_rgba(233,195,73,0.7)] hover:scale-105 active:scale-95 transition-all duration-300 cursor-pointer"
+          >
+            <span>Open Invitation</span>
+            <span className="text-[14px] group-hover:translate-x-1 transition-transform">→</span>
+          </button>
+        </div>
       </div>
+
 
       <AmbientLayer dust={9} petals={3} />
     </section>

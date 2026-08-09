@@ -1,11 +1,26 @@
 import couplePhoto from "/assets/couple.jpg?url";
 import palaceNight from "@/assets/palace-night.jpg";
+import prewedding1 from "/assets/prewedding-1.jpg";
+import prewedding2 from "/assets/prewedding-2.jpg";
+import prewedding3 from "/assets/prewedding-3.jpg";
+import prewedding4 from "/assets/prewedding-4.jpg";
+
 
 export type Milestone = {
   date: string;
   title: string;
   description: string;
   image?: string;
+};
+
+export type GalleryItem = {
+  id: string;
+  image: string;
+  caption: string;
+  date?: string;
+  location?: string;
+  isHero?: boolean;
+  aspectRatio?: "portrait" | "landscape" | "square";
 };
 
 export type FamilyMember = {
@@ -45,7 +60,7 @@ export type WeddingData = {
     quote: string;
     message: string;
   };
-  gallery: { image: string; caption?: string }[];
+  gallery: GalleryItem[];
   story: Milestone[];
   family: FamilyMember[];
   countdown: {
@@ -81,7 +96,51 @@ export const wedding: WeddingData = {
     message:
       "With hearts full of gratitude, we open this window of our home to you. Your presence would turn our celebration into a memory we keep forever.",
   },
-  gallery: [{ image: couplePhoto, caption: "Pre-Wedding" }],
+  gallery: [
+    {
+      id: "pw-1",
+      image: prewedding1,
+      caption: "Udaipur Palace Terrace",
+      date: "Sunset Memories",
+      location: "Udaipur, Rajasthan",
+      aspectRatio: "landscape",
+    },
+    {
+      id: "pw-2",
+      image: prewedding2,
+      caption: "Haveli Courtyard Romance",
+      date: "Golden Hour",
+      location: "Haveli Courtyard",
+      aspectRatio: "portrait",
+    },
+    {
+      id: "hero",
+      image: couplePhoto,
+      caption: "Rohan & Ananya — Royal Portrait",
+      date: "Pre-Wedding Shoot",
+      location: "Palace Terrace",
+      isHero: true,
+      aspectRatio: "landscape",
+    },
+    {
+      id: "pw-3",
+      image: prewedding3,
+      caption: "Lakeside Boat Sunset",
+      date: "Dusk Reflections",
+      location: "Lake Pichola",
+      aspectRatio: "portrait",
+    },
+    {
+      id: "pw-4",
+      image: prewedding4,
+      caption: "Golden Sand Dunes",
+      date: "Desert Sunset",
+      location: "Sam Sand Dunes, Jaisalmer",
+      aspectRatio: "landscape",
+    },
+  ],
+
+
   story: [
     {
       date: "2019",
@@ -122,10 +181,14 @@ export const wedding: WeddingData = {
     confirmationNote: "We can't wait to celebrate with you.",
   },
   blessings: [
-    { message: "Wishing you both a lifetime of happiness.", guestName: "Priya" },
-    { message: "May your home always be full of light.", guestName: "Arjun" },
-    { message: "Two beautiful souls, one beautiful journey.", guestName: "Naina" },
+    { message: "Wishing you both a lifetime of happiness, warmth, and laughter.", guestName: "Priya & Family" },
+    { message: "May your home always be filled with divine light and love.", guestName: "Arjun & Neha" },
+    { message: "Two beautiful souls, one magnificent Rajasthani journey.", guestName: "Naina & Vikram" },
+    { message: "May your togetherness grow sweeter with every passing year.", guestName: "Kavita Aunty" },
+    { message: "May your bond be as everlasting and regal as royalty.", guestName: "Devraj Uncle" },
+    { message: "Abundant blessings and endless joy for your new beginning.", guestName: "Meera & Rajesh" },
   ],
+
   thankYou: {
     message: "Thank you for being part of our story.",
     signOff: "With Love",

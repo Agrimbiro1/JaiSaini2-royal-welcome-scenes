@@ -1,123 +1,153 @@
-import { useState } from "react";
+import { useEffect, useRef, useState } from "react";
+import gsap from "gsap";
 import { wedding } from "../data/wedding";
-import { useSceneEnter } from "../engine/useSceneEnter";
-import { SceneShell, SceneTitle } from "../ui/SceneShell";
-import { Divider, JaaliPanel } from "../ui/Ornaments";
+import { usePrefersReducedMotion } from "../engine/SceneProvider";
 import { AmbientLayer, WarmGlow } from "../ui/Ambient";
+import { Divider } from "../ui/Ornaments";
+import ceremoniesBg from "/assets/ceremonies-palace-courtyard.png";
 
-const toneFor: Record<string, string> = {
-  haldi: "oklch(0.8 0.13 88)",
-  mehendi: "oklch(0.55 0.1 150)",
-  sangeet: "oklch(0.5 0.12 300)",
-  wedding: "oklch(0.78 0.11 84)",
-  reception: "oklch(0.45 0.1 262)",
+// Vector icons for each ceremony type
+const ceremonyIcons: Record<string, string> = {
+  haldi: "🌼",
+  mehendi: "🌿",
+  sangeet: "🪕",
+  wedding: "👑",
+  reception: "✨",
 };
 
 export default function CeremoniesScene() {
-  const ref = useSceneEnter<HTMLDivElement>();
+  const reduced = usePrefersReducedMotion();
+  const rootRef = useRef<HTMLDivElement>(null);
+  const bgRef = useRef<HTMLDivElement>(null);
+  const cardRef = useRef<HTMLDivElement>(null);
+
   const [activeId, setActiveId] = useState(wedding.ceremonies[0]?.id ?? "");
   const active = wedding.ceremonies.find((c) => c.id === activeId);
-  const tint = toneFor[activeId] ?? "oklch(0.78 0.11 84)";
+
+  useEffect(() => {
+    if (!rootRef.current || reduced) return;
+
+    const tl = gsap.timeline({ defaults: { ease: "power2.out" } });
+
+    tl.to(bgRef.current, { opacity: 1, duration: 1.0 }).fromTo(
+      cardRef.current,
+      { y: 30, opacity: 0 },
+      { y: 0, opacity: 1, duration: 0.8 },
+      "-=0.4"
+    );
+
+    return () => {
+      tl.kill();
+    };
+  }, [reduced]);
 
   return (
-    <SceneShell>
-      <JaaliPanel className="absolute inset-0 opacity-[0.06]" />
+    <section
+      ref={rootRef}
+      className="relative w-full h-full overflow-hidden bg-[#0d0f07] text-[#e3e3d5] font-sans select-none flex flex-col items-center justify-between py-6 px-4"
+    >
+      {/* Background Image */}
       <div
-        className="absolute inset-0 transition-colors duration-700"
-        style={{ background: `radial-gradient(60% 45% at 50% 34%, ${tint}22, transparent 70%)` }}
-      />
-      <WarmGlow className="left-1/2 top-[30%] h-48 w-48 -translate-x-1/2 opacity-35" />
-
-      {/* Courtyard arches */}
-      <svg
-        viewBox="0 0 320 200"
-        className="absolute bottom-24 left-0 right-0 h-40 w-full text-gold/45"
-        fill="none"
-        preserveAspectRatio="none"
-        aria-hidden="true"
+        ref={bgRef}
+        className="absolute inset-0 z-0 pointer-events-none opacity-0 transition-opacity duration-1000 overflow-hidden"
       >
-        {[20, 120, 220].map((x) => (
-          <path
-            key={x}
-            d={`M${x} 200V90c0-22 18-40 40-40s40 18 40 40v110`}
-            stroke="currentColor"
-            strokeWidth="1.2"
-          />
-        ))}
-      </svg>
+        <img
+          src={ceremoniesBg}
+          alt="Palace Ceremonies Courtyard"
+          className="w-full h-full object-cover object-center scale-105"
+        />
+        <div className="absolute inset-0 bg-gradient-to-t from-[#0d0f07]/90 via-[#0d0f07]/45 to-[#0d0f07]/80" />
+      </div>
 
-      <div
-        ref={ref}
-        className="relative z-10 flex h-full flex-col items-center justify-center px-7 pb-28 pt-20"
-      >
-        <SceneTitle kicker="Chapter Eight" title="The Royal Celebration" />
+      <WarmGlow className="left-1/2 top-1/2 h-80 w-80 -translate-x-1/2 -translate-y-1/2 opacity-40 pointer-events-none" />
 
-        <div
-          className="mt-6 flex flex-wrap justify-center gap-2"
-          data-enter
-          data-enter-order={2}
-        >
-          {wedding.ceremonies.map((c) => (
+      {/* Header */}
+      <div className="relative z-20 flex flex-col items-center text-center mt-2">
+        <span className="font-sans text-[9px] sm:text-[10px] uppercase tracking-[0.35em] text-[#e9c349] font-medium">
+          Chapter Eight • The Royal Celebration
+        </span>
+        <h1 className="mt-1 font-display text-2xl sm:text-3xl text-[#fef08a] font-medium tracking-wide drop-shadow-md">
+          Wedding Ceremonies
+        </h1>
+        <Divider className="mt-2 h-2.5 w-36 text-[#e9c349]/80" />
+      </div>
+
+      {/* Ceremony Selection Tabs */}
+      <div className="relative z-20 flex flex-wrap justify-center gap-2 my-2 max-w-xl">
+        {wedding.ceremonies.map((c) => {
+          const isActive = c.id === activeId;
+          return (
             <button
               key={c.id}
               type="button"
               onClick={() => setActiveId(c.id)}
-              className={`min-h-11 rounded-sm border px-3 py-2 font-sans text-[0.58rem] uppercase tracking-[0.24em] transition-colors ${
-                c.id === activeId
-                  ? "border-gold bg-gold/15 text-gold-bright"
-                  : "border-gold/25 text-ivory/60"
+              className={`flex items-center gap-1.5 px-3.5 py-1.5 rounded-full border text-[10px] sm:text-xs uppercase tracking-[0.2em] font-semibold transition-all cursor-pointer ${
+                isActive
+                  ? "bg-[#e9c349] border-[#fef08a] text-[#451a03] shadow-[0_0_15px_rgba(233,195,73,0.5)] scale-105"
+                  : "bg-[#0d0f07]/80 border-[#e9c349]/40 text-[#e3e3d5] hover:border-[#fef08a]"
               }`}
             >
-              {c.name}
+              <span>{ceremonyIcons[c.id] || "✦"}</span>
+              <span>{c.name}</span>
             </button>
-          ))}
-        </div>
+          );
+        })}
+      </div>
 
-        {active && (
-          <div
-            className="mt-6 w-full max-w-[19rem] rounded-sm border border-gold/35 bg-maroon-deep/70 px-5 py-5 text-center"
-            data-enter
-            data-enter-order={3}
-          >
-            <p className="font-display text-2xl tracking-wide text-ivory">{active.name}</p>
-            <Divider className="mx-auto mt-2 h-3 w-24 text-gold/70" />
-            <dl className="mt-3 space-y-1 font-sans text-[0.72rem] text-ivory/75">
-              {active.date && <dd>{active.date}</dd>}
-              {active.time && <dd>{active.time}</dd>}
-              {active.venue && <dd>{active.venue}</dd>}
-              {active.dressCode && (
-                <dd className="text-gold/80">Dress code — {active.dressCode}</dd>
-              )}
-            </dl>
-            {active.mapUrl && (
-              <a
-                href={active.mapUrl}
-                target="_blank"
-                rel="noreferrer"
-                className="mt-4 inline-block min-h-11 border-b border-gold/60 pb-1 font-sans text-[0.58rem] uppercase tracking-[0.3em] text-gold"
-              >
-                Get Directions
-              </a>
+      {/* Active Ceremony Card */}
+      {active && (
+        <div
+          ref={cardRef}
+          className="relative z-20 w-full max-w-md bg-gradient-to-b from-[#fefce8] via-[#fef9c3] to-[#fef08a] text-[#451a03] p-6 sm:p-7 rounded-[4px] border-2 border-[#e9c349] shadow-[0_22px_55px_rgba(0,0,0,0.85),0_0_25px_rgba(233,195,73,0.3)] flex flex-col items-center text-center my-3"
+        >
+          {/* Filigree Corner Accents */}
+          <div className="absolute top-2 left-2 w-3.5 h-3.5 border-t-2 border-l-2 border-[#b45309] rounded-tl-xs pointer-events-none" />
+          <div className="absolute top-2 right-2 w-3.5 h-3.5 border-t-2 border-r-2 border-[#b45309] rounded-tr-xs pointer-events-none" />
+          <div className="absolute bottom-2 left-2 w-3.5 h-3.5 border-b-2 border-l-2 border-[#b45309] rounded-bl-xs pointer-events-none" />
+          <div className="absolute bottom-2 right-2 w-3.5 h-3.5 border-b-2 border-r-2 border-[#b45309] rounded-br-xs pointer-events-none" />
+
+          {/* Ceremony Icon & Name */}
+          <div className="w-12 h-12 rounded-full bg-[#451a03] text-[#fef08a] text-xl flex items-center justify-center border border-[#e9c349] shadow-md mb-2">
+            {ceremonyIcons[active.id] || "✦"}
+          </div>
+
+          <h2 className="font-display text-xl sm:text-2xl font-bold text-[#451a03] tracking-wide">
+            {active.name}
+          </h2>
+
+          <div className="w-16 h-[1.5px] bg-[#b45309] mx-auto my-3 opacity-80" />
+
+          {/* Date, Time & Venue */}
+          <div className="space-y-1.5 font-sans text-xs sm:text-sm text-[#451a03]">
+            {active.date && (
+              <p className="font-semibold text-[#92400e] tracking-wider uppercase">
+                {active.date} • {active.time}
+              </p>
+            )}
+            {active.venue && <p className="font-medium">{active.venue}</p>}
+            {active.dressCode && (
+              <p className="text-[11px] italic text-[#b45309] mt-2">
+                Dress Code: {active.dressCode}
+              </p>
             )}
           </div>
-        )}
-      </div>
 
-      {/* Diyas */}
-      <div className="pointer-events-none absolute bottom-20 left-0 right-0 z-10 flex justify-center gap-10">
-        {[0, 1, 2].map((i) => (
-          <span
-            key={i}
-            className="h-2 w-2 rounded-full bg-gold-bright"
-            style={{
-              boxShadow: "0 0 12px 4px color-mix(in oklab, var(--gold) 55%, transparent)",
-              animation: `flame-flicker ${2 + i * 0.4}s ease-in-out infinite`,
-            }}
-          />
-        ))}
-      </div>
+          {/* Map Directions CTA */}
+          {active.mapUrl && (
+            <a
+              href={active.mapUrl}
+              target="_blank"
+              rel="noreferrer"
+              className="mt-4 inline-flex items-center gap-2 px-5 py-2 rounded bg-[#451a03] text-[#fef08a] font-sans text-[10px] uppercase tracking-[0.25em] font-bold shadow-md hover:bg-[#78350f] transition-colors"
+            >
+              <span>Get Directions</span>
+              <span>📍</span>
+            </a>
+          )}
+        </div>
+      )}
 
-      <AmbientLayer dust={6} />
-    </SceneShell>
+      <AmbientLayer dust={7} petals={2} />
+    </section>
   );
 }

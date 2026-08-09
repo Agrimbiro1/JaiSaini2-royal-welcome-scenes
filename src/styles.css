@@ -257,6 +257,31 @@ body {
   }
 }
 
+@keyframes feather-drop {
+  0% {
+    transform: translate3d(0, -18vh, 0) rotate(var(--rot-start, -15deg)) scale(var(--scale, 1));
+    opacity: 0;
+  }
+  8% {
+    opacity: 0.9;
+  }
+  45% {
+    transform: translate3d(var(--sway-1, 4vw), 40vh, 0) rotate(var(--rot-mid, 20deg)) scale(var(--scale, 1));
+    opacity: 0.85;
+  }
+  80% {
+    transform: translate3d(var(--sway-2, -3vw), 80vh, 0) rotate(var(--rot-late, -10deg)) scale(var(--scale, 1));
+    opacity: 0.7;
+  }
+  100% {
+    transform: translate3d(var(--drift, 5vw), 115vh, 0) rotate(var(--rot-end, 40deg)) scale(var(--scale, 1));
+    opacity: 0;
+  }
+}
+
+
+
+
 @keyframes dust-drift {
   0% {
     transform: translate3d(0, 0, 0);
