@@ -1,120 +1,377 @@
-import { useEffect, useRef, useState } from "react";
-import gsap from "gsap";
-import { wedding } from "../data/wedding";
+import { useState } from "react";
 import { usePrefersReducedMotion } from "../engine/SceneProvider";
 import { AmbientLayer, WarmGlow } from "../ui/Ambient";
 import { Divider } from "../ui/Ornaments";
-import storyBg from "/assets/story-palace-scroll.png";
+
+import rajasthanMapBg from "/assets/rajasthan-vintage-map.png";
+import prewedding1 from "/assets/prewedding-1.jpg";
+import prewedding2 from "/assets/prewedding-2.jpg";
+import prewedding3 from "/assets/prewedding-3.jpg";
+import couplePhoto from "/assets/couple.jpg";
+
+interface StoryWaypoint {
+  id: string;
+  year: string;
+  title: string;
+  location: string;
+  description: string;
+  photo: string;
+  x: number; // percentage X on full-screen map (0 - 100)
+  y: number; // percentage Y on full-screen map (0 - 100)
+}
+
+// Staggered in a winding S-wave pattern across Rajasthan (Top-Left -> Lower-Center -> Upper-Right -> Lower-Right)
+const storyNodes: StoryWaypoint[] = [
+  {
+    id: "node-1",
+    year: "2019",
+    title: "The First Meeting",
+    location: "Udaipur Lake Pichola",
+    description: "Beside the glistening waters of Lake Pichola, our paths crossed for the very first time. A single glance that sparked a lifetime of togetherness.",
+    photo: prewedding3,
+    x: 18,
+    y: 28,
+  },
+  {
+    id: "node-2",
+    year: "2021",
+    title: "The First Journey",
+    location: "Jodhpur Blue City",
+    description: "Two cities, one long scenic road, and endless hours of deep conversation beneath the blue city skies of Jodhpur.",
+    photo: prewedding1,
+    x: 38,
+    y: 64,
+  },
+  {
+    id: "node-3",
+    year: "2024",
+    title: "The Proposal",
+    location: "Jaipur Amber Palace Terrace",
+    description: "Under a blanket of royal stars atop Amber Fort, a ring was presented, a heart was pledged, and one joyous 'Yes!' echoed forever.",
+    photo: prewedding2,
+    x: 64,
+    y: 32,
+  },
+  {
+    id: "node-4",
+    year: "2026",
+    title: "The Royal Wedding",
+    location: "The Palace Courtyard",
+    description: "Two souls, two royal families, united in eternal matrimony before loved ones under the sacred mandap.",
+    photo: couplePhoto,
+    x: 82,
+    y: 72,
+  },
+];
 
 export default function StoryScene() {
   const reduced = usePrefersReducedMotion();
-  const rootRef = useRef<HTMLDivElement>(null);
-  const bgRef = useRef<HTMLDivElement>(null);
-  const scrollRef = useRef<HTMLDivElement>(null);
+  const [selectedNode, setSelectedNode] = useState<StoryWaypoint | null>(null);
 
-  const [activeIdx, setActiveIdx] = useState(0);
-  const milestones = wedding.story;
-  const current = milestones[activeIdx]!;
-
-  useEffect(() => {
-    if (!rootRef.current || reduced) return;
-
-    const tl = gsap.timeline({ defaults: { ease: "power2.out" } });
-
-    tl.to(bgRef.current, { opacity: 1, duration: 1.0 })
-      .fromTo(
-        scrollRef.current,
-        { scale: 0.9, opacity: 0, y: 30 },
-        { scale: 1, opacity: 1, y: 0, duration: 1.0, ease: "back.out(1.3)" },
-        "-=0.4"
-      );
-
-    return () => {
-      tl.kill();
-    };
-  }, [reduced]);
+  // SVG Wavy Bezier Curve String connecting (18, 28) -> (38, 64) -> (64, 32) -> (82, 72)
+  const pathD = `M ${storyNodes[0]!.x} ${storyNodes[0]!.y} C 24 45, 30 60, ${storyNodes[1]!.x} ${storyNodes[1]!.y} C 48 68, 54 34, ${storyNodes[2]!.x} ${storyNodes[2]!.y} C 72 30, 76 56, ${storyNodes[3]!.x} ${storyNodes[3]!.y}`;
 
   return (
-    <section
-      ref={rootRef}
-      className="relative w-full h-full overflow-hidden bg-[#0d0f07] text-[#e3e3d5] font-sans select-none flex flex-col items-center justify-between py-6 px-4"
-    >
-      {/* Background Image */}
-      <div
-        ref={bgRef}
-        className="absolute inset-0 z-0 pointer-events-none opacity-0 transition-opacity duration-1000 overflow-hidden"
-      >
-        <img
-          src={storyBg}
-          alt="Palace Gallery Hallway"
-          className="w-full h-full object-cover object-center scale-105"
-        />
-        <div className="absolute inset-0 bg-gradient-to-t from-[#0d0f07]/90 via-[#0d0f07]/45 to-[#0d0f07]/80" />
-      </div>
+    <section className="story-fullscreen-root relative w-full h-[100svh] overflow-hidden select-none">
+      <style>{`
+        .story-fullscreen-root {
+          --maroon: #430E1F;
+          --maroon-deep: #2C0714;
+          --maroon-mid: #6E1B34;
+          --gold: #CBA135;
+          --gold-light: #EAD59A;
+          --ivory: #FBF1DE;
+          --ink: #331019;
+          --teal: #0F6B62;
+          --teal-light: #4FA89B;
+          --marigold: #E2790E;
+          --marigold-2: #F2A93C;
 
-      <WarmGlow className="left-1/2 top-1/2 h-80 w-80 -translate-x-1/2 -translate-y-1/2 opacity-40 pointer-events-none" />
+          font-family: 'Rajdhani', sans-serif;
+          color: var(--ivory);
+          isolation: isolate;
+        }
 
-      {/* Header */}
-      <div className="relative z-20 flex flex-col items-center text-center mt-2">
-        <span className="font-sans text-[9px] sm:text-[10px] uppercase tracking-[0.35em] text-[#e9c349] font-medium">
-          Chapter Five • Our Journey
+        /* Full Screen Background Map */
+        .fullscreen-map-img {
+          position: absolute;
+          inset: 0;
+          width: 100%;
+          height: 100%;
+          object-fit: cover;
+          object-position: center;
+          filter: contrast(1.08) saturate(1.15) brightness(0.85);
+          transform: scale(1.02);
+        }
+
+        .jaali-overlay {
+          position: absolute; inset: 0; opacity: 0.08;
+          background-image:
+            linear-gradient(45deg, var(--gold) 1px, transparent 1px),
+            linear-gradient(-45deg, var(--gold) 1px, transparent 1px);
+          background-size: 34px 34px;
+          pointer-events: none;
+        }
+
+        .map-vignette {
+          position: absolute; inset: 0;
+          background: radial-gradient(circle at 50% 50%, transparent 35%, rgba(44, 7, 20, 0.72) 85%, rgba(44, 7, 20, 0.95) 100%);
+          pointer-events: none;
+        }
+
+        /* SVG Connecting Path Overlay across Fullscreen (0 0 100 100 ViewBox) */
+        .fullscreen-svg-overlay {
+          position: absolute;
+          inset: 0;
+          width: 100%;
+          height: 100%;
+          pointer-events: none;
+          z-index: 10;
+        }
+
+        /* Clean Thin Black Cartography Dashed Line (No Background Overlay) */
+        .journey-path-dash {
+          stroke: #1c0a02;
+          stroke-width: 0.3;
+          stroke-dasharray: 1 1;
+          stroke-linecap: round;
+          fill: none;
+          opacity: 0.85;
+          animation: pathDash 24s linear infinite;
+        }
+
+        @keyframes pathDash {
+          to { stroke-dashoffset: -100; }
+        }
+
+        /* Circle Photo Node */
+        .circle-photo-node {
+          position: absolute;
+          transform: translate(-50%, -50%);
+          z-index: 20;
+          cursor: pointer;
+          transition: transform 0.35s cubic-bezier(0.34, 1.56, 0.64, 1), box-shadow 0.35s ease;
+          display: flex;
+          flex-direction: column;
+          align-items: center;
+        }
+
+        .circle-photo-node:hover {
+          transform: translate(-50%, -55%) scale(1.12);
+        }
+
+        .circle-frame {
+          position: relative;
+          width: 78px;
+          height: 78px;
+          border-radius: 50%;
+          background: linear-gradient(135deg, var(--gold-light), var(--gold), var(--maroon-mid));
+          padding: 3px;
+          box-shadow: 0 12px 28px rgba(0,0,0,0.85), 0 0 20px rgba(203,161,53,0.45);
+          transition: box-shadow 0.35s ease;
+        }
+
+        @media (min-width: 640px) {
+          .circle-frame {
+            width: 110px;
+            height: 110px;
+            padding: 4px;
+          }
+        }
+        @media (min-width: 1024px) {
+          .circle-frame {
+            width: 130px;
+            height: 130px;
+            padding: 5px;
+          }
+        }
+
+        .circle-frame.selected {
+          box-shadow: 0 0 0 4.5px var(--gold-light), 0 16px 36px rgba(0,0,0,0.9), 0 0 30px rgba(242,169,60,0.9);
+          transform: scale(1.08);
+        }
+
+        .circle-inner-img {
+          width: 100%;
+          height: 100%;
+          border-radius: 50%;
+          overflow: hidden;
+          border: 1.5px solid var(--gold);
+          background: #1c0a02;
+        }
+
+        .circle-inner-img img {
+          width: 100%;
+          height: 100%;
+          object-fit: cover;
+          transition: transform 0.5s ease;
+        }
+
+        .circle-photo-node:hover .circle-inner-img img {
+          transform: scale(1.08);
+        }
+
+        .node-pill-label {
+          margin-top: 8px;
+          background: rgba(44, 7, 20, 0.92);
+          backdrop-filter: blur(8px);
+          border: 1px solid var(--gold);
+          color: var(--gold-light);
+          padding: 3px 12px;
+          border-radius: 999px;
+          font-family: 'Rajdhani', sans-serif;
+          font-size: 11px;
+          font-weight: 700;
+          letter-spacing: 1.5px;
+          white-space: nowrap;
+          box-shadow: 0 6px 14px rgba(0,0,0,0.7);
+        }
+
+        @media (min-width: 640px) {
+          .node-pill-label {
+            font-size: 12px;
+            padding: 4px 15px;
+          }
+        }
+
+        /* Detail Modal Popup */
+        .modal-detail-card {
+          position: relative;
+          z-index: 50;
+          width: min(600px, 92vw);
+          background: linear-gradient(180deg, var(--ivory), #F5E7CC);
+          color: var(--ink);
+          border-radius: 16px;
+          padding: 22px 24px;
+          border: 2px solid var(--gold);
+          box-shadow: 0 25px 65px rgba(0,0,0,0.92), 0 0 30px rgba(203,161,53,0.35);
+          display: flex;
+          flex-direction: column;
+          align-items: center;
+          text-align: center;
+        }
+
+        @media (prefers-reduced-motion: reduce) {
+          .journey-path-dash { animation: none !important; }
+          .circle-photo-node { transition: none !important; }
+        }
+      `}</style>
+
+      {/* Full-Screen Vintage Rajasthani Map Image */}
+      <img
+        src={rajasthanMapBg}
+        alt="Vintage Rajasthani Map Fullscreen"
+        className="fullscreen-map-img"
+      />
+      <div className="jaali-overlay" aria-hidden="true" />
+      <div className="map-vignette" aria-hidden="true" />
+      <WarmGlow className="left-1/2 top-1/3 h-96 w-96 -translate-x-1/2 -translate-y-1/2 opacity-30 pointer-events-none" />
+
+      {/* Header Overlay at Top Center */}
+      <div className="absolute top-4 sm:top-6 left-1/2 -translate-x-1/2 z-20 flex flex-col items-center text-center px-4 pointer-events-none">
+        <span className="font-sans text-[10px] sm:text-[11.5px] uppercase tracking-[0.35em] text-[#EAD59A] font-bold drop-shadow-md">
+          Chapter Two • Our Journey
         </span>
-        <h1 className="mt-1 font-display text-2xl sm:text-3xl text-[#fef08a] font-medium tracking-wide drop-shadow-md">
+        <h1 className="font-['Cormorant_Garamond',serif] italic font-semibold text-2xl sm:text-4xl text-[#EAD59A] tracking-wide drop-shadow-lg mt-0.5">
           A Story Written in Gold
         </h1>
-        <Divider className="mt-2 h-2.5 w-36 text-[#e9c349]/80" />
+        <Divider className="mt-2 h-2.5 w-32 sm:w-40 text-[#CBA135]" />
       </div>
 
-      {/* Royal Manuscript Scroll Card */}
-      <div
-        ref={scrollRef}
-        className="relative z-20 w-full max-w-lg bg-gradient-to-b from-[#fefce8] via-[#fef9c3] to-[#fef08a] text-[#451a03] p-6 sm:p-8 rounded-[4px] border-2 border-[#e9c349] shadow-[0_22px_55px_rgba(0,0,0,0.85),0_0_25px_rgba(233,195,73,0.3)] flex flex-col items-center text-center my-4"
-      >
-        {/* Filigree Corner Accents */}
-        <div className="absolute top-2 left-2 w-3.5 h-3.5 border-t-2 border-l-2 border-[#b45309] rounded-tl-xs pointer-events-none" />
-        <div className="absolute top-2 right-2 w-3.5 h-3.5 border-t-2 border-r-2 border-[#b45309] rounded-tr-xs pointer-events-none" />
-        <div className="absolute bottom-2 left-2 w-3.5 h-3.5 border-b-2 border-l-2 border-[#b45309] rounded-bl-xs pointer-events-none" />
-        <div className="absolute bottom-2 right-2 w-3.5 h-3.5 border-b-2 border-r-2 border-[#b45309] rounded-br-xs pointer-events-none" />
+      {/* SVG Wavy Path Overlay across Fullscreen */}
+      <svg className="fullscreen-svg-overlay" viewBox="0 0 100 100" preserveAspectRatio="none">
+        {/* Single Thin Black Cartography Dashed Line (No Background) */}
+        <path d={pathD} className="journey-path-dash" />
+      </svg>
 
-        {/* Milestone Date Badge */}
-        <span className="font-sans text-[10px] sm:text-[11px] uppercase tracking-[0.3em] font-bold text-[#92400e]">
-          {current.date}
-        </span>
+      {/* 4 Staggered Wavy Circular Photo Nodes */}
+      {storyNodes.map((node) => {
+        const isSelected = selectedNode?.id === node.id;
+        return (
+          <div
+            key={node.id}
+            className="circle-photo-node"
+            style={{ left: `${node.x}%`, top: `${node.y}%` }}
+            onClick={() => setSelectedNode(node)}
+          >
+            <div className={`circle-frame ${isSelected ? "selected" : ""}`}>
+              <div className="circle-inner-img">
+                <img src={node.photo} alt={node.title} />
+              </div>
+            </div>
 
-        {/* Title */}
-        <h2 className="mt-1.5 font-display text-xl sm:text-2xl font-semibold text-[#451a03] tracking-wide">
-          {current.title}
-        </h2>
+            <div className="node-pill-label">
+              {node.year} • {node.title}
+            </div>
+          </div>
+        );
+      })}
 
-        {/* Divider */}
-        <div className="w-16 h-[1.5px] bg-gradient-to-r from-transparent via-[#b45309] to-transparent my-3.5" />
+      {/* Selected Milestone Detail Pop-Up Modal */}
+      {selectedNode && (
+        <div
+          onClick={() => setSelectedNode(null)}
+          className="fixed inset-0 z-50 flex items-center justify-center bg-[#2C0714]/80 backdrop-blur-md px-4 py-8 animate-in fade-in transition-all duration-300 select-none"
+        >
+          <div
+            onClick={(e) => e.stopPropagation()}
+            className="modal-detail-card animate-in zoom-in-95 duration-300"
+          >
+            {/* Filigree Corner Accents */}
+            <div className="absolute top-2.5 left-2.5 w-3.5 h-3.5 border-t-2 border-l-2 border-[#0F6B62] rounded-tl-xs pointer-events-none" />
+            <div className="absolute top-2.5 right-2.5 w-3.5 h-3.5 border-t-2 border-r-2 border-[#0F6B62] rounded-tr-xs pointer-events-none" />
+            <div className="absolute bottom-2.5 left-2.5 w-3.5 h-3.5 border-b-2 border-l-2 border-[#0F6B62] rounded-bl-xs pointer-events-none" />
+            <div className="absolute bottom-2.5 right-2.5 w-3.5 h-3.5 border-b-2 border-r-2 border-[#0F6B62] rounded-br-xs pointer-events-none" />
 
-        {/* Description */}
-        <p className="font-display text-sm sm:text-base italic leading-relaxed text-[#451a03] max-w-sm">
-          “{current.description}”
-        </p>
-
-        {/* Interactive Timeline Stepper */}
-        <div className="mt-6 flex items-center justify-center gap-3">
-          {milestones.map((m, idx) => (
+            {/* Close Button */}
             <button
-              key={idx}
               type="button"
-              onClick={() => setActiveIdx(idx)}
-              className={`flex items-center gap-2 px-3 py-1.5 rounded-full border transition-all cursor-pointer ${
-                idx === activeIdx
-                  ? "bg-[#451a03] border-[#78350f] text-[#fef08a] shadow-md scale-105"
-                  : "bg-[#fefce8] border-[#ca8a04]/50 text-[#78350f] hover:border-[#78350f]"
-              }`}
+              onClick={() => setSelectedNode(null)}
+              className="absolute top-3.5 right-3.5 z-20 w-8 h-8 rounded-full bg-[#331019]/10 border border-[#0F6B62]/40 text-[#6E1B34] hover:text-[#331019] hover:bg-[#331019]/20 flex items-center justify-center text-xs cursor-pointer transition-colors font-bold"
+              aria-label="Close detail card"
             >
-              <span className="text-[10px]">{idx === activeIdx ? "✦" : "•"}</span>
-              <span className="font-sans text-[10px] uppercase tracking-wider font-semibold">
-                {m.date}
-              </span>
+              ✕
             </button>
-          ))}
+
+            {/* Header info */}
+            <span className="font-sans text-[11px] font-bold uppercase tracking-[0.3em] text-[#0F6B62] mb-1">
+              {selectedNode.year} • {selectedNode.location}
+            </span>
+
+            <h2 className="font-['Cormorant_Garamond',serif] text-2xl sm:text-3xl font-semibold text-[#430E1F] tracking-wide mb-3">
+              {selectedNode.title}
+            </h2>
+
+            {/* Photo inside Modal */}
+            <div className="w-full max-w-sm h-44 sm:h-52 rounded-lg overflow-hidden border-2 border-[#CBA135] shadow-md mb-4">
+              <img src={selectedNode.photo} alt={selectedNode.title} className="w-full h-full object-cover" />
+            </div>
+
+            {/* Description Quote */}
+            <p className="font-['Cormorant_Garamond',serif] italic text-base sm:text-lg text-[#331019] leading-relaxed mb-4 px-2">
+              "{selectedNode.description}"
+            </p>
+
+            {/* Next/Prev Navigation inside Modal */}
+            <div className="flex items-center gap-3">
+              {storyNodes.map((n) => (
+                <button
+                  key={n.id}
+                  type="button"
+                  onClick={() => setSelectedNode(n)}
+                  className={`px-3 py-1 rounded-full text-xs font-bold font-sans tracking-wider transition-all ${
+                    n.id === selectedNode.id
+                      ? "bg-[#6E1B34] text-[#EAD59A] border border-[#CBA135]"
+                      : "bg-[#0F6B62]/15 text-[#331019] hover:bg-[#0F6B62]/30"
+                  }`}
+                >
+                  {n.year}
+                </button>
+              ))}
+            </div>
+          </div>
         </div>
-      </div>
+      )}
 
       <AmbientLayer dust={7} petals={2} />
     </section>

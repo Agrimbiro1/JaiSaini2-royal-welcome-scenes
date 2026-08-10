@@ -2,9 +2,8 @@ import type { ComponentType } from "react";
 import type { TransitionName } from "./transitions";
 
 import WelcomeScene from "../scenes/WelcomeScene";
-import CoupleScene from "../scenes/CoupleScene";
-import GalleryScene from "../scenes/GalleryScene";
 import StoryScene from "../scenes/StoryScene";
+import GalleryScene from "../scenes/GalleryScene";
 import FamilyScene from "../scenes/FamilyScene";
 import CountdownScene from "../scenes/CountdownScene";
 import CeremoniesScene from "../scenes/CeremoniesScene";
@@ -31,11 +30,11 @@ export const scenes: SceneDef[] = [
     transitionOut: "curtain",
   },
   {
-    id: "couple",
-    label: "Couple",
-    chapterTitle: "The Royal Pair",
-    component: CoupleScene,
-    transitionOut: "light-sweep",
+    id: "story",
+    label: "Our Story",
+    chapterTitle: "A Story Written in Gold",
+    component: StoryScene,
+    transitionOut: "line-draw",
   },
   {
     id: "gallery",
@@ -43,13 +42,6 @@ export const scenes: SceneDef[] = [
     chapterTitle: "The Royal Memory Gallery",
     component: GalleryScene,
     transitionOut: "thread",
-  },
-  {
-    id: "story",
-    label: "Our Story",
-    chapterTitle: "A Story Written in Gold",
-    component: StoryScene,
-    transitionOut: "line-draw",
   },
   {
     id: "family",
@@ -99,6 +91,6 @@ export const totalScenes = scenes.length;
 
 export function sceneIndexById(id: string | undefined): number {
   if (!id) return 0;
-  const i = scenes.findIndex((s) => s.id === id);
-  return i < 0 ? 0 : i;
+  const idx = scenes.findIndex((s) => s.id === id);
+  return idx >= 0 ? idx : 0;
 }
