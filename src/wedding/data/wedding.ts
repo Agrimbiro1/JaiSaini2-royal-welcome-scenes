@@ -49,8 +49,17 @@ export type WeddingData = {
   couple: {
     groom: string;
     bride: string;
+    groomFull?: string;
+    brideFull?: string;
+    groomParents?: string;
+    brideParents?: string;
     tagline: string;
     subtitle: string;
+    shloka?: string;
+    shlokaTranslation?: string;
+    royalAnnouncement?: string;
+    weddingDate?: string;
+    venue?: string;
     portrait: string;
     groomPortrait?: string;
     bridePortrait?: string;
@@ -86,8 +95,17 @@ export const wedding: WeddingData = {
   couple: {
     groom: "Rohan",
     bride: "Ananya",
+    groomFull: "Rohan Singh Rathore",
+    brideFull: "Ananya Kumari Shekhawat",
+    groomParents: "Son of Thakur Vikram Singh & Thakurani Sunita Devi",
+    brideParents: "Daughter of Thakur Rajendra Singh & Thakurani Gayatri Devi",
     tagline: "Glimpse of Our Forever",
-    subtitle: "A Rajasthani Wedding Celebration",
+    subtitle: "A Royal Rajasthani Wedding Celebration",
+    shloka: "मङ्गलम् भगवान् विष्णुः, मङ्गलम् गरुडध्वजः। मङ्गलम् पुण्डरीकाक्षः, मङ्गलाय तनो हरिः॥",
+    shlokaTranslation: "May divine blessings illuminate this sacred bond with eternal joy, prosperity, and togetherness.",
+    royalAnnouncement: "By Royal Grace & Sacred Blessings, the Rathore & Shekhawat families joyfully announce the grand matrimony of their beloved children.",
+    weddingDate: "28th November, 2026",
+    venue: "Umaid Bhawan Palace Courtyard • Jodhpur, Rajasthan",
     portrait: couplePhoto,
   },
   welcome: {

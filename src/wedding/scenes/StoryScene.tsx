@@ -162,27 +162,27 @@ export default function StoryScene() {
 
         .circle-frame {
           position: relative;
-          width: 78px;
-          height: 78px;
+          width: 96px;
+          height: 96px;
           border-radius: 50%;
           background: linear-gradient(135deg, var(--gold-light), var(--gold), var(--maroon-mid));
-          padding: 3px;
+          padding: 3.5px;
           box-shadow: 0 12px 28px rgba(0,0,0,0.85), 0 0 20px rgba(203,161,53,0.45);
           transition: box-shadow 0.35s ease;
         }
 
         @media (min-width: 640px) {
           .circle-frame {
-            width: 110px;
-            height: 110px;
-            padding: 4px;
+            width: 136px;
+            height: 136px;
+            padding: 4.5px;
           }
         }
         @media (min-width: 1024px) {
           .circle-frame {
-            width: 130px;
-            height: 130px;
-            padding: 5px;
+            width: 160px;
+            height: 160px;
+            padding: 5.5px;
           }
         }
 
@@ -212,15 +212,15 @@ export default function StoryScene() {
         }
 
         .node-pill-label {
-          margin-top: 8px;
+          margin-top: 10px;
           background: rgba(44, 7, 20, 0.92);
           backdrop-filter: blur(8px);
           border: 1px solid var(--gold);
           color: var(--gold-light);
-          padding: 3px 12px;
+          padding: 4px 14px;
           border-radius: 999px;
           font-family: 'Rajdhani', sans-serif;
-          font-size: 11px;
+          font-size: 12px;
           font-weight: 700;
           letter-spacing: 1.5px;
           white-space: nowrap;
@@ -229,8 +229,8 @@ export default function StoryScene() {
 
         @media (min-width: 640px) {
           .node-pill-label {
-            font-size: 12px;
-            padding: 4px 15px;
+            font-size: 13px;
+            padding: 5px 16px;
           }
         }
 
@@ -238,11 +238,11 @@ export default function StoryScene() {
         .modal-detail-card {
           position: relative;
           z-index: 50;
-          width: min(600px, 92vw);
+          width: min(640px, 92vw);
           background: linear-gradient(180deg, var(--ivory), #F5E7CC);
           color: var(--ink);
           border-radius: 16px;
-          padding: 22px 24px;
+          padding: 24px 26px;
           border: 2px solid var(--gold);
           box-shadow: 0 25px 65px rgba(0,0,0,0.92), 0 0 30px rgba(203,161,53,0.35);
           display: flex;
@@ -270,7 +270,7 @@ export default function StoryScene() {
       {/* Header Overlay at Top Center */}
       <div className="absolute top-4 sm:top-6 left-1/2 -translate-x-1/2 z-20 flex flex-col items-center text-center px-4 pointer-events-none">
         <span className="font-sans text-[10px] sm:text-[11.5px] uppercase tracking-[0.35em] text-[#EAD59A] font-bold drop-shadow-md">
-          Chapter Two • Our Journey
+          Chapter Three • Our Journey
         </span>
         <h1 className="font-['Cormorant_Garamond',serif] italic font-semibold text-2xl sm:text-4xl text-[#EAD59A] tracking-wide drop-shadow-lg mt-0.5">
           A Story Written in Gold
@@ -343,7 +343,7 @@ export default function StoryScene() {
             </h2>
 
             {/* Photo inside Modal */}
-            <div className="w-full max-w-sm h-44 sm:h-52 rounded-lg overflow-hidden border-2 border-[#CBA135] shadow-md mb-4">
+            <div className="w-full max-w-md h-52 sm:h-64 rounded-xl overflow-hidden border-2 border-[#CBA135] shadow-lg mb-4">
               <img src={selectedNode.photo} alt={selectedNode.title} className="w-full h-full object-cover" />
             </div>
 

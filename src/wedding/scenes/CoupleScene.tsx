@@ -1,180 +1,394 @@
-import { useEffect, useRef, useState } from "react";
-import gsap from "gsap";
+import { useState } from "react";
+import { useScene, usePrefersReducedMotion } from "../engine/SceneProvider";
+import { useSceneEnter } from "../engine/useSceneEnter";
 import { wedding } from "../data/wedding";
-import { usePrefersReducedMotion } from "../engine/SceneProvider";
-import { AmbientLayer, WarmGlow } from "../ui/Ambient";
 import { Divider } from "../ui/Ornaments";
+import { AmbientLayer, WarmGlow } from "../ui/Ambient";
 
-import coupleBg from "/assets/couple-background.png";
-import coupleFrame from "/assets/couple-frame.png";
-import royalCouplePortrait from "/assets/royal-couple-portrait.png";
-
-type Focus = "groom" | "bride" | "couple" | null;
+import scrollTableBg from "/assets/royal-scroll-table.png";
+import couplePhoto from "/assets/couple.jpg";
 
 export default function CoupleScene() {
+  const { goNext } = useScene();
+  const containerRef = useSceneEnter<HTMLDivElement>();
   const reduced = usePrefersReducedMotion();
-  const rootRef = useRef<HTMLDivElement>(null);
-  const bgRef = useRef<HTMLDivElement>(null);
-  const centralFrameRef = useRef<HTMLDivElement>(null);
-  const groomCardRef = useRef<HTMLDivElement>(null);
-  const brideCardRef = useRef<HTMLDivElement>(null);
+  const [showLineageModal, setShowLineageModal] = useState(false);
 
-  const [focus, setFocus] = useState<Focus>(null);
-  const { groom, bride } = wedding.couple;
-
-  useEffect(() => {
-    if (!rootRef.current || reduced) return;
-
-    const tl = gsap.timeline({ defaults: { ease: "power2.out" } });
-
-    tl.to(bgRef.current, { opacity: 1, duration: 1.0 })
-      .fromTo(
-        centralFrameRef.current,
-        { scale: 0.85, opacity: 0, y: 30 },
-        { scale: 1, opacity: 1, y: 0, duration: 1.0, ease: "back.out(1.3)" },
-        "-=0.4"
-      )
-      .fromTo(
-        groomCardRef.current,
-        { x: -50, opacity: 0 },
-        { x: 0, opacity: 1, duration: 0.7 },
-        "-=0.5"
-      )
-      .fromTo(
-        brideCardRef.current,
-        { x: 50, opacity: 0 },
-        { x: 0, opacity: 1, duration: 0.7 },
-        "-=0.7"
-      );
-
-    return () => {
-      tl.kill();
-    };
-  }, [reduced]);
+  const {
+    groomFull,
+    brideFull,
+    groomParents,
+    brideParents,
+    shloka,
+    shlokaTranslation,
+    royalAnnouncement,
+    weddingDate,
+    venue,
+  } = wedding.couple;
 
   return (
     <section
-      ref={rootRef}
-      className="relative w-full h-full min-h-screen overflow-hidden bg-[#0d0f07] text-[#e3e3d5] font-sans select-none flex flex-col items-center justify-between py-6 px-4 pb-20"
+      ref={containerRef}
+      className="couple-fullscreen-root relative w-full h-[100svh] overflow-hidden select-none flex flex-col items-center justify-between"
     >
-      {/* Background Image: couple-background.png */}
-      <div
-        ref={bgRef}
-        className="absolute inset-0 z-0 pointer-events-none opacity-0 transition-opacity duration-1000 overflow-hidden"
+      <style>{`
+        .couple-fullscreen-root {
+          --maroon: #430E1F;
+          --maroon-deep: #2C0714;
+          --maroon-mid: #6E1B34;
+          --gold: #CBA135;
+          --gold-light: #EAD59A;
+          --gold-bright: #F5D77F;
+          --ivory: #FBF1DE;
+          --ink: #331019;
+          --teal: #0F6B62;
+
+          font-family: 'Rajdhani', sans-serif;
+          color: var(--ivory);
+          isolation: isolate;
+        }
+
+        /* Fullscreen Background Scroll-on-Table Image */
+        .fullscreen-scroll-bg {
+          position: absolute;
+          inset: 0;
+          width: 100%;
+          height: 100%;
+          object-fit: cover;
+          object-position: center;
+          filter: contrast(1.06) saturate(1.12) brightness(0.82);
+          transform: scale(1.01);
+        }
+
+        .scroll-jaali-overlay {
+          position: absolute;
+          inset: 0;
+          opacity: 0.06;
+          background-image:
+            linear-gradient(45deg, var(--gold) 1px, transparent 1px),
+            linear-gradient(-45deg, var(--gold) 1px, transparent 1px);
+          background-size: 36px 36px;
+          pointer-events: none;
+        }
+
+        .scroll-vignette {
+          position: absolute;
+          inset: 0;
+          background: radial-gradient(circle at 50% 50%, transparent 35%, rgba(44, 7, 20, 0.75) 80%, rgba(44, 7, 20, 0.95) 100%);
+          pointer-events: none;
+        }
+
+        /* Fixed Single-Screen Calligraphy Content Box (No Scrolling) */
+        .scroll-calligraphy-single-screen {
+          position: relative;
+          z-index: 20;
+          width: min(720px, 86vw);
+          height: calc(100svh - 110px);
+          margin-top: 52px;
+          margin-bottom: 58px;
+          display: flex;
+          flex-direction: column;
+          align-items: center;
+          justify-content: space-evenly;
+          padding: 2% 6%;
+          text-align: center;
+          color: #2b0b14;
+          overflow: hidden; /* Strictly no scrollbar */
+        }
+
+        .scroll-header-tag {
+          font-family: 'Rajdhani', sans-serif;
+          font-size: 10px;
+          font-weight: 700;
+          letter-spacing: 0.3em;
+          text-transform: uppercase;
+          color: #7a1d36;
+          border-bottom: 1.5px solid #c59b27;
+          padding-bottom: 1px;
+        }
+
+        .scroll-shloka-text {
+          font-family: 'Cinzel', 'Noto Serif Devanagari', serif;
+          font-size: 11px;
+          line-height: 1.4;
+          color: #5c1426;
+          font-weight: 600;
+          max-width: 90%;
+        }
+
+        .groom-title, .bride-title {
+          font-family: 'Cormorant Garamond', serif;
+          font-weight: 700;
+          color: #3b0916;
+          line-height: 1.05;
+          letter-spacing: -0.01em;
+          text-shadow: 0 1px 2px rgba(234, 213, 154, 0.4);
+        }
+
+        .weds-script-text {
+          font-family: 'Great Vibes', 'Cormorant Garamond', cursive;
+          font-style: italic;
+          color: #9e2343;
+          font-weight: 600;
+          line-height: 1;
+        }
+
+        .lineage-text-box {
+          font-family: 'Cormorant Garamond', serif;
+          color: #4a1523;
+        }
+
+        .royal-announcement-quote {
+          font-family: 'Cormorant Garamond', serif;
+          font-style: italic;
+          font-size: 13px;
+          line-height: 1.4;
+          color: #2b0b14;
+          font-weight: 600;
+          max-width: 86%;
+        }
+
+        .wedding-date-stamp {
+          background: linear-gradient(135deg, #430e1f, #6e1b34);
+          color: #ead59a;
+          border: 1.5px solid #cba135;
+          padding: 4px 18px;
+          border-radius: 999px;
+          font-family: 'Rajdhani', sans-serif;
+          font-size: 10.5px;
+          font-weight: 700;
+          letter-spacing: 1.6px;
+          text-transform: uppercase;
+          box-shadow: 0 4px 12px rgba(0,0,0,0.5);
+        }
+
+        /* Wax Seal Button on top-right */
+        .wax-seal-button {
+          position: absolute;
+          top: 60px;
+          right: 7%;
+          z-index: 30;
+          width: 44px;
+          height: 44px;
+          border-radius: 50%;
+          background: radial-gradient(circle at 35% 35%, #c21c2c, #700914, #3a0207);
+          border: 2px solid #ead59a;
+          box-shadow: 0 6px 18px rgba(0,0,0,0.85), 0 0 14px rgba(245, 215, 127, 0.7);
+          cursor: pointer;
+          transition: transform 0.3s ease, box-shadow 0.3s ease;
+          display: flex;
+          align-items: center;
+          justify-content: center;
+        }
+
+        .wax-seal-button:hover {
+          transform: scale(1.12) rotate(6deg);
+          box-shadow: 0 8px 24px rgba(0,0,0,0.9), 0 0 22px rgba(245, 215, 127, 0.9);
+        }
+
+        @media (min-width: 640px) {
+          .scroll-header-tag { font-size: 12px; }
+          .scroll-shloka-text { font-size: 13.5px; }
+          .royal-announcement-quote { font-size: 15px; }
+          .wedding-date-stamp { font-size: 11.5px; padding: 5px 22px; }
+          .wax-seal-button { width: 52px; height: 52px; }
+        }
+
+        @media (min-width: 1024px) {
+          .scroll-shloka-text { font-size: 14.5px; }
+          .royal-announcement-quote { font-size: 16px; }
+        }
+
+        @media (prefers-reduced-motion: reduce) {
+          .wax-seal-button { transition: none !important; }
+        }
+      `}</style>
+
+      {/* Fullscreen Scroll-on-Table Background Image */}
+      <img
+        src={scrollTableBg}
+        alt="Royal Parchment Scroll on Palace Table"
+        className="fullscreen-scroll-bg"
+      />
+      <div className="scroll-jaali-overlay" aria-hidden="true" />
+      <div className="scroll-vignette" aria-hidden="true" />
+      <WarmGlow className="left-1/2 top-1/2 h-[500px] w-[500px] -translate-x-1/2 -translate-y-1/2 opacity-30 pointer-events-none" />
+      <AmbientLayer dust={8} petals={3} />
+
+      {/* Wax Seal Crest Button */}
+      <button
+        type="button"
+        onClick={() => setShowLineageModal(true)}
+        className="wax-seal-button"
+        title="Click to inspect Royal Family Crest & Lineage"
+        aria-label="Royal Wax Seal"
       >
-        <img
-          src={coupleBg}
-          alt="Palace Courtyard Heritage Background"
-          className="w-full h-full object-cover object-center scale-105 filter brightness-90 contrast-105"
-        />
-        <div className="absolute inset-0 bg-gradient-to-t from-[#2C0714]/90 via-[#2C0714]/40 to-[#2C0714]/75" />
-      </div>
-
-      <WarmGlow className="left-1/2 top-1/3 h-96 w-96 -translate-x-1/2 opacity-40 pointer-events-none" />
-
-      {/* Header */}
-      <div className="relative z-20 flex flex-col items-center text-center mt-2">
-        <span className="font-sans text-[10px] sm:text-[11px] uppercase tracking-[0.35em] text-[#EAD59A] font-semibold">
-          Chapter Two • The Royal Pair
+        <span className="text-[#F5D77F] font-bold text-xs sm:text-sm tracking-widest font-serif drop-shadow-md">
+          ♔
         </span>
-        <h1 className="mt-1 font-['Cormorant_Garamond',serif] italic font-semibold text-3xl sm:text-4xl text-[#EAD59A] tracking-wide drop-shadow-md">
-          {groom} <span className="text-[#CBA135]">×</span> {bride}
-        </h1>
-        <p className="mt-1 font-sans text-xs sm:text-sm text-[#d8c1af] max-w-md">
-          Two souls bound by love, stepping into eternity together.
-        </p>
-        <Divider className="mt-2.5 h-2.5 w-36 text-[#CBA135]/80" />
-      </div>
+      </button>
 
-      {/* Main Center Portrait & Cards Layout */}
-      <div className="relative z-20 w-full max-w-5xl flex-1 flex flex-col lg:flex-row items-center justify-center gap-6 my-auto">
-        {/* Left Card: Groom Bio */}
-        <div
-          ref={groomCardRef}
-          onClick={() => setFocus(focus === "groom" ? null : "groom")}
-          className={`w-full max-w-xs p-5 rounded-2xl bg-[#FBF1DE]/15 backdrop-blur-md border border-[#EAD59A]/60 shadow-[0_15px_35px_rgba(0,0,0,0.6)] flex flex-col items-center text-center transition-all duration-300 cursor-pointer ${
-            focus === "bride" ? "opacity-40 scale-95" : focus === "groom" ? "scale-105 z-30 border-[#EAD59A]" : "hover:scale-102"
-          }`}
-        >
-          <span className="font-sans text-[10px] uppercase tracking-[0.25em] text-[#4FA89B] font-bold">
-            The Royal Groom
+      {/* Live Calligraphy Overlay - Fixed Single Screen (Non-Scrollable) */}
+      <div
+        data-enter
+        data-enter-order="1"
+        className="scroll-calligraphy-single-screen"
+      >
+        {/* Header Tag */}
+        <div className="flex flex-col items-center shrink-0">
+          <span className="scroll-header-tag">
+            शाही पैगाम • Chapter Two • The Royal Proclamation
           </span>
-          <h2 className="font-['Cormorant_Garamond',serif] text-2xl sm:text-3xl font-semibold text-[#EAD59A] mt-1 mb-1">
-            {groom}
-          </h2>
-          <p className="font-['Cormorant_Garamond',serif] italic text-sm text-[#FBF1DE]/85 mb-3">
-            Son of Rajesh & Sunita Sharma
-          </p>
-          <div className="w-10 h-[1px] bg-[#CBA135]/60 mb-3" />
-          <p className="font-sans text-xs text-[#FBF1DE]/90 leading-relaxed">
-            "With courage in his heart and devotion in his soul, stepping into a lifetime of endless joy with his beloved Ananya."
-          </p>
+          <Divider className="mt-1 h-2 w-24 sm:w-32 text-[#7a1d36]" />
         </div>
 
-        {/* Center Main Frame with Fitted Generated Royal Couple Portrait */}
-        <div
-          ref={centralFrameRef}
-          onClick={() => setFocus(focus === "couple" ? null : "couple")}
-          className="relative flex flex-col items-center cursor-pointer transition-all duration-300 my-2"
-        >
-          {/* Ornate Hanging Wall Hook */}
-          <div className="flex flex-col items-center mb-[-6px] z-20">
-            <div className="w-4 h-4 rounded-full bg-gradient-to-b from-[#EAD59A] via-[#CBA135] to-[#430E1F] border border-[#EAD59A] shadow-md" />
-            <div className="w-[2px] h-7 bg-gradient-to-b from-[#CBA135] to-[#430E1F]" />
-          </div>
+        {/* Sacred Devanagari Sanskrit Shloka */}
+        {shloka && (
+          <p className="scroll-shloka-text shrink-0">
+            {shloka}
+          </p>
+        )}
 
-          {/* Central Royal Frame Box */}
-          <div className="relative w-[290px] sm:w-[360px] md:w-[410px] aspect-[4/3] flex items-center justify-center">
-            {/* Fitted Generated Couple Image placed behind the frame cutout */}
-            <div className="absolute top-[14%] bottom-[14%] left-[14%] right-[14%] overflow-hidden rounded-md z-0 bg-[#2C0714] shadow-inner">
-              <img
-                src={royalCouplePortrait}
-                alt={`${groom} and ${bride} Royal Portrait`}
-                className="w-full h-full object-cover object-center transform transition-transform duration-700 hover:scale-105"
-              />
-            </div>
-
-            {/* Royal Gold Frame Overlay */}
+        {/* Rectangular Couple Portrait Frame - Shifted to Top of Couple Names */}
+        <div className="flex items-center justify-center shrink-0 my-0.5 sm:my-1">
+          <div className="w-36 sm:w-52 h-20 sm:h-28 rounded-xl overflow-hidden border-2 sm:border-3 border-[#cba135] shadow-xl ring-2 ring-[#7a1d36]/30 bg-[#1c0a02]">
             <img
-              src={coupleFrame}
-              alt="Royal Gold Frame"
-              className="absolute inset-0 w-full h-full object-contain pointer-events-none z-10 filter drop-shadow-[0_15px_30px_rgba(0,0,0,0.9)]"
+              src={couplePhoto}
+              alt="Rohan & Ananya Royal Portrait"
+              className="w-full h-full object-cover object-top"
             />
           </div>
+        </div>
 
-          {/* Center Caption Badge */}
-          <div className="mt-3 px-4 py-1.5 rounded-full bg-[#2C0714]/90 border border-[#EAD59A]/60 text-center backdrop-blur-md shadow-lg">
-            <p className="font-['Cormorant_Garamond',serif] text-base text-[#EAD59A] font-semibold tracking-wider">
-              {groom} & {bride}
-            </p>
+        {/* Main Calligraphy Couple Names */}
+        <div className="flex flex-col items-center shrink-0 my-0.5">
+          <h1 className="groom-title text-2xl sm:text-4xl lg:text-5xl">
+            {groomFull || wedding.couple.groom}
+          </h1>
+          <div className="weds-script-text text-xl sm:text-3xl lg:text-4xl my-0.5">
+            — weds —
           </div>
+          <h1 className="bride-title text-2xl sm:text-4xl lg:text-5xl">
+            {brideFull || wedding.couple.bride}
+          </h1>
         </div>
 
-        {/* Right Card: Bride Bio */}
-        <div
-          ref={brideCardRef}
-          onClick={() => setFocus(focus === "bride" ? null : "bride")}
-          className={`w-full max-w-xs p-5 rounded-2xl bg-[#FBF1DE]/15 backdrop-blur-md border border-[#EAD59A]/60 shadow-[0_15px_35px_rgba(0,0,0,0.6)] flex flex-col items-center text-center transition-all duration-300 cursor-pointer ${
-            focus === "groom" ? "opacity-40 scale-95" : focus === "bride" ? "scale-105 z-30 border-[#EAD59A]" : "hover:scale-102"
-          }`}
-        >
-          <span className="font-sans text-[10px] uppercase tracking-[0.25em] text-[#4FA89B] font-bold">
-            The Royal Bride
-          </span>
-          <h2 className="font-['Cormorant_Garamond',serif] text-2xl sm:text-3xl font-semibold text-[#EAD59A] mt-1 mb-1">
-            {bride}
-          </h2>
-          <p className="font-['Cormorant_Garamond',serif] italic text-sm text-[#FBF1DE]/85 mb-3">
-            Daughter of Vikram & Kavita Sharma
+        {/* Parentage & Royal Lineage */}
+        <div className="lineage-text-box shrink-0">
+          <p className="text-[12px] sm:text-[15px] font-bold text-[#541221]">
+            {groomParents}
           </p>
-          <div className="w-10 h-[1px] bg-[#CBA135]/60 mb-3" />
-          <p className="font-sans text-xs text-[#FBF1DE]/90 leading-relaxed">
-            "With grace, poise, and eternal love, walking hand in hand with Rohan to weave their royal fairytale together."
+          <div className="text-[9.5px] sm:text-[11px] uppercase tracking-widest font-sans text-[#8c1c38] my-0.5 font-bold">
+            • United In Holy Matrimony With •
+          </div>
+          <p className="text-[12px] sm:text-[15px] font-bold text-[#541221]">
+            {brideParents}
           </p>
         </div>
+
+        {/* Royal Announcement Quote */}
+        {royalAnnouncement && (
+          <p className="royal-announcement-quote hidden sm:block shrink-0">
+            "{royalAnnouncement}"
+          </p>
+        )}
+
+        {/* Wedding Date & Venue Stamp */}
+        <div className="wedding-date-stamp shrink-0">
+          {weddingDate} • {venue?.split("•")[0]}
+        </div>
+
+        {/* Action Button to Next Chapter */}
+        <button
+          type="button"
+          onClick={goNext}
+          className="group inline-flex items-center gap-1.5 bg-gradient-to-r from-[#6E1B34] via-[#430E1F] to-[#2C0714] text-[#EAD59A] border border-[#CBA135] px-5 py-1.5 rounded-full font-sans text-[11px] sm:text-xs font-bold tracking-widest uppercase shadow-xl hover:shadow-[0_0_20px_rgba(203,161,53,0.7)] hover:border-[#F5D77F] transition-all duration-300 cursor-pointer active:scale-95 shrink-0"
+        >
+          <span>Explore Our Story</span>
+          <span className="text-sm group-hover:translate-x-1 transition-transform">
+            →
+          </span>
+        </button>
       </div>
 
-      <AmbientLayer dust={7} petals={2} />
+      {/* Royal Lineage Modal Popup */}
+      {showLineageModal && (
+        <div
+          onClick={() => setShowLineageModal(false)}
+          className="fixed inset-0 z-50 flex items-center justify-center bg-[#2C0714]/85 backdrop-blur-md px-4 py-8 animate-in fade-in duration-300 select-none"
+        >
+          <div
+            onClick={(e) => e.stopPropagation()}
+            className="relative z-50 w-full max-w-lg bg-gradient-to-b from-[#FBF1DE] to-[#F5E7CC] text-[#331019] rounded-2xl p-6 border-2 border-[#CBA135] shadow-[0_25px_65px_rgba(0,0,0,0.95)] flex flex-col items-center text-center animate-in zoom-in-95 duration-300"
+          >
+            {/* Corner Accents */}
+            <div className="absolute top-3 left-3 w-4 h-4 border-t-2 border-l-2 border-[#0F6B62]" />
+            <div className="absolute top-3 right-3 w-4 h-4 border-t-2 border-r-2 border-[#0F6B62]" />
+            <div className="absolute bottom-3 left-3 w-4 h-4 border-b-2 border-l-2 border-[#0F6B62]" />
+            <div className="absolute bottom-3 right-3 w-4 h-4 border-b-2 border-r-2 border-[#0F6B62]" />
+
+            {/* Close Button */}
+            <button
+              type="button"
+              onClick={() => setShowLineageModal(false)}
+              className="absolute top-3.5 right-3.5 w-8 h-8 rounded-full bg-[#331019]/10 border border-[#0F6B62]/40 text-[#6E1B34] hover:bg-[#331019]/20 flex items-center justify-center font-bold cursor-pointer"
+            >
+              ✕
+            </button>
+
+            {/* Modal Header */}
+            <span className="font-sans text-[11px] font-bold uppercase tracking-[0.3em] text-[#0F6B62] mb-1">
+              Royal Lineage & Decree
+            </span>
+            <h2 className="font-['Cormorant_Garamond',serif] text-2xl sm:text-3xl font-semibold text-[#430E1F] mb-3">
+              The Sacred Royal Houses
+            </h2>
+
+            <Divider className="mb-4 h-2 w-32 text-[#CBA135]" />
+
+            {/* Groom side info */}
+            <div className="w-full bg-[#430E1F]/5 border border-[#CBA135]/40 rounded-xl p-3 mb-3 text-left">
+              <span className="text-[11px] font-bold uppercase tracking-wider text-[#0F6B62] block mb-0.5">
+                The House of Rathore (Groom)
+              </span>
+              <h3 className="font-['Cormorant_Garamond',serif] text-lg font-bold text-[#430E1F]">
+                {groomFull}
+              </h3>
+              <p className="text-xs text-[#331019]/80 font-serif italic">
+                {groomParents}
+              </p>
+            </div>
+
+            {/* Bride side info */}
+            <div className="w-full bg-[#430E1F]/5 border border-[#CBA135]/40 rounded-xl p-3 mb-4 text-left">
+              <span className="text-[11px] font-bold uppercase tracking-wider text-[#0F6B62] block mb-0.5">
+                The House of Shekhawat (Bride)
+              </span>
+              <h3 className="font-['Cormorant_Garamond',serif] text-lg font-bold text-[#430E1F]">
+                {brideFull}
+              </h3>
+              <p className="text-xs text-[#331019]/80 font-serif italic">
+                {brideParents}
+              </p>
+            </div>
+
+            {/* Shloka Translation Quote */}
+            {shlokaTranslation && (
+              <p className="font-['Cormorant_Garamond',serif] italic text-sm text-[#430E1F] bg-[#CBA135]/15 p-3 rounded-lg border border-[#CBA135]/40 mb-4">
+                "{shlokaTranslation}"
+              </p>
+            )}
+
+            <button
+              type="button"
+              onClick={() => setShowLineageModal(false)}
+              className="bg-[#6E1B34] text-[#EAD59A] border border-[#CBA135] px-6 py-1.5 rounded-full font-sans text-xs font-bold tracking-wider uppercase hover:bg-[#430E1F] transition-colors cursor-pointer"
+            >
+              Close Announcement
+            </button>
+          </div>
+        </div>
+      )}
     </section>
   );
 }

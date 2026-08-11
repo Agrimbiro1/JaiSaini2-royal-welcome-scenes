@@ -2,6 +2,7 @@ import type { ComponentType } from "react";
 import type { TransitionName } from "./transitions";
 
 import WelcomeScene from "../scenes/WelcomeScene";
+import CoupleScene from "../scenes/CoupleScene";
 import StoryScene from "../scenes/StoryScene";
 import GalleryScene from "../scenes/GalleryScene";
 import FamilyScene from "../scenes/FamilyScene";
@@ -27,6 +28,13 @@ export const scenes: SceneDef[] = [
     label: "Welcome",
     chapterTitle: "A Royal Welcome",
     component: WelcomeScene,
+    transitionOut: "curtain",
+  },
+  {
+    id: "couple",
+    label: "The Couple",
+    chapterTitle: "The Royal Proclamation",
+    component: CoupleScene,
     transitionOut: "curtain",
   },
   {
