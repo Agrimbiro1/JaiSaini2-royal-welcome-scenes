@@ -7,6 +7,8 @@ import { AmbientLayer, WarmGlow } from "../ui/Ambient";
 import { PeacockFeathers } from "../ui/PeacockFeathers";
 
 import welcomeBg from "/assets/welcome-background.png";
+import welcomeMan from "/assets/welcome-man.png";
+import welcomeWomen from "/assets/welcome-women.png";
 import coupleFrame from "/assets/couple-frame.png";
 
 import reelMehendi from "@/assets/reel-mehendi.jpg";
@@ -341,6 +343,24 @@ export default function WelcomeScene() {
         {/* Falling Particles Layer (z-10): Peacock Feathers & Golden Petals (falling BEHIND couple image & text) */}
         <div className="absolute inset-0 z-10 pointer-events-none overflow-hidden">
           <PeacockFeathers active={welcomeRevealed} count={16} />
+        </div>
+
+        {/* Left Corner: Royal Rajasthani Welcome Man */}
+        <div className="absolute left-0 bottom-0 z-15 pointer-events-none max-w-[28vw] sm:max-w-[32vw] md:max-w-[340px]">
+          <img
+            src={welcomeMan}
+            alt="Royal Rajasthani Welcome Man"
+            className="w-full h-auto max-h-[50vh] sm:max-h-[65vh] object-contain object-left-bottom filter drop-shadow-[0_10px_30px_rgba(0,0,0,0.85)]"
+          />
+        </div>
+
+        {/* Right Corner: Royal Rajasthani Welcome Woman */}
+        <div className="absolute right-0 bottom-0 z-15 pointer-events-none max-w-[28vw] sm:max-w-[32vw] md:max-w-[340px]">
+          <img
+            src={welcomeWomen}
+            alt="Royal Rajasthani Welcome Woman"
+            className="w-full h-auto max-h-[50vh] sm:max-h-[65vh] object-contain object-right-bottom filter drop-shadow-[0_10px_30px_rgba(0,0,0,0.85)]"
+          />
         </div>
 
         {/* Foreground Content Layer (z-20): Couple Image, Text & Button */}

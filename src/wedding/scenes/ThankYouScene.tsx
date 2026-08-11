@@ -4,6 +4,7 @@ import { wedding } from "../data/wedding";
 import { usePrefersReducedMotion } from "../engine/SceneProvider";
 import { AmbientLayer, WarmGlow } from "../ui/Ambient";
 import { Divider } from "../ui/Ornaments";
+import { SkyLanterns3D } from "../ui/SkyLanterns3D";
 import thankYouBg from "/assets/thankyou-night-palace.png";
 
 export default function ThankYouScene() {
@@ -11,7 +12,6 @@ export default function ThankYouScene() {
   const rootRef = useRef<HTMLDivElement>(null);
   const bgRef = useRef<HTMLDivElement>(null);
   const contentRef = useRef<HTMLDivElement>(null);
-  const lanternsRef = useRef<(HTMLDivElement | null)[]>([]);
 
   const { message, signOff } = wedding.thankYou;
 
@@ -27,19 +27,6 @@ export default function ThankYouScene() {
         { y: 0, opacity: 1, duration: 1.0 },
         "-=0.5"
       );
-
-    // Floating Sky Lanterns continuous animation
-    lanternsRef.current.filter(Boolean).forEach((lantern, i) => {
-      gsap.to(lantern, {
-        y: "-15vh",
-        x: (i % 2 === 0 ? 1 : -1) * 20,
-        rotation: (i % 2 === 0 ? 3 : -3),
-        duration: 4 + i * 1.5,
-        ease: "sine.inOut",
-        yoyo: true,
-        repeat: -1,
-      });
-    });
 
     return () => {
       tl.kill();
@@ -64,41 +51,18 @@ export default function ThankYouScene() {
         <div className="absolute inset-0 bg-gradient-to-t from-[#0d0f07]/95 via-[#0d0f07]/50 to-[#0d0f07]/75" />
       </div>
 
-      {/* Floating Royal Sky Lanterns (Kandils) */}
-      <div className="absolute inset-0 z-10 pointer-events-none overflow-hidden">
-        {[
-          { left: "15%", top: "60%" },
-          { left: "80%", top: "55%" },
-          { left: "30%", top: "75%" },
-          { left: "70%", top: "70%" },
-        ].map((pos, i) => (
-          <div
-            key={i}
-            ref={(el) => {
-              lanternsRef.current[i] = el;
-            }}
-            style={{ left: pos.left, top: pos.top }}
-            className="absolute flex flex-col items-center"
-          >
-            {/* Glowing Lantern Disc */}
-            <div className="w-6 h-9 sm:w-8 sm:h-12 rounded-t-lg bg-gradient-to-b from-[#fef08a] via-[#f59e0b] to-[#ea580c] border border-[#fef08a] shadow-[0_0_25px_rgba(245,158,11,0.85)] flex items-center justify-center">
-              <div className="w-2 h-2 rounded-full bg-[#ffffff] animate-pulse" />
-            </div>
-            {/* Lantern Tassel */}
-            <div className="w-0.5 h-4 bg-[#fef08a]/70" />
-          </div>
-        ))}
-      </div>
+      {/* Realistic 3D Sky Lanterns Simulation Canvas (Three.js) */}
+      <SkyLanterns3D count={32} interactive={false} />
 
-      <WarmGlow className="left-1/2 top-1/2 h-96 w-96 -translate-x-1/2 -translate-y-1/2 opacity-50 pointer-events-none" />
+      <WarmGlow className="left-1/2 top-1/2 h-96 w-96 -translate-x-1/2 -translate-y-1/2 opacity-50 pointer-events-none z-15" />
 
       {/* Main Content */}
       <div
         ref={contentRef}
-        className="relative z-20 flex flex-col items-center text-center my-auto max-w-md px-4"
+        className="relative z-20 flex flex-col items-center text-center my-auto max-w-md px-6 py-8 rounded-2xl bg-[#0d0f07]/60 backdrop-blur-sm border border-[#e9c349]/30 shadow-2xl pointer-events-auto"
       >
-        <span className="font-sans text-[10px] uppercase tracking-[0.4em] text-[#e9c349] font-medium">
-          Chapter Eleven • The Story Continues
+        <span className="font-sans text-[10px] sm:text-[11px] uppercase tracking-[0.4em] text-[#e9c349] font-medium">
+          Chapter Ten • The Story Continues
         </span>
 
         <h1 className="mt-2 font-display text-3xl sm:text-4xl md:text-5xl text-[#fef08a] font-light tracking-widest drop-shadow-md">
@@ -111,11 +75,11 @@ export default function ThankYouScene() {
           “{message}”
         </p>
 
-        <p className="mt-6 font-script text-2xl text-[#fef08a]">
+        <p className="mt-6 font-script text-2xl sm:text-3xl text-[#fef08a]">
           {signOff},
         </p>
 
-        <p className="mt-1 font-display text-xl tracking-[0.2em] text-[#e9c349] font-medium">
+        <p className="mt-1 font-display text-xl sm:text-2xl tracking-[0.2em] text-[#e9c349] font-medium">
           {wedding.couple.groom.toUpperCase()} <span className="text-[#ffffff]">×</span> {wedding.couple.bride.toUpperCase()}
         </p>
       </div>
