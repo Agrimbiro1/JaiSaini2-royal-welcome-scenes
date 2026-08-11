@@ -1,153 +1,620 @@
 import { useEffect, useRef, useState } from "react";
 import gsap from "gsap";
-import { wedding } from "../data/wedding";
+import ceremoniesBg from "@/assets/ceremonies-palace-courtyard.png";
+import ceremonyCardClean from "@/assets/ceremony-card-clean.png";
 import { usePrefersReducedMotion } from "../engine/SceneProvider";
-import { AmbientLayer, WarmGlow } from "../ui/Ambient";
-import { Divider } from "../ui/Ornaments";
-import ceremoniesBg from "/assets/ceremonies-palace-courtyard.png";
+import { AmbientLayer } from "../ui/Ambient";
+import { Calendar, Clock, MapPin, Navigation, CalendarPlus } from "lucide-react";
 
-// Vector icons for each ceremony type
-const ceremonyIcons: Record<string, string> = {
-  haldi: "🌼",
-  mehendi: "🌿",
-  sangeet: "🪕",
-  wedding: "👑",
-  reception: "✨",
+export type CeremonyDetail = {
+  id: string;
+  name: string;
+  tagline: string;
+  day: string;
+  date: string;
+  time: string;
+  venue: string;
+  location: string;
+  isoStart: string;
+  isoEnd: string;
+  mapUrl: string;
 };
+
+const ceremonyDetails: CeremonyDetail[] = [
+  {
+    id: "haldi",
+    name: "HALDI",
+    tagline: "THE RITUAL OF COLOURS",
+    day: "WEDNESDAY",
+    date: "2 DECEMBER 2026",
+    time: "10:00 AM ONWARDS",
+    venue: "SUVARNA MAHAL COURTYARD",
+    location: "JAIPUR, RAJASTHAN",
+    isoStart: "20261202T043000Z",
+    isoEnd: "20261202T083000Z",
+    mapUrl: "https://maps.google.com/?q=Suvarna+Mahal+Jaipur",
+  },
+  {
+    id: "mehendi",
+    name: "MEHENDI",
+    tagline: "THE HENNA RITUAL",
+    day: "WEDNESDAY",
+    date: "2 DECEMBER 2026",
+    time: "4:00 PM ONWARDS",
+    venue: "ZANANA GARDENS",
+    location: "JAIPUR, RAJASTHAN",
+    isoStart: "20261202T103000Z",
+    isoEnd: "20261202T153000Z",
+    mapUrl: "https://maps.google.com/?q=Zanana+Gardens+Jaipur",
+  },
+  {
+    id: "sangeet",
+    name: "SANGEET",
+    tagline: "THE NIGHT OF MUSIC & DANCE",
+    day: "THURSDAY",
+    date: "3 DECEMBER 2026",
+    time: "7:00 PM ONWARDS",
+    venue: "THE PALACE LAWNS",
+    location: "JAIPUR, RAJASTHAN",
+    isoStart: "20261203T133000Z",
+    isoEnd: "20261203T183000Z",
+    mapUrl: "https://maps.google.com/?q=Palace+Lawns+Jaipur",
+  },
+  {
+    id: "shaadi",
+    name: "SHAADI",
+    tagline: "THE MAIN CEREMONY",
+    day: "MONDAY",
+    date: "21 DECEMBER 2026",
+    time: "7:00 PM ONWARDS",
+    venue: "THE GRAND PALACE",
+    location: "JAIPUR, RAJASTHAN",
+    isoStart: "20261221T133000Z",
+    isoEnd: "20261221T193000Z",
+    mapUrl: "https://maps.google.com/?q=The+Grand+Palace+Jaipur",
+  },
+  {
+    id: "reception",
+    name: "RECEPTION",
+    tagline: "THE ROYAL BANQUET",
+    day: "SATURDAY",
+    date: "5 DECEMBER 2026",
+    time: "8:00 PM ONWARDS",
+    venue: "ROYAL BALLROOM",
+    location: "JAIPUR, RAJASTHAN",
+    isoStart: "20261205T143000Z",
+    isoEnd: "20261205T193000Z",
+    mapUrl: "https://maps.google.com/?q=Royal+Ballroom+Jaipur",
+  },
+];
+
+// Vector Icons for Ceremony Arch Tabs
+function TabIcon({ id, active }: { id: string; active: boolean }) {
+  const strokeColor = active ? "#7a1c1c" : "#8c6b54";
+  const fillColor = active ? "#7a1c1c" : "none";
+
+  switch (id) {
+    case "haldi":
+      return (
+        <svg viewBox="0 0 40 40" className="w-7 h-7 sm:w-8 sm:h-8" aria-hidden="true">
+          <ellipse cx="20" cy="25" rx="13" ry="6" stroke={strokeColor} strokeWidth="2" fill="none" />
+          <path d="M11 25 C11 31 29 31 29 25" fill={fillColor} stroke={strokeColor} strokeWidth="1.5" />
+          <circle cx="20" cy="18" r="4.5" fill="#f7d44a" />
+          <circle cx="14" cy="20" r="2.5" fill="#f7d44a" />
+          <circle cx="26" cy="20" r="2.5" fill="#f7d44a" />
+        </svg>
+      );
+    case "mehendi":
+      return (
+        <svg viewBox="0 0 40 40" className="w-7 h-7 sm:w-8 sm:h-8" aria-hidden="true">
+          <path d="M20 5 C14 11 10 19 14 29 C18 33 26 33 28 25 C30 17 24 9 20 5 Z" stroke={strokeColor} strokeWidth="2" fill={active ? "#7a1c1c" : "none"} opacity="0.9" />
+          <path d="M20 11 L20 25 M16 17 L24 17 M17 21 L23 21" stroke={active ? "#fff" : strokeColor} strokeWidth="1.2" />
+        </svg>
+      );
+    case "sangeet":
+      return (
+        <svg viewBox="0 0 40 40" className="w-7 h-7 sm:w-8 sm:h-8" aria-hidden="true">
+          <rect x="9" y="16" width="22" height="13" rx="4" stroke={strokeColor} strokeWidth="2" fill={fillColor} />
+          <ellipse cx="9" cy="22.5" rx="2" ry="6.5" stroke={strokeColor} strokeWidth="1.5" />
+          <ellipse cx="31" cy="22.5" rx="2" ry="6.5" stroke={strokeColor} strokeWidth="1.5" />
+          <path d="M24 12 L28 7 M28 7 L34 9 M28 7 L28 13" stroke={strokeColor} strokeWidth="1.5" strokeLinecap="round" />
+        </svg>
+      );
+    case "shaadi":
+    case "wedding":
+      return (
+        <svg viewBox="0 0 40 40" className="w-7 h-7 sm:w-8 sm:h-8" aria-hidden="true">
+          <path d="M7 32 L7 16 L20 8 L33 16 L33 32" stroke={strokeColor} strokeWidth="2" fill="none" />
+          <path d="M11 16 L20 10 L29 16" stroke={strokeColor} strokeWidth="1.5" fill="none" />
+          <path d="M20 28 C18 24 18 21 20 19 C22 21 22 24 20 28 Z" fill="#e2790e" stroke="#f7d44a" strokeWidth="1" />
+          <rect x="13" y="28" width="14" height="3" fill={strokeColor} />
+        </svg>
+      );
+    case "reception":
+      return (
+        <svg viewBox="0 0 40 40" className="w-7 h-7 sm:w-8 sm:h-8" aria-hidden="true">
+          <path d="M20 5 L20 13 M11 17 C11 23 29 23 29 17 M15 23 L15 29 M25 23 L25 29 M11 29 H29" stroke={strokeColor} strokeWidth="2" strokeLinecap="round" fill="none" />
+          <circle cx="20" cy="15" r="2" fill={strokeColor} />
+          <circle cx="13" cy="17" r="1.5" fill={strokeColor} />
+          <circle cx="27" cy="17" r="1.5" fill={strokeColor} />
+        </svg>
+      );
+    default:
+      return null;
+  }
+}
 
 export default function CeremoniesScene() {
   const reduced = usePrefersReducedMotion();
   const rootRef = useRef<HTMLDivElement>(null);
-  const bgRef = useRef<HTMLDivElement>(null);
   const cardRef = useRef<HTMLDivElement>(null);
 
-  const [activeId, setActiveId] = useState(wedding.ceremonies[0]?.id ?? "");
-  const active = wedding.ceremonies.find((c) => c.id === activeId);
+  const [activeId, setActiveId] = useState<string>("shaadi");
+  const active = ceremonyDetails.find((c) => c.id === activeId) || ceremonyDetails[3]!;
 
   useEffect(() => {
-    if (!rootRef.current || reduced) return;
-
-    const tl = gsap.timeline({ defaults: { ease: "power2.out" } });
-
-    tl.to(bgRef.current, { opacity: 1, duration: 1.0 }).fromTo(
+    if (!cardRef.current || reduced) return;
+    gsap.fromTo(
       cardRef.current,
-      { y: 30, opacity: 0 },
-      { y: 0, opacity: 1, duration: 0.8 },
-      "-=0.4"
+      { scale: 0.96, opacity: 0.85 },
+      { scale: 1, opacity: 1, duration: 0.45, ease: "back.out(1.3)" }
     );
+  }, [activeId, reduced]);
 
-    return () => {
-      tl.kill();
-    };
-  }, [reduced]);
+  // Generate Google Calendar Event Link
+  const getGoogleCalendarUrl = (item: CeremonyDetail) => {
+    const title = encodeURIComponent(`Rohan & Ananya — ${item.name} Ceremony`);
+    const details = encodeURIComponent(`${item.name} (${item.tagline}) at ${item.venue}, ${item.location}`);
+    const location = encodeURIComponent(`${item.venue}, ${item.location}`);
+    return `https://calendar.google.com/calendar/render?action=TEMPLATE&text=${title}&details=${details}&location=${location}&dates=${item.isoStart}/${item.isoEnd}`;
+  };
 
   return (
     <section
       ref={rootRef}
-      className="relative w-full h-full overflow-hidden bg-[#0d0f07] text-[#e3e3d5] font-sans select-none flex flex-col items-center justify-between py-6 px-4"
+      className="ceremonies-scene-root relative w-full h-[100svh] overflow-hidden flex flex-col justify-between items-center py-2 px-3 sm:px-6 select-none bg-[#120a06]"
     >
-      {/* Background Image */}
-      <div
-        ref={bgRef}
-        className="absolute inset-0 z-0 pointer-events-none opacity-0 transition-opacity duration-1000 overflow-hidden"
-      >
+      <style>{`
+        .ceremonies-scene-root {
+          font-family: 'Playfair Display', Georgia, serif;
+          color: #3d261a;
+          isolation: isolate;
+        }
+
+        /* Full Screen Palace Background Photo */
+        .ceremonies-scene-root .palace-bg-photo {
+          position: absolute;
+          inset: 0;
+          width: 100%;
+          height: 100%;
+          object-fit: cover;
+          object-position: center;
+          z-index: 0;
+          filter: brightness(0.98) contrast(1.02);
+        }
+
+        /* Subtle Radial Vignette Layer */
+        .ceremonies-scene-root .vignette-layer {
+          position: absolute;
+          inset: 0;
+          background: radial-gradient(circle at 50% 45%, rgba(0, 0, 0, 0.05) 0%, rgba(20, 10, 5, 0.35) 80%, rgba(15, 5, 0, 0.55) 100%);
+          z-index: 1;
+          pointer-events: none;
+        }
+
+        /* --- Top Header --- */
+        .ceremonies-scene-root .top-header-section {
+          position: relative;
+          z-index: 20;
+          text-align: center;
+          margin-top: 2px;
+        }
+
+        .ceremonies-scene-root .header-flourish {
+          margin: 0 auto 2px;
+          opacity: 0.9;
+        }
+
+        .ceremonies-scene-root .header-title {
+          font-family: 'Cinzel', 'Playfair Display', serif;
+          font-size: min(1.85rem, 4.8vw);
+          font-weight: 700;
+          letter-spacing: 6px;
+          color: #ffffff;
+          text-transform: uppercase;
+          text-shadow: 0 2px 10px rgba(0, 0, 0, 0.7);
+          margin-bottom: 2px;
+        }
+
+        .ceremonies-scene-root .header-subtitle {
+          font-family: 'Cinzel', serif;
+          font-size: min(0.66rem, 2.4vw);
+          letter-spacing: 3px;
+          color: rgba(255, 235, 200, 0.92);
+          text-transform: uppercase;
+          text-shadow: 0 1px 4px rgba(0, 0, 0, 0.6);
+        }
+
+        /* --- Grand Ornate Card Frame Wrapper --- */
+        .ceremonies-scene-root .ornate-card-wrapper {
+          position: relative;
+          z-index: 20;
+          max-width: 560px;
+          width: 100%;
+          height: min(720px, 80vh);
+          display: flex;
+          align-items: center;
+          justify-content: center;
+          margin: 1px 0;
+          filter: drop-shadow(0 22px 48px rgba(0, 0, 0, 0.45));
+        }
+
+        .ceremonies-scene-root .ornate-card-img {
+          position: absolute;
+          inset: 0;
+          width: 100%;
+          height: 100%;
+          object-fit: contain;
+          pointer-events: none;
+          z-index: 0;
+        }
+
+        /* STRICT PARCHMENT SAFE AREA (top: 23.5%, bottom: 21% to shift buttons down slightly) */
+        .ceremonies-scene-root .parchment-safe-area {
+          position: absolute;
+          top: 23.5%;
+          bottom: 21%;
+          left: 20%;
+          right: 20%;
+          z-index: 10;
+          display: flex;
+          flex-direction: column;
+          align-items: center;
+          justify-content: space-between;
+          text-align: center;
+          padding: 2px 6px;
+        }
+
+        .ceremonies-scene-root .ceremony-main-title {
+          font-family: 'Playfair Display', Georgia, serif;
+          font-size: min(2.1rem, 6vw);
+          font-weight: 700;
+          letter-spacing: 6px;
+          color: #7a1c1c;
+          line-height: 1;
+          margin-bottom: 2px;
+        }
+
+        .ceremonies-scene-root .ceremony-tagline {
+          font-family: 'Cinzel', serif;
+          font-size: 0.68rem;
+          letter-spacing: 2.8px;
+          color: #634331;
+          text-transform: uppercase;
+          font-weight: 600;
+        }
+
+        .ceremonies-scene-root .divider-ornament {
+          width: 70px;
+          height: 1px;
+          background: linear-gradient(90deg, transparent, #c39b73, transparent);
+          margin: 4px auto 6px;
+        }
+
+        /* 3 Details Grid - Shifted further right (+34px padding-left) for optimal centering & visibility */
+        .ceremonies-scene-root .details-container {
+          display: flex;
+          flex-direction: column;
+          align-items: center;
+          width: 100%;
+          margin: 2px 0;
+          padding-left: 34px;
+        }
+
+        .ceremonies-scene-root .detail-row {
+          display: grid;
+          grid-template-columns: 32px 1fr;
+          align-items: center;
+          gap: 12px;
+          width: 100%;
+          max-width: 290px;
+          margin-bottom: 6px;
+          text-align: left;
+        }
+
+        .ceremonies-scene-root .detail-icon-badge {
+          width: 32px;
+          height: 32px;
+          border-radius: 50%;
+          background: rgba(247, 212, 74, 0.18);
+          border: 1.5px solid rgba(195, 155, 115, 0.6);
+          display: flex;
+          align-items: center;
+          justify-content: center;
+          color: #7a1c1c;
+          flex-shrink: 0;
+        }
+
+        .ceremonies-scene-root .detail-text-primary {
+          font-family: 'Cinzel', serif;
+          font-size: 0.82rem;
+          font-weight: 700;
+          letter-spacing: 1.3px;
+          color: #3d261a;
+          text-transform: uppercase;
+          line-height: 1.2;
+        }
+
+        .ceremonies-scene-root .detail-text-sub {
+          font-family: 'Inter', system-ui, sans-serif;
+          font-size: 0.68rem;
+          letter-spacing: 1.1px;
+          color: #7a5843;
+          text-transform: uppercase;
+          font-weight: 500;
+        }
+
+        /* --- Two Action Buttons Stacked VERTICALLY Shifted Down --- */
+        .ceremonies-scene-root .action-buttons-vertical {
+          display: flex;
+          flex-direction: column;
+          align-items: center;
+          gap: 7px;
+          width: 100%;
+          max-width: 270px;
+          margin-top: 6px;
+          margin-bottom: 2px;
+        }
+
+        .ceremonies-scene-root .btn-action-vertical {
+          width: 100%;
+          display: inline-flex;
+          align-items: center;
+          justify-content: center;
+          gap: 6px;
+          padding: 7px 14px;
+          border-radius: 18px;
+          font-family: 'Cinzel', serif;
+          font-weight: 700;
+          font-size: min(0.7rem, 2.4vw);
+          letter-spacing: 1.2px;
+          text-transform: uppercase;
+          cursor: pointer;
+          text-decoration: none;
+          transition: all 0.2s ease;
+        }
+
+        /* Get Directions Button */
+        .ceremonies-scene-root .btn-action-direction {
+          background: linear-gradient(180deg, #d4a12a 0%, #b3821a 100%);
+          border: 1px solid rgba(255, 245, 200, 0.85);
+          color: #2b1805;
+          box-shadow: 0 4px 12px rgba(180, 130, 30, 0.38);
+        }
+        .ceremonies-scene-root .btn-action-direction:hover {
+          transform: translateY(-1px);
+          box-shadow: 0 6px 16px rgba(180, 130, 30, 0.52);
+        }
+
+        /* Add to Calendar Button */
+        .ceremonies-scene-root .btn-action-calendar {
+          background: linear-gradient(180deg, #7a1c1c 0%, #581111 100%);
+          border: 1px solid rgba(255, 215, 150, 0.45);
+          color: #fff6e5;
+          box-shadow: 0 4px 12px rgba(100, 20, 10, 0.38);
+        }
+        .ceremonies-scene-root .btn-action-calendar:hover {
+          transform: translateY(-1px);
+          box-shadow: 0 6px 16px rgba(120, 25, 15, 0.52);
+        }
+
+        /* --- Bottom 5 Jharokha Arch Tabs Bar (RAISED ABOVE NAVBAR WITH 50PX MARGIN) --- */
+        .ceremonies-scene-root .tabs-bar-container {
+          position: relative;
+          z-index: 25;
+          display: flex;
+          align-items: flex-end;
+          justify-content: center;
+          gap: min(8px, 1.5vw);
+          width: 100%;
+          max-width: 580px;
+          margin-bottom: 50px;
+        }
+
+        .ceremonies-scene-root .arch-tab-btn {
+          position: relative;
+          flex: 1;
+          max-width: 98px;
+          height: 78px;
+          background: linear-gradient(180deg, #FAF6F0 0%, #EBE0D0 100%);
+          border: 1.5px solid rgba(195, 155, 115, 0.5);
+          border-radius: 34px 34px 8px 8px;
+          display: flex;
+          flex-direction: column;
+          align-items: center;
+          justify-content: center;
+          padding: 5px 3px 4px;
+          cursor: pointer;
+          transition: all 0.35s cubic-bezier(0.16, 1, 0.3, 1);
+          box-shadow: 0 8px 22px rgba(0, 0, 0, 0.28);
+        }
+
+        /* Active Selected Tab */
+        .ceremonies-scene-root .arch-tab-btn.is-active {
+          background: linear-gradient(180deg, #FFFFFF 0%, #FAF6F0 100%);
+          border: 2px solid #7a1c1c;
+          transform: translateY(-8px);
+          box-shadow:
+            0 16px 30px rgba(0, 0, 0, 0.4),
+            0 0 16px rgba(122, 28, 28, 0.32);
+        }
+
+        .ceremonies-scene-root .tab-label {
+          font-family: 'Cinzel', serif;
+          font-size: min(0.68rem, 2.3vw);
+          font-weight: 700;
+          letter-spacing: 1px;
+          color: #634331;
+          text-transform: uppercase;
+          margin-top: 2px;
+        }
+
+        .ceremonies-scene-root .arch-tab-btn.is-active .tab-label {
+          color: #7a1c1c;
+        }
+
+        @media (max-width: 480px) {
+          .ceremonies-scene-root .ornate-card-wrapper {
+            height: min(600px, 78vh);
+          }
+          .ceremonies-scene-root .parchment-safe-area {
+            top: 22.5%;
+            bottom: 20%;
+            left: 18%;
+            right: 18%;
+          }
+          .ceremonies-scene-root .details-container {
+            padding-left: 20px;
+          }
+          .ceremonies-scene-root .detail-row {
+            max-width: 250px;
+            gap: 10px;
+          }
+          .ceremonies-scene-root .tabs-bar-container {
+            margin-bottom: 44px;
+          }
+          .ceremonies-scene-root .arch-tab-btn {
+            height: 68px;
+            border-radius: 24px 24px 6px 6px;
+          }
+        }
+
+        @media (prefers-reduced-motion: reduce) {
+          .ceremonies-scene-root .ornate-card-wrapper,
+          .ceremonies-scene-root .arch-tab-btn {
+            transition: none !important;
+            animation: none !important;
+            transform: none !important;
+          }
+        }
+      `}</style>
+
+      {/* Full Screen Palace Background Photo */}
+      <img
+        src={ceremoniesBg}
+        alt="Palace Courtyard"
+        className="palace-bg-photo"
+      />
+      <div className="vignette-layer" aria-hidden="true" />
+
+      {/* Top Header */}
+      <header className="top-header-section">
+        <svg className="header-flourish" width="50" height="12" viewBox="0 0 60 14" fill="none" aria-hidden="true">
+          <path d="M0 7 H22 M38 7 H60 M30 2 L34 7 L30 12 L26 7 Z" fill="#ffd700" stroke="#ffd700" strokeWidth="1" />
+        </svg>
+        <h1 className="header-title">THE CELEBRATIONS</h1>
+        <p className="header-subtitle">TOGETHER IS OUR FAVOURITE PLACE TO BE</p>
+      </header>
+
+      {/* Prominent Grand Ornate Clean PNG Card Container Wrapper */}
+      <div ref={cardRef} className="ornate-card-wrapper">
+        {/* User's Clean Transparent PNG Card Frame Asset */}
         <img
-          src={ceremoniesBg}
-          alt="Palace Ceremonies Courtyard"
-          className="w-full h-full object-cover object-center scale-105"
+          src={ceremonyCardClean}
+          alt="Royal Ceremonies Frame Card"
+          className="ornate-card-img"
         />
-        <div className="absolute inset-0 bg-gradient-to-t from-[#0d0f07]/90 via-[#0d0f07]/45 to-[#0d0f07]/80" />
+
+        {/* Strict Parchment Safe Area Overlay */}
+        <div className="parchment-safe-area">
+          {/* Header Title & Tagline */}
+          <div>
+            <h2 className="ceremony-main-title">{active.name}</h2>
+            <p className="ceremony-tagline">{active.tagline}</p>
+            <div className="divider-ornament" aria-hidden="true" />
+          </div>
+
+          {/* 3 Detail Rows with Icons Aligned 100% Perfectly Straight & Shifted Further Right */}
+          <div className="details-container">
+            {/* Date Row */}
+            <div className="detail-row">
+              <div className="detail-icon-badge">
+                <Calendar className="w-4 h-4 text-[#7a1c1c]" />
+              </div>
+              <div>
+                <div className="detail-text-primary">{active.day}</div>
+                <div className="detail-text-sub">{active.date}</div>
+              </div>
+            </div>
+
+            {/* Time Row */}
+            <div className="detail-row">
+              <div className="detail-icon-badge">
+                <Clock className="w-4 h-4 text-[#7a1c1c]" />
+              </div>
+              <div>
+                <div className="detail-text-primary">{active.time}</div>
+              </div>
+            </div>
+
+            {/* Venue Row */}
+            <div className="detail-row">
+              <div className="detail-icon-badge">
+                <MapPin className="w-4 h-4 text-[#7a1c1c]" />
+              </div>
+              <div>
+                <div className="detail-text-primary">{active.venue}</div>
+                <div className="detail-text-sub">{active.location}</div>
+              </div>
+            </div>
+          </div>
+
+          {/* Two Action Buttons Stacked VERTICALLY Shifted Down */}
+          <div className="action-buttons-vertical">
+            <a
+              href={active.mapUrl}
+              target="_blank"
+              rel="noreferrer"
+              className="btn-action-vertical btn-action-direction"
+              title="Get Direction"
+            >
+              <Navigation className="w-3.5 h-3.5" />
+              <span>Get Direction</span>
+            </a>
+
+            <a
+              href={getGoogleCalendarUrl(active)}
+              target="_blank"
+              rel="noreferrer"
+              className="btn-action-vertical btn-action-calendar"
+              title="Add to Calendar"
+            >
+              <CalendarPlus className="w-3.5 h-3.5" />
+              <span>Add to Calendar</span>
+            </a>
+          </div>
+        </div>
       </div>
 
-      <WarmGlow className="left-1/2 top-1/2 h-80 w-80 -translate-x-1/2 -translate-y-1/2 opacity-40 pointer-events-none" />
-
-      {/* Header */}
-      <div className="relative z-20 flex flex-col items-center text-center mt-2">
-        <span className="font-sans text-[9px] sm:text-[10px] uppercase tracking-[0.35em] text-[#e9c349] font-medium">
-          Chapter Eight • The Royal Celebration
-        </span>
-        <h1 className="mt-1 font-display text-2xl sm:text-3xl text-[#fef08a] font-medium tracking-wide drop-shadow-md">
-          Wedding Ceremonies
-        </h1>
-        <Divider className="mt-2 h-2.5 w-36 text-[#e9c349]/80" />
-      </div>
-
-      {/* Ceremony Selection Tabs */}
-      <div className="relative z-20 flex flex-wrap justify-center gap-2 my-2 max-w-xl">
-        {wedding.ceremonies.map((c) => {
+      {/* Bottom 5 Arch Tabs Bar (RAISED ABOVE NAVBAR WITH 50PX MARGIN) */}
+      <div className="tabs-bar-container">
+        {ceremonyDetails.map((c) => {
           const isActive = c.id === activeId;
           return (
             <button
               key={c.id}
               type="button"
               onClick={() => setActiveId(c.id)}
-              className={`flex items-center gap-1.5 px-3.5 py-1.5 rounded-full border text-[10px] sm:text-xs uppercase tracking-[0.2em] font-semibold transition-all cursor-pointer ${
-                isActive
-                  ? "bg-[#e9c349] border-[#fef08a] text-[#451a03] shadow-[0_0_15px_rgba(233,195,73,0.5)] scale-105"
-                  : "bg-[#0d0f07]/80 border-[#e9c349]/40 text-[#e3e3d5] hover:border-[#fef08a]"
-              }`}
+              className={`arch-tab-btn ${isActive ? "is-active" : ""}`}
             >
-              <span>{ceremonyIcons[c.id] || "✦"}</span>
-              <span>{c.name}</span>
+              <TabIcon id={c.id} active={isActive} />
+              <span className="tab-label">{c.name}</span>
             </button>
           );
         })}
       </div>
 
-      {/* Active Ceremony Card */}
-      {active && (
-        <div
-          ref={cardRef}
-          className="relative z-20 w-full max-w-md bg-gradient-to-b from-[#fefce8] via-[#fef9c3] to-[#fef08a] text-[#451a03] p-6 sm:p-7 rounded-[4px] border-2 border-[#e9c349] shadow-[0_22px_55px_rgba(0,0,0,0.85),0_0_25px_rgba(233,195,73,0.3)] flex flex-col items-center text-center my-3"
-        >
-          {/* Filigree Corner Accents */}
-          <div className="absolute top-2 left-2 w-3.5 h-3.5 border-t-2 border-l-2 border-[#b45309] rounded-tl-xs pointer-events-none" />
-          <div className="absolute top-2 right-2 w-3.5 h-3.5 border-t-2 border-r-2 border-[#b45309] rounded-tr-xs pointer-events-none" />
-          <div className="absolute bottom-2 left-2 w-3.5 h-3.5 border-b-2 border-l-2 border-[#b45309] rounded-bl-xs pointer-events-none" />
-          <div className="absolute bottom-2 right-2 w-3.5 h-3.5 border-b-2 border-r-2 border-[#b45309] rounded-br-xs pointer-events-none" />
-
-          {/* Ceremony Icon & Name */}
-          <div className="w-12 h-12 rounded-full bg-[#451a03] text-[#fef08a] text-xl flex items-center justify-center border border-[#e9c349] shadow-md mb-2">
-            {ceremonyIcons[active.id] || "✦"}
-          </div>
-
-          <h2 className="font-display text-xl sm:text-2xl font-bold text-[#451a03] tracking-wide">
-            {active.name}
-          </h2>
-
-          <div className="w-16 h-[1.5px] bg-[#b45309] mx-auto my-3 opacity-80" />
-
-          {/* Date, Time & Venue */}
-          <div className="space-y-1.5 font-sans text-xs sm:text-sm text-[#451a03]">
-            {active.date && (
-              <p className="font-semibold text-[#92400e] tracking-wider uppercase">
-                {active.date} • {active.time}
-              </p>
-            )}
-            {active.venue && <p className="font-medium">{active.venue}</p>}
-            {active.dressCode && (
-              <p className="text-[11px] italic text-[#b45309] mt-2">
-                Dress Code: {active.dressCode}
-              </p>
-            )}
-          </div>
-
-          {/* Map Directions CTA */}
-          {active.mapUrl && (
-            <a
-              href={active.mapUrl}
-              target="_blank"
-              rel="noreferrer"
-              className="mt-4 inline-flex items-center gap-2 px-5 py-2 rounded bg-[#451a03] text-[#fef08a] font-sans text-[10px] uppercase tracking-[0.25em] font-bold shadow-md hover:bg-[#78350f] transition-colors"
-            >
-              <span>Get Directions</span>
-              <span>📍</span>
-            </a>
-          )}
-        </div>
-      )}
-
-      <AmbientLayer dust={7} petals={2} />
+      <AmbientLayer dust={6} petals={2} />
     </section>
   );
 }

@@ -1,541 +1,520 @@
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
+import confetti from "canvas-confetti";
+import haveliWallBg from "@/assets/haveli-wall-bg.jpg";
 import { wedding } from "../data/wedding";
 import { useScene, usePrefersReducedMotion } from "../engine/SceneProvider";
 import { AmbientLayer } from "../ui/Ambient";
+import { RotateCcw } from "lucide-react";
 
-interface Petal {
+interface FloralPetal {
   id: number;
   left: number;
   drift: string;
   spin: string;
   duration: string;
   delay: string;
-  size: string;
-  isGold: boolean;
+  size: number;
+  color: string;
+  blur: number;
 }
 
 export default function RsvpScene() {
   const { accepted, setAccepted } = useScene();
   const reduced = usePrefersReducedMotion();
 
-  const [guestName, setGuestName] = useState(() => wedding.welcome.guestName || "Aarav & Priya Sharma");
-  const [petals, setPetals] = useState<Petal[]>([]);
-  const [overlayRun, setOverlayRun] = useState(false);
-  const [showReveal, setShowReveal] = useState(false);
-  const [showReplay, setShowReplay] = useState(false);
-  const [liveStatusText, setLiveStatusText] = useState("");
+  const [guestName, setGuestName] = useState(() => wedding.welcome.guestName || "Meera & Family");
+  const [petals, setPetals] = useState<FloralPetal[]>([]);
+  const [isClicking, setIsClicking] = useState<boolean>(false);
 
   useEffect(() => {
     if (typeof window !== "undefined") {
       const params = new URLSearchParams(window.location.search);
       const guest = params.get("guest");
-      if (guest) {
-        setGuestName(guest);
-      }
+      if (guest) setGuestName(guest);
     }
   }, []);
 
-  const spawnPetals = (count = 30) => {
-    const newPetals: Petal[] = [];
-    for (let i = 0; i < count; i++) {
-      const left = Math.random() * 100;
-      const drift = (Math.random() * 140 - 70).toFixed(0) + "px";
-      const spin = (Math.random() * 540 - 270).toFixed(0) + "deg";
-      const duration = (2.6 + Math.random() * 2.2).toFixed(2) + "s";
-      const delay = (Math.random() * 1.4).toFixed(2) + "s";
-      const size = (9 + Math.random() * 10).toFixed(0) + "px";
+  // Multi-stage Floral & Golden Confetti Explosion
+  const triggerAcceptExperience = () => {
+    if (accepted) return;
+    setIsClicking(true);
+
+    setTimeout(() => {
+      setIsClicking(false);
+      setAccepted(true);
+      spawnFloralRain();
+
+      if (!reduced) {
+        // Stage 1: Central Golden & Rose Sparkles
+        confetti({
+          particleCount: 90,
+          spread: 85,
+          origin: { y: 0.62 },
+          colors: ["#d90429", "#ff758f", "#ffd700", "#ffffff"],
+          startVelocity: 32,
+          zIndex: 120,
+        });
+
+        // Stage 2: Side Bougainvillea Canopy Explosion
+        setTimeout(() => {
+          confetti({
+            particleCount: 75,
+            angle: 60,
+            spread: 80,
+            origin: { x: 0.1, y: 0.5 },
+            colors: ["#e63946", "#ff4d6d", "#ffb3c1"],
+            startVelocity: 38,
+            zIndex: 120,
+          });
+          confetti({
+            particleCount: 75,
+            angle: 120,
+            spread: 80,
+            origin: { x: 0.9, y: 0.5 },
+            colors: ["#e63946", "#ff4d6d", "#ffb3c1"],
+            startVelocity: 38,
+            zIndex: 120,
+          });
+        }, 220);
+
+        // Stage 3: Falling Petal Shower
+        setTimeout(() => {
+          confetti({
+            particleCount: 140,
+            spread: 140,
+            origin: { y: 0.1, x: 0.5 },
+            colors: ["#d90429", "#ff758f", "#ffffff", "#ffd700"],
+            startVelocity: 15,
+            gravity: 0.65,
+            scalar: 1.1,
+            zIndex: 120,
+          });
+        }, 500);
+      }
+    }, 240);
+  };
+
+  const spawnFloralRain = () => {
+    if (reduced) return;
+    const colors = ["#e63946", "#d90429", "#ff758f", "#ffb3c1", "#ffffff", "#ffd700"];
+    const newPetals: FloralPetal[] = [];
+    for (let i = 0; i < 55; i++) {
       newPetals.push({
-        id: Math.random() + Date.now() + i,
-        left,
-        drift,
-        spin,
-        duration,
-        delay,
-        size,
-        isGold: Math.random() > 0.6,
+        id: Date.now() + i,
+        left: Math.random() * 100,
+        drift: (Math.random() * 180 - 90).toFixed(0) + "px",
+        spin: (Math.random() * 720 - 360).toFixed(0) + "deg",
+        duration: (3.2 + Math.random() * 3.5).toFixed(2) + "s",
+        delay: (Math.random() * 2).toFixed(2) + "s",
+        size: Math.floor(10 + Math.random() * 15),
+        color: colors[Math.floor(Math.random() * colors.length)]!,
+        blur: Math.random() > 0.75 ? 2 : 0,
       });
     }
     setPetals(newPetals);
   };
 
-  const handleAccept = () => {
-    if (accepted) return;
-    setAccepted(true);
-    setLiveStatusText("Invitation accepted.");
-
-    requestAnimationFrame(() => setOverlayRun(true));
-
-    if (!reduced) {
-      spawnPetals(30);
-    }
-
-    const revealTimer = setTimeout(() => setShowReveal(true), reduced ? 100 : 650);
-    const replayTimer = setTimeout(() => setShowReplay(true), reduced ? 400 : 2000);
-
-    return () => {
-      clearTimeout(revealTimer);
-      clearTimeout(replayTimer);
-    };
-  };
-
-  const handleReplay = () => {
+  const handleReset = () => {
     setAccepted(false);
-    setOverlayRun(false);
-    setShowReveal(false);
-    setShowReplay(false);
-    setLiveStatusText("");
     setPetals([]);
   };
 
   return (
-    <section className="rsvp-stage-root relative w-full h-full min-h-screen overflow-hidden flex items-center justify-center p-5 select-none">
+    <section className="rsvp-wall-direct-root relative w-full h-[100svh] overflow-hidden flex items-center justify-center p-4 select-none">
       <style>{`
-        .rsvp-stage-root {
-          --maroon: #430E1F;
-          --maroon-deep: #2C0714;
-          --maroon-mid: #6E1B34;
-          --gold: #CBA135;
-          --gold-light: #EAD59A;
-          --gold-soft: #F3E3B8;
-          --ivory: #FBF1DE;
-          --ink: #331019;
-          --teal: #0F6B62;
-          --teal-light: #4FA89B;
-          --marigold: #E2790E;
-          --marigold-2: #F2A93C;
-
-          background: radial-gradient(120% 140% at 50% -10%, var(--maroon-mid) 0%, var(--maroon) 45%, var(--maroon-deep) 100%);
-          font-family: 'Rajdhani', sans-serif;
-          color: var(--ivory);
+        .rsvp-wall-direct-root {
+          font-family: 'Playfair Display', Georgia, serif;
+          color: #4a2818;
           isolation: isolate;
+          background-color: #e5d3bc;
         }
 
-        /* ambient jaali lattice background */
-        .rsvp-stage-root .jaali {
-          position: absolute; inset: 0;
-          opacity: 0.10;
-          background-image:
-            linear-gradient(45deg, var(--gold) 1px, transparent 1px),
-            linear-gradient(-45deg, var(--gold) 1px, transparent 1px);
-          background-size: 34px 34px;
-          mask-image: radial-gradient(120% 100% at 50% 30%, black 30%, transparent 78%);
-          pointer-events: none;
-        }
-
-        .rsvp-stage-root .corner-motif {
+        /* User's Exact Haveli Wall Photo Background */
+        .rsvp-wall-direct-root .wall-bg-photo {
           position: absolute;
-          width: 130px; height: 130px;
-          opacity: 0.55;
-          pointer-events: none;
+          inset: 0;
+          width: 100%;
+          height: 100%;
+          object-fit: cover;
+          object-position: center;
+          z-index: 0;
+          filter: brightness(1.02) contrast(1.02);
+        }
+
+        /* Soft Gradient Radial Vignette to focus on Center Arch */
+        .rsvp-wall-direct-root .wall-vignette {
+          position: absolute;
+          inset: 0;
+          background: radial-gradient(circle at 50% 50%, transparent 35%, rgba(0, 0, 0, 0.12) 100%);
           z-index: 1;
+          pointer-events: none;
         }
-        .rsvp-stage-root .corner-motif.tl { top: 18px; left: 18px; }
-        .rsvp-stage-root .corner-motif.tr { top: 18px; right: 18px; transform: scaleX(-1); }
-        .rsvp-stage-root .corner-motif.bl { bottom: 18px; left: 18px; transform: scaleY(-1); }
-        .rsvp-stage-root .corner-motif.br { bottom: 18px; right: 18px; transform: scale(-1,-1); }
 
-        /* ============ CARD ============ */
-        .rsvp-stage-root .invite-wrap {
+        /* --- Center Arch Content (Placed DIRECTLY on Wall - NO CARD) --- */
+        .rsvp-wall-direct-root .wall-center-content {
           position: relative;
-          width: min(420px, 100%);
-          z-index: 2;
+          z-index: 10;
+          max-width: 440px;
+          width: 100%;
+          height: min(580px, 80vh);
+          display: flex;
+          flex-direction: column;
+          align-items: center;
+          justify-content: space-between;
+          padding: 30px 16px 20px;
+          text-align: center;
         }
 
-        .rsvp-stage-root .crest {
+        /* Arch Apex Relief Ornament */
+        .rsvp-wall-direct-root .arch-apex-ornament {
+          opacity: 0.85;
+          margin-bottom: 2px;
+        }
+
+        /* --- RSVP Title Placed Directly on Sandstone Wall --- */
+        .rsvp-wall-direct-root .wall-rsvp-title {
+          font-family: 'Playfair Display', Georgia, serif;
+          font-size: 2.8rem;
+          font-weight: 700;
+          letter-spacing: 9px;
+          color: #6b2619;
+          line-height: 1;
+          margin-bottom: 8px;
+          text-shadow: 0 1px 2px rgba(255, 255, 255, 0.7), 0 2px 4px rgba(70, 30, 10, 0.15);
+        }
+
+        .rsvp-wall-direct-root .wall-rsvp-subhead {
+          font-family: 'Cinzel', serif;
+          font-size: 0.72rem;
+          letter-spacing: 3.2px;
+          color: #634331;
+          text-transform: uppercase;
+          font-weight: 600;
+          text-shadow: 0 1px 1px rgba(255, 255, 255, 0.6);
+        }
+
+        /* --- Middle Message Formation Directly on Wall --- */
+        .rsvp-wall-direct-root .wall-message-formation {
           position: relative;
           width: 100%;
           display: flex;
+          flex-direction: column;
+          align-items: center;
           justify-content: center;
-          margin-bottom: -34px;
-          z-index: 3;
-        }
-        .rsvp-stage-root .crest svg { width: 190px; height: auto; filter: drop-shadow(0 4px 10px rgba(0,0,0,0.35)); }
-
-        .rsvp-stage-root .card {
-          position: relative;
-          background: linear-gradient(180deg, var(--ivory) 0%, #F5E7CC 100%);
-          color: var(--ink);
-          border-radius: 18px;
-          padding: 56px 34px 36px;
-          text-align: center;
-          box-shadow:
-            0 30px 60px -20px rgba(0,0,0,0.55),
-            0 0 0 1px rgba(203,161,53,0.35),
-            inset 0 0 0 8px rgba(203,161,53,0.12);
-          transition: transform 0.6s cubic-bezier(.22,1,.36,1), box-shadow 0.6s ease, opacity 0.6s ease;
-        }
-        .rsvp-stage-root .card::before {
-          content: "";
-          position: absolute; inset: 10px;
-          border: 1px solid rgba(203,161,53,0.55);
-          border-radius: 12px;
-          pointer-events: none;
-        }
-        .rsvp-stage-root .card.is-accepted {
-          transform: scale(0.96);
-          box-shadow:
-            0 20px 50px -20px rgba(0,0,0,0.5),
-            0 0 0 1px rgba(203,161,53,0.6),
-            0 0 40px 4px rgba(203,161,53,0.35),
-            inset 0 0 0 8px rgba(203,161,53,0.16);
+          margin: 12px 0;
+          padding: 10px;
         }
 
-        .rsvp-stage-root .eyebrow {
-          font-family: 'Cinzel', serif;
-          font-size: 11.5px;
-          letter-spacing: 3.5px;
-          text-transform: uppercase;
-          color: var(--teal);
-          margin: 0 0 6px;
+        .rsvp-wall-direct-root .guest-name-script {
+          font-family: 'Great Vibes', 'Cormorant Garamond', cursive, serif;
+          font-size: 2.4rem;
+          color: #7a2216;
+          margin-bottom: 8px;
+          text-shadow: 0 1px 2px rgba(255, 255, 255, 0.8);
         }
 
-        .rsvp-stage-root .to-line {
-          font-family: 'Rajdhani', sans-serif;
-          font-size: 13px;
-          letter-spacing: 2px;
-          text-transform: uppercase;
-          color: #8a5a3f;
-          margin: 4px 0 2px;
-        }
-
-        .rsvp-stage-root .guest-name {
+        .rsvp-wall-direct-root .wall-rsvp-text {
           font-family: 'Cormorant Garamond', serif;
-          font-style: italic;
-          font-weight: 600;
-          font-size: 34px;
-          line-height: 1.15;
-          color: var(--maroon-mid);
-          margin: 2px 0 18px;
-        }
-
-        .rsvp-stage-root .divider {
-          display: flex; align-items: center; justify-content: center;
-          gap: 10px; margin: 6px 0 18px;
-          color: var(--gold);
-        }
-        .rsvp-stage-root .divider svg { width: 90px; height: 14px; }
-
-        .rsvp-stage-root .message {
-          font-family: 'Cormorant Garamond', serif;
-          font-size: 18.5px;
+          font-size: 1.12rem;
           line-height: 1.55;
-          color: #4a2a1f;
-          margin: 0 0 30px;
-        }
-
-        .rsvp-stage-root .details {
-          font-family: 'Rajdhani', sans-serif;
-          font-size: 13.5px;
-          letter-spacing: 1px;
-          color: var(--teal);
-          margin: -14px 0 26px;
-          text-transform: uppercase;
-          font-weight: 600;
-        }
-
-        .rsvp-stage-root .accept-btn {
-          position: relative;
-          font-family: 'Rajdhani', sans-serif;
-          font-weight: 700;
-          font-size: 15px;
-          letter-spacing: 2.5px;
-          text-transform: uppercase;
-          color: var(--ivory);
-          background: linear-gradient(180deg, var(--marigold-2), var(--marigold));
-          border: none;
-          padding: 15px 38px;
-          border-radius: 999px;
-          cursor: pointer;
-          box-shadow: 0 10px 24px -8px rgba(226,121,14,0.65), inset 0 0 0 1px rgba(255,255,255,0.25);
-          transition: transform 0.25s ease, box-shadow 0.25s ease, opacity 0.4s ease;
-        }
-        .rsvp-stage-root .accept-btn:hover { transform: translateY(-2px); box-shadow: 0 14px 28px -8px rgba(226,121,14,0.75), inset 0 0 0 1px rgba(255,255,255,0.35); }
-        .rsvp-stage-root .accept-btn:active { transform: translateY(0); }
-        .rsvp-stage-root .accept-btn:focus-visible { outline: 3px solid var(--gold); outline-offset: 3px; }
-        .rsvp-stage-root .accept-btn[disabled] { cursor: default; opacity: 0.85; transform: none; }
-
-        .rsvp-stage-root .accept-btn .check {
-          display: inline-flex; margin-right: 6px; vertical-align: -3px;
-        }
-
-        .rsvp-stage-root .replay {
-          margin-top: 16px;
-          background: none; border: none;
-          font-family: 'Rajdhani', sans-serif;
-          font-size: 12.5px;
-          letter-spacing: 1.5px;
-          text-transform: uppercase;
-          color: var(--teal);
-          text-decoration: underline;
-          text-underline-offset: 3px;
-          cursor: pointer;
-          opacity: 0;
-          transform: translateY(4px);
-          transition: opacity 0.5s ease, transform 0.5s ease;
-          pointer-events: none;
-        }
-        .rsvp-stage-root .replay.show { opacity: 0.85; transform: translateY(0); pointer-events: auto; }
-
-        .rsvp-stage-root .sr-only {
-          position: absolute; width: 1px; height: 1px;
-          padding: 0; margin: -1px; overflow: hidden;
-          clip: rect(0,0,0,0); white-space: nowrap; border: 0;
-        }
-
-        /* ============ ACCEPTANCE ANIMATION ============ */
-        .rsvp-stage-root .rsvp-overlay {
-          position: fixed; inset: 0;
-          display: flex; align-items: center; justify-content: center;
-          pointer-events: none;
-          opacity: 0;
-          transition: opacity 0.5s ease;
-          z-index: 50;
-        }
-        .rsvp-stage-root .rsvp-overlay.active { opacity: 1; }
-
-        .rsvp-stage-root .rsvp-overlay .veil {
-          position: absolute; inset: 0;
-          background: radial-gradient(60% 60% at 50% 45%, rgba(67,14,31,0.55) 0%, rgba(44,7,20,0.85) 70%, rgba(44,7,20,0.94) 100%);
-        }
-
-        .rsvp-stage-root .mandala {
-          position: relative;
-          width: 340px; height: 340px;
-          display: flex; align-items: center; justify-content: center;
-        }
-        .rsvp-stage-root .mandala svg { position: absolute; inset: 0; width: 100%; height: 100%; }
-
-        .rsvp-stage-root .ring {
-          transform-origin: 170px 170px;
-          transform: scale(0);
-          opacity: 0;
-        }
-        .rsvp-stage-root .rsvp-overlay.run .ring {
-          animation: ringGrow 1.1s cubic-bezier(.16,1,.3,1) forwards;
-        }
-        @keyframes ringGrow {
-          0% { transform: scale(0); opacity: 0; }
-          55% { opacity: 1; }
-          100% { transform: scale(1); opacity: 0.9; }
-        }
-
-        .rsvp-stage-root .dots-ring {
-          transform-origin: 170px 170px;
-          opacity: 0;
-        }
-        .rsvp-stage-root .rsvp-overlay.run .dots-ring {
-          animation: dotsFade 0.8s ease forwards 0.5s, dotsSpin 26s linear infinite 0.5s;
-        }
-        @keyframes dotsFade { to { opacity: 0.85; } }
-        @keyframes dotsSpin { to { transform: rotate(360deg); } }
-
-        .rsvp-stage-root .flame-glow {
-          position: absolute;
-          width: 90px; height: 90px;
-          border-radius: 50%;
-          background: radial-gradient(circle, rgba(242,169,60,0.9) 0%, rgba(226,121,14,0.35) 45%, transparent 72%);
-          filter: blur(2px);
-          opacity: 0;
-          transform: scale(0.6);
-        }
-        .rsvp-stage-root .rsvp-overlay.run .flame-glow {
-          animation: flameIn 1s ease forwards 0.15s, flameFlicker 1.8s ease-in-out infinite 1.1s;
-        }
-        @keyframes flameIn { to { opacity: 1; transform: scale(1); } }
-        @keyframes flameFlicker {
-          0%,100% { transform: scale(1); opacity: 0.85; }
-          50% { transform: scale(1.08); opacity: 1; }
-        }
-
-        .rsvp-stage-root .reveal {
-          position: absolute;
-          bottom: 12%;
-          left: 50%;
-          transform: translate(-50%, 14px);
-          text-align: center;
-          width: min(360px, 88vw);
-          opacity: 0;
-          transition: opacity 0.7s ease, transform 0.7s ease;
-        }
-        .rsvp-stage-root .reveal.show { opacity: 1; transform: translate(-50%, 0); }
-        .rsvp-stage-root .reveal .r-eyebrow {
-          font-family: 'Cinzel', serif;
-          font-size: 11px; letter-spacing: 3px; text-transform: uppercase;
-          color: var(--gold-light);
-          margin: 0 0 8px;
-        }
-        .rsvp-stage-root .reveal .r-msg {
-          font-family: 'Cormorant Garamond', serif;
+          color: #4a2d1e;
           font-style: italic;
-          font-size: 22px;
-          color: var(--ivory);
-          margin: 0;
+          margin-bottom: 20px;
+          max-width: 320px;
+          text-shadow: 0 1px 1px rgba(255, 255, 255, 0.7);
         }
-        .rsvp-stage-root .reveal svg { width: 120px; height: 14px; margin: 10px auto 0; display:block; }
-        .rsvp-stage-root .reveal .underline-path {
-          stroke-dasharray: 200;
-          stroke-dashoffset: 200;
-        }
-        .rsvp-stage-root .reveal.show .underline-path {
-          animation: drawLine 1s ease forwards 0.2s;
-        }
-        @keyframes drawLine { to { stroke-dashoffset: 0; } }
 
-        /* petals */
-        .rsvp-stage-root .petal {
+        /* --- Golden Wax Seal Monogram Floating on Wall --- */
+        .rsvp-wall-direct-root .wax-seal-wrapper {
+          display: flex;
+          flex-direction: column;
+          align-items: center;
+          justify-content: center;
+          margin: 6px 0 20px;
+        }
+
+        .rsvp-wall-direct-root .wax-seal-stamp {
+          position: relative;
+          width: 62px;
+          height: 62px;
+          border-radius: 50%;
+          background: radial-gradient(circle at 35% 35%, #F7D44A 0%, #D4A12A 50%, #8C6218 100%);
+          box-shadow:
+            0 8px 22px rgba(90, 60, 15, 0.4),
+            inset 0 2px 4px rgba(255, 255, 255, 0.75),
+            inset 0 -2px 4px rgba(0, 0, 0, 0.4);
+          display: flex;
+          align-items: center;
+          justify-content: center;
+          border: 1.5px solid rgba(255, 240, 180, 0.9);
+          animation: floatSeal 4s infinite alternate ease-in-out;
+        }
+
+        @keyframes floatSeal {
+          0% { transform: translateY(0px) rotate(-1deg); }
+          100% { transform: translateY(-4px) rotate(1deg); }
+        }
+
+        .rsvp-wall-direct-root .wax-seal-monogram {
+          font-family: 'Cinzel', serif;
+          font-weight: 700;
+          font-size: 1.02rem;
+          color: #3D2305;
+          letter-spacing: 1px;
+          text-shadow: 0 1px 1px rgba(255, 255, 255, 0.4);
+        }
+
+        /* Hanging Silk Tassels */
+        .rsvp-wall-direct-root .tassels-svg {
+          width: 32px;
+          height: 28px;
+          margin-top: -4px;
+          filter: drop-shadow(0 3px 6px rgba(0, 0, 0, 0.3));
+        }
+
+        /* --- Golden Plaque Button Directly Placed on Wall --- */
+        .rsvp-wall-direct-root .btn-golden-plaque {
+          position: relative;
+          width: 100%;
+          max-width: 300px;
+          background: linear-gradient(180deg, #F7D44A 0%, #D4A12A 60%, #B3821A 100%);
+          border: 1.5px solid rgba(255, 245, 200, 0.9);
+          border-radius: 12px;
+          padding: 14px 28px;
+          font-family: 'Cinzel', serif;
+          font-weight: 700;
+          font-size: 0.92rem;
+          letter-spacing: 3px;
+          color: #2B1805;
+          text-transform: uppercase;
+          cursor: pointer;
+          box-shadow:
+            0 10px 24px rgba(160, 110, 20, 0.4),
+            inset 0 1px 0 rgba(255, 255, 255, 0.8);
+          transition: transform 0.25s ease, box-shadow 0.25s ease, background 0.25s ease;
+          overflow: hidden;
+        }
+
+        .rsvp-wall-direct-root .btn-golden-plaque:hover {
+          transform: translateY(-2px) scale(1.02);
+          box-shadow: 0 14px 32px rgba(160, 110, 20, 0.55), inset 0 1px 0 rgba(255, 255, 255, 0.95);
+          background: linear-gradient(180deg, #FFE066 0%, #E0B030 60%, #C49220 100%);
+        }
+
+        .rsvp-wall-direct-root .btn-golden-plaque.is-pressing {
+          transform: scale(0.95);
+          box-shadow: 0 4px 10px rgba(160, 110, 20, 0.4);
+        }
+
+        /* Golden Radial Glow Ripple on Click */
+        .rsvp-wall-direct-root .btn-glow-ripple {
           position: absolute;
-          top: -24px;
-          width: 14px; height: 14px;
-          background: linear-gradient(135deg, var(--marigold-2), var(--marigold));
-          border-radius: 0% 60% 0% 60%;
-          opacity: 0.95;
+          inset: -24px;
+          border-radius: 30px;
+          background: radial-gradient(circle, rgba(247, 212, 74, 0.9) 0%, rgba(247, 212, 74, 0) 70%);
+          opacity: 0;
           pointer-events: none;
+        }
+        .rsvp-wall-direct-root .btn-golden-plaque.is-pressing .btn-glow-ripple {
+          animation: glowRippleOut 0.6s ease-out forwards;
+        }
+        @keyframes glowRippleOut {
+          0% { opacity: 0.95; transform: scale(0.4); }
+          100% { opacity: 0; transform: scale(1.7); }
+        }
+
+        /* --- Confirmation State Directly on Wall --- */
+        .rsvp-wall-direct-root .welcome-confirm-wall {
+          animation: zoomInConfirm 0.8s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+          text-align: center;
+          width: 100%;
+        }
+
+        @keyframes zoomInConfirm {
+          0% { opacity: 0; transform: scale(0.9) translateY(10px); }
+          100% { opacity: 1; transform: scale(1) translateY(0); }
+        }
+
+        .rsvp-wall-direct-root .welcome-main-title {
+          font-family: 'Great Vibes', cursive;
+          font-size: 3.6rem;
+          color: #7a2216;
+          margin-bottom: 2px;
+          line-height: 1;
+          text-shadow: 0 1px 3px rgba(255, 255, 255, 0.8);
+        }
+
+        .rsvp-wall-direct-root .welcome-sub-title {
+          font-family: 'Cinzel', serif;
+          font-size: 0.82rem;
+          letter-spacing: 3px;
+          text-transform: uppercase;
+          color: #5c3e2e;
+          font-weight: 600;
+          margin-bottom: 14px;
+          text-shadow: 0 1px 1px rgba(255, 255, 255, 0.6);
+        }
+
+        /* 3D Falling Flower Petals Particles */
+        .rsvp-wall-direct-root .floral-petal-particle {
+          position: absolute;
+          top: -20px;
+          border-radius: 0% 70% 0% 70%;
+          pointer-events: none;
+          z-index: 40;
           will-change: transform, opacity;
         }
-        .rsvp-stage-root .petal.gold {
-          background: linear-gradient(135deg, var(--gold-light), var(--gold));
-        }
-        @keyframes fall {
-          0% { transform: translate(0, -10px) rotate(0deg); opacity: 0; }
-          8% { opacity: 1; }
-          100% { transform: translate(var(--drift), 620px) rotate(var(--spin)); opacity: 0.15; }
+
+        @keyframes petalFallAnimation {
+          0% {
+            transform: translate3d(0, -10px, 0) rotate(0deg);
+            opacity: 0;
+          }
+          10% { opacity: 0.95; }
+          100% {
+            transform: translate3d(var(--drift), 105vh, 0) rotate(var(--spin));
+            opacity: 0.1;
+          }
         }
 
         @media (max-width: 480px) {
-          .rsvp-stage-root .card { padding: 50px 22px 30px; }
-          .rsvp-stage-root .guest-name { font-size: 28px; }
-          .rsvp-stage-root .message { font-size: 17px; }
-          .rsvp-stage-root .mandala { width: 280px; height: 280px; }
+          .rsvp-wall-direct-root .wall-center-content {
+            padding: 24px 12px 16px;
+          }
+          .rsvp-wall-direct-root .wall-rsvp-title { font-size: 2.2rem; }
+          .rsvp-wall-direct-root .welcome-main-title { font-size: 2.8rem; }
+          .rsvp-wall-direct-root .btn-golden-plaque { padding: 12px 20px; font-size: 0.84rem; }
         }
 
         @media (prefers-reduced-motion: reduce) {
-          .rsvp-stage-root .card, .rsvp-stage-root .accept-btn, .rsvp-stage-root .reveal, .rsvp-stage-root .replay { transition: none !important; }
-          .rsvp-stage-root .ring, .rsvp-stage-root .dots-ring, .rsvp-stage-root .flame-glow, .rsvp-stage-root .petal { animation: none !important; opacity: 1 !important; transform: none !important; }
+          .rsvp-wall-direct-root .btn-golden-plaque {
+            transition: none !important;
+            animation: none !important;
+            transform: none !important;
+          }
         }
       `}</style>
 
-      {/* Ambient jaali lattice background */}
-      <div className="jaali" aria-hidden="true" />
+      {/* User's Exact Rajasthani Haveli Sandstone Wall Background Photo */}
+      <img
+        src={haveliWallBg}
+        alt="Rajasthani Haveli Arch Wall"
+        className="wall-bg-photo"
+      />
 
-      {/* Corner motifs */}
-      <svg className="corner-motif tl" viewBox="0 0 100 100" aria-hidden="true"><path d="M2,2 C2,40 30,50 30,90 M2,2 C40,2 50,30 90,30" fill="none" stroke="#CBA135" strokeWidth="1.4" /><circle cx="30" cy="90" r="3" fill="#CBA135" /><circle cx="90" cy="30" r="3" fill="#CBA135" /></svg>
-      <svg className="corner-motif tr" viewBox="0 0 100 100" aria-hidden="true"><path d="M2,2 C2,40 30,50 30,90 M2,2 C40,2 50,30 90,30" fill="none" stroke="#CBA135" strokeWidth="1.4" /><circle cx="30" cy="90" r="3" fill="#CBA135" /><circle cx="90" cy="30" r="3" fill="#CBA135" /></svg>
-      <svg className="corner-motif bl" viewBox="0 0 100 100" aria-hidden="true"><path d="M2,2 C2,40 30,50 30,90 M2,2 C40,2 50,30 90,30" fill="none" stroke="#CBA135" strokeWidth="1.4" /><circle cx="30" cy="90" r="3" fill="#CBA135" /><circle cx="90" cy="30" r="3" fill="#CBA135" /></svg>
-      <svg className="corner-motif br" viewBox="0 0 100 100" aria-hidden="true"><path d="M2,2 C2,40 30,50 30,90 M2,2 C40,2 50,30 90,30" fill="none" stroke="#CBA135" strokeWidth="1.4" /><circle cx="30" cy="90" r="3" fill="#CBA135" /><circle cx="90" cy="30" r="3" fill="#CBA135" /></svg>
+      {/* Soft Vignette Overlay */}
+      <div className="wall-vignette" aria-hidden="true" />
 
-      <div className="invite-wrap">
-        {/* Jharokha crest */}
-        <div className="crest">
-          <svg viewBox="0 0 240 130" aria-hidden="true">
-            <path d="M20,120 Q20,58 62,50 Q62,20 90,16 Q120,8 150,16 Q178,20 178,50 Q220,58 220,120"
-              fill="none" stroke="#CBA135" strokeWidth="2.2" />
-            <path d="M40,120 Q40,68 70,60 Q75,32 120,26 Q165,32 170,60 Q200,68 200,120"
-              fill="none" stroke="#0F6B62" strokeWidth="1.2" opacity="0.8" />
-            <circle cx="120" cy="40" r="6" fill="#CBA135" />
-            <path d="M120,46 C104,54 104,72 120,80 C136,72 136,54 120,46 Z" fill="#0F6B62" opacity="0.9" />
-            <circle cx="62" cy="50" r="3" fill="#CBA135" />
-            <circle cx="178" cy="50" r="3" fill="#CBA135" />
-          </svg>
+      {/* Center Arch Content (Placed DIRECTLY on Wall) */}
+      <div className="wall-center-content">
+        {/* Arch Apex Ornament */}
+        <svg className="arch-apex-ornament" width="60" height="24" viewBox="0 0 60 24" fill="none" aria-hidden="true">
+          <path d="M30 0 C20 12 8 8 0 20 H60 C52 8 40 12 30 0 Z" fill="#8c5838" opacity="0.6" />
+          <circle cx="30" cy="10" r="2.5" fill="#7a2216" />
+        </svg>
+
+        {/* Arch Header Title */}
+        <div>
+          <h1 className="wall-rsvp-title">RSVP</h1>
+          <p className="wall-rsvp-subhead">WE WOULD BE HONOURED BY YOUR PRESENCE</p>
         </div>
 
-        <div className={`card ${accepted ? "is-accepted" : ""}`} id="card">
-          <p className="eyebrow">You Are Invited</p>
-          <p className="to-line">Dear</p>
-          <p className="guest-name" id="guestName">{guestName}</p>
+        {/* Middle Message Formation Directly Placed on Wall (NO CARD CONTAINER) */}
+        <div className="wall-message-formation">
+          {!accepted ? (
+            <>
+              <div className="guest-name-script">{guestName}</div>
+              <p className="wall-rsvp-text">
+                Your presence will make our wedding celebration complete.
+              </p>
 
-          <div className="divider" aria-hidden="true">
-            <svg viewBox="0 0 90 14"><path d="M0,7 H30 M60,7 H90 M45,2 L50,7 L45,12 L40,7 Z" fill="#CBA135" stroke="#CBA135" strokeWidth="1" /></svg>
-          </div>
+              {/* Golden Wax Seal Monogram Floating Directly on Wall */}
+              <div className="wax-seal-wrapper">
+                <div className="wax-seal-stamp">
+                  <span className="wax-seal-monogram">
+                    {wedding.couple.groom[0]} ♥ {wedding.couple.bride[0]}
+                  </span>
+                </div>
+                {/* Hanging Silk Tassels */}
+                <svg className="tassels-svg" viewBox="0 0 32 28" fill="none" aria-hidden="true">
+                  <path d="M12 0 L8 28 M20 0 L24 28 M16 0 L16 26" stroke="#d4a12a" strokeWidth="2.5" />
+                  <circle cx="8" cy="26" r="3" fill="#f7d44a" />
+                  <circle cx="24" cy="26" r="3" fill="#f7d44a" />
+                  <circle cx="16" cy="24" r="3" fill="#d4a12a" />
+                </svg>
+              </div>
 
-          <p className="message">
-            With the blessings of our elders and hearts full of joy, we invite you to be part of our wedding celebrations — an evening of rituals, music and togetherness.
-          </p>
+              {/* Golden Plaque Button Placed Directly on Wall */}
+              <button
+                type="button"
+                className={`btn-golden-plaque ${isClicking ? "is-pressing" : ""}`}
+                onClick={triggerAcceptExperience}
+              >
+                <div className="btn-glow-ripple" aria-hidden="true" />
+                <span>ACCEPT INVITATION</span>
+              </button>
+            </>
+          ) : (
+            /* Confirmation Welcome Message Transformation Directly on Wall */
+            <div className="welcome-confirm-wall">
+              <div className="welcome-main-title">Welcome!</div>
+              <div className="welcome-sub-title">YOUR PRESENCE MEANS THE WORLD TO US</div>
 
-          <p className="details">18 February 2027 · Jaipur, Rajasthan</p>
+              <div className="wax-seal-wrapper">
+                <div className="wax-seal-stamp">
+                  <span className="wax-seal-monogram">
+                    {wedding.couple.groom[0]} ♥ {wedding.couple.bride[0]}
+                  </span>
+                </div>
+                <svg className="tassels-svg" viewBox="0 0 32 28" fill="none" aria-hidden="true">
+                  <path d="M12 0 L8 28 M20 0 L24 28 M16 0 L16 26" stroke="#d4a12a" strokeWidth="2.5" />
+                  <circle cx="8" cy="26" r="3" fill="#f7d44a" />
+                  <circle cx="24" cy="26" r="3" fill="#f7d44a" />
+                </svg>
+              </div>
 
-          <button
-            className="accept-btn"
-            id="acceptBtn"
-            type="button"
-            onClick={handleAccept}
-            disabled={accepted}
-          >
-            {accepted ? (
-              <>
-                <span className="check">&#10003;</span>
-                <span className="btn-label">Accepted</span>
-              </>
-            ) : (
-              <span className="btn-label">Accept Invitation</span>
-            )}
-          </button>
-          <div>
-            <button
-              className={`replay ${accepted && showReplay ? "show" : ""}`}
-              id="replayBtn"
-              type="button"
-              onClick={handleReplay}
-            >
-              RSVP again
-            </button>
-          </div>
-          <p className="sr-only" id="liveStatus" role="status" aria-live="polite">{liveStatusText}</p>
+              <p className="text-xs text-[#5c3e2e] mb-3 font-semibold">
+                Confirmed for {guestName}
+              </p>
+
+              <button
+                type="button"
+                onClick={handleReset}
+                className="inline-flex items-center gap-1.5 text-xs text-[#7a2216] underline underline-offset-4 cursor-pointer hover:opacity-80 transition-opacity font-semibold"
+              >
+                <RotateCcw className="w-3.5 h-3.5" /> Replay Floral Bloom
+              </button>
+            </div>
+          )}
         </div>
-      </div>
 
-      {/* Full-page acceptance animation */}
-      <div className={`rsvp-overlay ${accepted ? "active" : ""} ${overlayRun ? "run" : ""}`} id="overlay" aria-hidden={!accepted}>
-        <div className="veil"></div>
-        <div className="mandala">
-          <svg viewBox="0 0 340 340">
-            <g>
-              <circle className="ring" cx="170" cy="170" r="150" fill="none" stroke="#CBA135" strokeWidth="1" style={{ animationDelay: "0s" }} />
-              <circle className="ring" cx="170" cy="170" r="118" fill="none" stroke="#4FA89B" strokeWidth="1" style={{ animationDelay: "0.08s" }} />
-              <circle className="ring" cx="170" cy="170" r="88" fill="none" stroke="#EAD59A" strokeWidth="1.4" style={{ animationDelay: "0.16s" }} />
-              <circle className="ring" cx="170" cy="170" r="58" fill="none" stroke="#CBA135" strokeWidth="1" style={{ animationDelay: "0.24s" }} />
-              <g className="dots-ring">
-                <circle cx="170" cy="30" r="3" fill="#F2A93C" />
-                <circle cx="170" cy="310" r="3" fill="#F2A93C" />
-                <circle cx="30" cy="170" r="3" fill="#F2A93C" />
-                <circle cx="310" cy="170" r="3" fill="#F2A93C" />
-                <circle cx="66" cy="66" r="2.4" fill="#CBA135" />
-                <circle cx="274" cy="66" r="2.4" fill="#CBA135" />
-                <circle cx="66" cy="274" r="2.4" fill="#CBA135" />
-                <circle cx="274" cy="274" r="2.4" fill="#CBA135" />
-              </g>
-            </g>
-          </svg>
-          <div className="flame-glow"></div>
-        </div>
-
-        {/* Petals */}
-        {accepted &&
-          petals.map((p) => (
-            <div
-              key={p.id}
-              className={`petal ${p.isGold ? "gold" : ""}`}
-              style={
-                {
-                  left: `${p.left}vw`,
-                  width: p.size,
-                  height: p.size,
-                  "--drift": p.drift,
-                  "--spin": p.spin,
-                  animation: `fall ${p.duration} ease-in ${p.delay} forwards`,
-                } as React.CSSProperties
-              }
-            />
-          ))}
-
-        <div className={`reveal ${showReveal ? "show" : ""}`} id="reveal">
-          <p className="r-eyebrow">Shubh Aagman</p>
-          <p className="r-msg" id="revealMsg">Your presence will make our celebration complete.</p>
-          <svg viewBox="0 0 120 14" aria-hidden="true"><path className="underline-path" d="M2,7 C30,-2 90,16 118,7" fill="none" stroke="#CBA135" strokeWidth="1.4" /></svg>
+        {/* Traditional Bottom Inscription Directly on Wall */}
+        <div className="text-[10px] tracking-[3px] text-[#634331] uppercase font-semibold text-shadow">
+          —— PADHARO MHARE DESH ——
         </div>
       </div>
 
-      <AmbientLayer dust={6} petals={2} />
+      {/* 3D Falling Flower Petals Rain */}
+      {petals.map((p) => (
+        <div
+          key={p.id}
+          className="floral-petal-particle"
+          style={
+            {
+              left: `${p.left}vw`,
+              width: `${p.size}px`,
+              height: `${p.size * 1.3}px`,
+              backgroundColor: p.color,
+              filter: p.blur ? `blur(${p.blur}px)` : "none",
+              "--drift": p.drift,
+              "--spin": p.spin,
+              animation: `petalFallAnimation ${p.duration} linear ${p.delay} forwards`,
+            } as React.CSSProperties
+          }
+        />
+      ))}
+
+      <AmbientLayer dust={5} petals={2} />
     </section>
   );
 }
-
