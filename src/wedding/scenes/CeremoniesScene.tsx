@@ -486,7 +486,7 @@ export default function CeremoniesScene() {
         /* MOBILE RESPONSIVE MEDIA QUERIES ONLY - Strictly scoped to mobile screens (<= 640px) */
         @media (max-width: 640px) {
           .ceremonies-scene-root .top-header-section {
-            margin-top: 46px;
+            margin-top: 10px;
           }
           .ceremonies-scene-root .header-title {
             font-size: 1.25rem;
@@ -497,17 +497,20 @@ export default function CeremoniesScene() {
             letter-spacing: 1.8px;
           }
           .ceremonies-scene-root .ornate-card-wrapper {
-            height: min(490px, 64vh);
-            max-width: 340px;
+            height: min(580px, 78vh);
+            max-width: min(390px, 96vw);
           }
           .ceremonies-scene-root .parchment-safe-area {
-            top: 24%;
-            bottom: 24.5%;
-            left: 18%;
-            right: 18%;
-            padding: 1px 2px;
+            top: 20%;
+            bottom: 20.5%;
+            left: 17%;
+            right: 17%;
+            padding: 2px 2px;
+            justify-content: center;
+            gap: 18px;
           }
           .ceremonies-scene-root .ceremony-main-title {
+            margin-top: 0px;
             font-size: 1.15rem;
             letter-spacing: 2px;
             margin-bottom: 0px;
@@ -522,12 +525,12 @@ export default function CeremoniesScene() {
           }
           .ceremonies-scene-root .details-container {
             padding-left: 20px;
-            margin: 2px 0;
+            margin: 0;
           }
           .ceremonies-scene-root .detail-row {
             max-width: 170px;
             gap: 7px;
-            margin-bottom: 7px;
+            margin-bottom: 6px;
             grid-template-columns: 20px 1fr;
           }
           .ceremonies-scene-root .detail-icon-badge {
@@ -544,10 +547,10 @@ export default function CeremoniesScene() {
             letter-spacing: 0.4px;
           }
           .ceremonies-scene-root .action-buttons-vertical {
-            gap: 3px;
+            gap: 3.5px;
             max-width: 155px;
-            margin-top: 2px;
-            margin-bottom: 6px;
+            margin-top: 0px;
+            margin-bottom: 0px;
           }
           .ceremonies-scene-root .btn-action-vertical {
             padding: 3.5px 6px;
