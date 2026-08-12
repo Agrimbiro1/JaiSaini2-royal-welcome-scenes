@@ -150,7 +150,7 @@ export default function CountdownScene() {
   const cwHours = (12 - (time.hours % 12)) % 12;
 
   return (
-    <section className="shubh-muhurat-root relative w-full h-full min-h-screen overflow-x-hidden overflow-y-auto flex flex-col items-center p-4 sm:p-6 md:p-8 select-none">
+    <section className="shubh-muhurat-root relative w-full h-full min-h-screen max-h-screen overflow-hidden flex flex-col items-center justify-between py-4 px-4 select-none">
       <style>{`
         .shubh-muhurat-root {
           --maroon: #430E1F;
@@ -182,23 +182,29 @@ export default function CountdownScene() {
         }
 
         .shubh-muhurat-root .head {
-          position: relative; text-align:center; max-width:540px; margin-bottom:16px; z-index:2;
+          position: relative; text-align:center; max-width:540px; margin-bottom:8px; z-index:2; margin-top: 4px;
         }
         .shubh-muhurat-root .head .eyebrow {
-          font-family:'Cinzel', serif; font-size:12.5px; letter-spacing:4px; text-transform:uppercase; color:var(--teal-light); margin:0 0 8px;
+          font-family:'Cinzel', serif; font-size:11px; letter-spacing:4px; text-transform:uppercase; color:var(--teal-light); margin:0 0 4px;
         }
         .shubh-muhurat-root .head h2 {
-          font-family:'Cormorant Garamond', serif; font-style:italic; font-weight:600; font-size:35px; margin:0 0 6px; color:var(--gold-light);
+          font-family:'Cormorant Garamond', serif; font-style:italic; font-weight:600; font-size:30px; margin:0 0 4px; color:var(--gold-light); leading-tight;
         }
         .shubh-muhurat-root .head p {
-          font-family:'Rajdhani', sans-serif; font-size:14px; letter-spacing:1px; text-transform:uppercase; color:#d8c1af; margin:0;
+          font-family:'Rajdhani', sans-serif; font-size:12.5px; letter-spacing:1px; text-transform:uppercase; color:#d8c1af; margin:0;
         }
 
-        /* Standalone Analog Clock Dial (Only the Clock Face) */
+        @media (min-width: 640px) {
+          .shubh-muhurat-root .head .eyebrow { font-size:12.5px; }
+          .shubh-muhurat-root .head h2 { font-size:35px; }
+          .shubh-muhurat-root .head p { font-size:14px; }
+        }
+
+        /* Standalone Analog Clock Dial */
         .standalone-clock-wrap {
           position: relative;
           z-index: 3;
-          margin-bottom: 20px;
+          margin-bottom: 10px;
           display: flex;
           align-items: center;
           justify-content: center;
@@ -206,14 +212,23 @@ export default function CountdownScene() {
 
         .analog-clock-dial {
           position: relative;
-          width: 145px;
-          height: 145px;
+          width: 120px;
+          height: 120px;
           border-radius: 50%;
           background: linear-gradient(135deg, #ca8a04, #fef08a, #854d0e);
-          padding: 5px;
-          box-shadow: 0 12px 30px rgba(0,0,0,0.85), inset 0 2px 6px rgba(255,255,255,0.5), 0 0 20px rgba(203,161,53,0.35);
+          padding: 4px;
+          box-shadow: 0 10px 25px rgba(0,0,0,0.85), inset 0 2px 6px rgba(255,255,255,0.5), 0 0 18px rgba(203,161,53,0.35);
           transition: transform 0.3s ease;
         }
+
+        @media (min-width: 640px) {
+          .analog-clock-dial {
+            width: 135px;
+            height: 135px;
+            padding: 5px;
+          }
+        }
+
         .analog-clock-dial:hover {
           transform: scale(1.04);
         }
@@ -228,16 +243,16 @@ export default function CountdownScene() {
           display: flex;
           align-items: center;
           justify-content: center;
-          box-shadow: inset 0 0 16px rgba(120,53,15,0.4);
+          box-shadow: inset 0 0 14px rgba(120,53,15,0.4);
           overflow: hidden;
         }
 
         /* Mandap Layout */
-        .mandap { position:relative; width:min(640px, 100%); z-index:2; margin-bottom: 30px; }
-        .finial { position:absolute; top:-22px; left:50%; transform:translateX(-50%); width:26px; height:26px; }
+        .mandap { position:relative; width:min(600px, 100%); z-index:2; margin-bottom: 12px; margin-top: auto; }
+        .finial { position:absolute; top:-18px; left:50%; transform:translateX(-50%); width:24px; height:24px; }
 
-        .canopy { width:100%; height:44px; display:block; overflow:visible; }
-        .garland { width:100%; height:46px; display:block; margin-top:-14px; }
+        .canopy { width:100%; height:38px; display:block; overflow:visible; }
+        .garland { width:100%; height:40px; display:block; margin-top:-12px; }
 
         .garland .bead { animation: twinkle 2.6s ease-in-out infinite; }
         @keyframes twinkle { 0%,100%{ opacity:0.55; } 50%{ opacity:1; } }
@@ -246,17 +261,22 @@ export default function CountdownScene() {
 
         .pillars {
           display:flex; justify-content:space-between; align-items:flex-start;
-          padding: 0 6px; margin-top: 4px;
+          padding: 0 4px; margin-top: 2px;
         }
-        .pillar { display:flex; flex-direction:column; align-items:center; width:23%; }
+        .pillar { display:flex; flex-direction:column; align-items:center; width:24%; }
 
         .capital {
-          width:0; height:0; margin-bottom:6px;
-          border-left:9px solid transparent; border-right:9px solid transparent; border-bottom:9px solid var(--gold);
+          width:0; height:0; margin-bottom:4px;
+          border-left:8px solid transparent; border-right:8px solid transparent; border-bottom:8px solid var(--gold);
           opacity:0.85;
         }
 
-        .flip { position:relative; width:100%; max-width:96px; height:64px; perspective: 320px; }
+        .flip { position:relative; width:100%; max-width:90px; height:56px; perspective: 320px; }
+        
+        @media (min-width: 640px) {
+          .flip { height: 60px; max-width: 96px; }
+        }
+
         .flip .inner { position:absolute; inset:0; transform-style:preserve-3d; }
         .flip.do-flip .inner { animation: singleCardFlip 0.5s cubic-bezier(.45,.05,.2,1) forwards; }
 
@@ -270,8 +290,8 @@ export default function CountdownScene() {
           display:flex; align-items:center; justify-content:center;
           background: linear-gradient(180deg, var(--ivory), #F5E7CC);
           border-radius: 8px;
-          box-shadow: 0 10px 20px -10px rgba(0,0,0,0.55), 0 0 0 1px rgba(203,161,53,0.5);
-          font-family:'Cinzel', serif; font-weight:700; font-size:26px; color:var(--maroon-mid);
+          box-shadow: 0 8px 18px -8px rgba(0,0,0,0.55), 0 0 0 1px rgba(203,161,53,0.5);
+          font-family:'Cinzel', serif; font-weight:700; font-size:24px; color:var(--maroon-mid);
         }
         .flip .back { transform: rotateX(180deg); }
         .flip::after {
@@ -279,40 +299,40 @@ export default function CountdownScene() {
           background: rgba(67,14,31,0.25); z-index:2; pointer-events:none;
         }
 
-        .unit-label { margin-top:9px; text-align:center; }
+        .unit-label { margin-top:6px; text-align:center; }
         .unit-label .en {
-          display:block; font-family:'Rajdhani', sans-serif; font-weight:700; font-size:11.5px;
+          display:block; font-family:'Rajdhani', sans-serif; font-weight:700; font-size:11px;
           letter-spacing:2px; text-transform:uppercase; color:var(--gold-light);
         }
         .unit-label .hi {
-          display:block; font-family:'Cormorant Garamond', serif; font-style:italic; font-size:13px;
-          color: var(--teal-light); margin-top:2px;
+          display:block; font-family:'Cormorant Garamond', serif; font-style:italic; font-size:12px;
+          color: var(--teal-light); margin-top:1px;
         }
 
-        .shaft { width:2px; flex:1; min-height:22px; margin-top:10px; background: linear-gradient(180deg, var(--gold), rgba(203,161,53,0.25)); }
-        .base { width:34px; height:6px; background: var(--gold); opacity:0.85; border-radius:2px; margin-top:2px; }
+        .shaft { width:2px; flex:1; min-height:14px; margin-top:6px; background: linear-gradient(180deg, var(--gold), rgba(203,161,53,0.25)); }
+        .base { width:32px; height:5px; background: var(--gold); opacity:0.85; border-radius:2px; margin-top:2px; }
         .plinth { width:100%; height:3px; background: linear-gradient(90deg, transparent, var(--gold), transparent); margin-top:2px; opacity:0.7; }
 
         /* Diyas */
-        .diya-row { display:flex; justify-content:center; margin-top:18px; }
-        .diya { position:relative; width:60px; height:40px; }
+        .diya-row { display:flex; justify-content:center; margin-top:10px; }
+        .diya { position:relative; width:54px; height:36px; }
         .diya .oil {
-          position:absolute; bottom:0; left:0; right:0; height:16px;
+          position:absolute; bottom:0; left:0; right:0; height:14px;
           background: linear-gradient(180deg, var(--gold), #8a6a1f);
-          border-radius: 0 0 30px 30px / 0 0 16px 16px;
+          border-radius: 0 0 28px 28px / 0 0 14px 14px;
           clip-path: ellipse(50% 100% at 50% 100%);
         }
         .diya .flame {
-          position:absolute; bottom:14px; left:50%; transform:translateX(-50%);
-          width:10px; height:18px;
+          position:absolute; bottom:12px; left:50%; transform:translateX(-50%);
+          width:9px; height:16px;
           background: radial-gradient(circle at 50% 70%, #FFE9B0, var(--marigold-2) 55%, var(--marigold) 90%);
           border-radius: 50% 50% 50% 50% / 60% 60% 40% 40%;
           filter: blur(0.2px);
           animation: flicker 1.6s ease-in-out infinite;
         }
         .diya .glow {
-          position:absolute; bottom:8px; left:50%; transform:translateX(-50%);
-          width:64px; height:64px; border-radius:50%;
+          position:absolute; bottom:6px; left:50%; transform:translateX(-50%);
+          width:56px; height:56px; border-radius:50%;
           background: radial-gradient(circle, rgba(242,169,60,0.55), transparent 70%);
           filter: blur(3px);
           animation: glowPulse 2.4s ease-in-out infinite;
@@ -332,7 +352,7 @@ export default function CountdownScene() {
         .complete-reveal {
           position: relative; z-index:2;
           text-align:center; max-width: 480px;
-          margin-top: 30px;
+          margin-top: 16px;
           opacity: 0; transform: translateY(10px);
           transition: opacity 0.7s ease, transform 0.7s ease;
           pointer-events: none;
@@ -358,11 +378,11 @@ export default function CountdownScene() {
         }
 
         @media (max-width: 480px) {
-          .shubh-muhurat-root .head h2 { font-size:30px; }
-          .flip { height:54px; }
-          .flip .face { font-size:21px; }
+          .shubh-muhurat-root .head h2 { font-size:26px; }
+          .flip { height:50px; }
+          .flip .face { font-size:20px; }
           .pillar { width:24%; }
-          .analog-clock-dial { width: 120px; height: 120px; }
+          .analog-clock-dial { width: 110px; height: 110px; }
         }
 
         @media (prefers-reduced-motion: reduce) {
