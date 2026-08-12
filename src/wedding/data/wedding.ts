@@ -1,5 +1,5 @@
 import couplePhoto from "/assets/couple.jpg?url";
-import palaceNight from "@/assets/palace-night.jpg";
+import palaceNight from "/assets/palace-night.jpg";
 import prewedding1 from "/assets/prewedding-1.jpg";
 import prewedding2 from "/assets/prewedding-2.jpg";
 import prewedding3 from "/assets/prewedding-3.jpg";

@@ -3,11 +3,11 @@ import gsap from "gsap";
 import { useScene, usePrefersReducedMotion } from "../engine/SceneProvider";
 import { wedding } from "../data/wedding";
 
-import reelMehendi from "@/assets/reel-mehendi.jpg";
-import reelJewellery from "@/assets/reel-jewellery.jpg";
-import reelMarigold from "@/assets/reel-marigold.jpg";
-import reelPalace from "@/assets/reel-palace.jpg";
-import palaceNight from "@/assets/palace-night.jpg";
+import reelMehendi from "/assets/reel-mehendi.jpg";
+import reelJewellery from "/assets/reel-jewellery.jpg";
+import reelMarigold from "/assets/reel-marigold.jpg";
+import reelPalace from "/assets/reel-palace.jpg";
+import palaceNight from "/assets/palace-night.jpg";
 
 /** 6-frame film strip with couple photo at the end */
 const reelFrames = [
@@ -122,22 +122,44 @@ export default function OpeningScene() {
     const tl = gsap.timeline({ defaults: { ease: "power2.out" } });
     tlRef.current = tl;
 
+    // Dynamic center calculations for mobile & desktop
+    const getFrame1CenterX = () => {
+      if (!filmStripRef.current) return 0;
+      const stripWidth = filmStripRef.current.offsetWidth;
+      const firstChild = filmStripRef.current.firstElementChild as HTMLElement;
+      if (!firstChild) return 0;
+      const frame1Left = firstChild.offsetLeft;
+      const frame1Width = firstChild.offsetWidth;
+      const frame1Center = frame1Left + frame1Width / 2;
+      return -(frame1Center - stripWidth / 2);
+    };
+
+    const getHeroCenterX = () => {
+      if (!heroFrameRef.current || !filmStripRef.current) return 0;
+      const stripWidth = filmStripRef.current.offsetWidth;
+      const heroLeft = heroFrameRef.current.offsetLeft;
+      const heroWidth = heroFrameRef.current.offsetWidth;
+      const heroCenter = heroLeft + heroWidth / 2;
+      return -(heroCenter - stripWidth / 2);
+    };
+
+    // Initialize strip position
+    gsap.set(filmStripRef.current, { x: () => getFrame1CenterX(), opacity: 0 });
+
     // Phase 1: Reel appearance & spin start, skip button fade in
-    tl.to(filmReelRef.current, { opacity: 1, scale: 1, duration: 1.5, ease: "power2.out" })
-      .to(skipBtnRef.current, { opacity: 0.7, duration: 0.8 }, "-=0.8")
+    tl.to(filmReelRef.current, { opacity: 1, scale: 1, duration: 1.2, ease: "power2.out" })
+      .to(skipBtnRef.current, { opacity: 0.8, duration: 0.6 }, "-=0.6")
+      .to(filmStripRef.current, { opacity: 1, duration: 0.6 }, "-=0.4")
 
-      // Phase 2: Film strip rolls across screen through frames 1 to 5
-      .to(filmStripRef.current, { opacity: 1, x: "10vw", duration: 2.2, ease: "power1.inOut" }, "-=0.6")
-      .to(filmReelRef.current, { rotation: 360, duration: 5.5, ease: "none" }, "-=2.2")
-
-      // Phase 3: Roll continuously to the END of the strip to center Frame 6 (the couple photo)
-      .to(filmStripRef.current, { x: "-42%", duration: 3.2, ease: "power2.inOut" }, "-=3.3")
+      // Phase 2 & 3: Film strip rolls continuously to DEAD-CENTER of Frame 6 (Couple Photo)
+      .to(filmReelRef.current, { rotation: 360, duration: 5.0, ease: "none" }, 0.6)
+      .to(filmStripRef.current, { x: () => getHeroCenterX(), duration: 3.4, ease: "power2.inOut" }, 0.6)
 
       // Phase 4: Focus on couple photo at the end - color reveal & spotlight
-      .to(heroImageRef.current, { filter: "grayscale(0%)", opacity: 1, scale: 1, duration: 1.5 }, "-=1.2")
-      .to(heroSpotlightRef.current, { opacity: 0.8, duration: 1.5 }, "-=1.5")
+      .to(heroImageRef.current, { filter: "grayscale(0%)", opacity: 1, scale: 1, duration: 1.2 }, "-=1.2")
+      .to(heroSpotlightRef.current, { opacity: 0.8, duration: 1.2 }, "-=1.2")
 
-      // Phase 5: Reveal Typography (Stitch Heritage Noir titles)
+      // Phase 5: Reveal Typography
       .to(filmReelRef.current, { opacity: 0, duration: 0.8 }, "-=1.0")
       .to(textContainerRef.current, { opacity: 1, y: -20, duration: 1.6, ease: "power2.out" })
 
@@ -170,47 +192,47 @@ export default function OpeningScene() {
       ref={root}
       className="relative w-full h-full overflow-hidden bg-[#0d0f07] text-[#e3e3d5] font-sans select-none"
     >
-      {/* Cinematic Film Overlays from Stitch MCP */}
+      {/* Cinematic Film Overlays */}
       <div className="film-grain" />
       <div className="light-leak" id="lightLeak" />
 
       {/* Main Container for Animation Sequence */}
       <div className="relative w-full h-full flex items-center justify-center overflow-hidden" id="introContainer">
         
-        {/* Stitch MCP Typography Container */}
+        {/* Responsive Typography Container */}
         <div
           ref={textContainerRef}
-          className="absolute inset-0 flex flex-col items-center justify-center z-20 opacity-0 pointer-events-none drop-shadow-2xl translate-y-5"
+          className="absolute inset-0 flex flex-col items-center justify-center z-20 opacity-0 pointer-events-none drop-shadow-2xl translate-y-5 px-4"
           id="textContainer"
         >
-          <h2 className="font-display text-[18px] md:text-[24px] text-[#e9c349] mb-4 md:mb-6 tracking-[0.6em] uppercase drop-shadow-[0_0_15px_rgba(233,195,73,0.6)]">
+          <h2 className="font-display text-[14px] sm:text-[18px] md:text-[24px] text-[#e9c349] mb-3 md:mb-6 tracking-[0.35em] sm:tracking-[0.6em] uppercase drop-shadow-[0_0_15px_rgba(233,195,73,0.6)] text-center">
             {wedding.couple.groom.toUpperCase()} × {wedding.couple.bride.toUpperCase()}
           </h2>
-          <h1 className="font-display text-[40px] md:text-[80px] text-[#e3e3d5] text-center px-4 max-w-5xl leading-[1.1] tracking-widest drop-shadow-[0_0_25px_rgba(233,195,73,0.3)]">
+          <h1 className="font-display text-[26px] sm:text-[40px] md:text-[80px] text-[#e3e3d5] text-center max-w-5xl leading-[1.15] tracking-wider sm:tracking-widest drop-shadow-[0_0_25px_rgba(233,195,73,0.3)]">
             {wedding.couple.tagline || "Glimpse of Our Forever"}
           </h1>
-          <p className="mt-4 text-[12px] md:text-[14px] text-[#c4c7c7] font-sans tracking-[0.3em] uppercase opacity-80">
+          <p className="mt-3 sm:mt-4 text-[10px] sm:text-[12px] md:text-[14px] text-[#c4c7c7] font-sans tracking-[0.2em] sm:tracking-[0.3em] uppercase opacity-80 text-center">
             {wedding.couple.subtitle || "A Royal Wedding Invitation"}
           </p>
         </div>
 
         {/* Reel & Film Strip Container */}
-        <div className="relative w-full h-full flex items-center justify-center" id="reelSequence">
+        <div className="relative w-full h-full flex items-center justify-center overflow-hidden" id="reelSequence">
           
           {/* Vintage Reel Silhouette */}
           <div
             ref={filmReelRef}
-            className="absolute w-[320px] h-[320px] md:w-[600px] md:h-[600px] opacity-0 scale-50 z-10 rounded-full border-[8px] md:border-[12px] border-[#e9c349]/30 flex items-center justify-center shadow-[0_0_80px_rgba(233,195,73,0.15)]"
+            className="absolute w-[240px] h-[240px] sm:w-[320px] sm:h-[320px] md:w-[600px] md:h-[600px] opacity-0 scale-50 z-10 rounded-full border-[6px] sm:border-[8px] md:border-[12px] border-[#e9c349]/30 flex items-center justify-center shadow-[0_0_80px_rgba(233,195,73,0.15)] pointer-events-none"
             id="filmReel"
           >
-            <div className="absolute inset-0 border-4 border-dashed border-[#e9c349]/40 rounded-full animate-[spin_20s_linear_infinite]" />
-            <div className="w-12 h-12 md:w-20 md:h-20 bg-[#e9c349]/80 rounded-full shadow-[0_0_40px_rgba(233,195,73,0.5)]" />
+            <div className="absolute inset-0 border-3 sm:border-4 border-dashed border-[#e9c349]/40 rounded-full animate-[spin_20s_linear_infinite]" />
+            <div className="w-10 h-10 sm:w-12 sm:h-12 md:w-20 md:h-20 bg-[#e9c349]/80 rounded-full shadow-[0_0_40px_rgba(233,195,73,0.5)]" />
           </div>
 
           {/* Long Horizontal Film Strip (6 frames, ending with couple photo) */}
           <div
             ref={filmStripRef}
-            className="absolute flex gap-6 md:gap-12 items-center opacity-0 z-0 translate-x-[60vw]"
+            className="absolute flex gap-4 sm:gap-6 md:gap-12 items-center opacity-0 z-0"
             id="filmStrip"
           >
             {reelFrames.map((frame) => {
@@ -220,7 +242,7 @@ export default function OpeningScene() {
                   <div
                     key={frame.id}
                     ref={heroFrameRef}
-                    className="w-[340px] h-[226px] md:w-[800px] md:h-[533px] relative shrink-0 border-y-[10px] md:border-y-[16px] border-x-[4px] md:border-x-[6px] border-[#12140c] bg-[#12140c] p-2 md:p-3 flex items-center justify-center overflow-hidden transition-all duration-1000"
+                    className="w-[280px] h-[186px] sm:w-[340px] sm:h-[226px] md:w-[800px] md:h-[533px] relative shrink-0 border-y-[8px] sm:border-y-[10px] md:border-y-[16px] border-x-[3px] sm:border-x-[4px] md:border-x-[6px] border-[#12140c] bg-[#12140c] p-1.5 sm:p-2 md:p-3 flex items-center justify-center overflow-hidden transition-all duration-1000 origin-center"
                     id="heroFrame"
                   >
                     <img
@@ -243,7 +265,7 @@ export default function OpeningScene() {
                 /* Regular Film Frames 1 to 5 */
                 <div
                   key={frame.id}
-                  className="w-[320px] h-[213px] md:w-[800px] md:h-[533px] relative shrink-0 border-y-[10px] md:border-y-[16px] border-x-[4px] md:border-x-[6px] border-[#12140c] bg-[#12140c] p-2 md:p-3 flex items-center justify-center"
+                  className="w-[260px] h-[173px] sm:w-[320px] sm:h-[213px] md:w-[800px] md:h-[533px] relative shrink-0 border-y-[8px] sm:border-y-[10px] md:border-y-[16px] border-x-[3px] sm:border-x-[4px] md:border-x-[6px] border-[#12140c] bg-[#12140c] p-1.5 sm:p-2 md:p-3 flex items-center justify-center"
                 >
                   <img
                     src={frame.src}
@@ -257,13 +279,13 @@ export default function OpeningScene() {
         </div>
       </div>
 
-      {/* Skip Button with Stitch MCP styling */}
+      {/* Skip Button */}
       {!closing && (
         <button
           ref={skipBtnRef}
           type="button"
           onClick={triggerExpandAndNext}
-          className="fixed bottom-6 right-6 md:bottom-12 md:right-12 z-50 text-[#c4c7c7] font-sans text-[11px] md:text-[12px] uppercase tracking-[0.2em] font-semibold hover:text-[#e9c349] transition-colors duration-300 flex items-center gap-2 group opacity-0 cursor-pointer"
+          className="fixed bottom-4 right-4 sm:bottom-6 sm:right-6 md:bottom-12 md:right-12 z-50 text-[#c4c7c7] font-sans text-[11px] md:text-[12px] uppercase tracking-[0.2em] font-semibold hover:text-[#e9c349] transition-colors duration-300 flex items-center gap-2 group opacity-0 cursor-pointer bg-[#12140c]/70 px-3 py-1.5 rounded-full border border-[#e9c349]/30 backdrop-blur-xs"
           id="skipBtn"
         >
           Skip

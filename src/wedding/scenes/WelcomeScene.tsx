@@ -2,7 +2,7 @@ import { useEffect, useRef, useState } from "react";
 import gsap from "gsap";
 import { useScene, usePrefersReducedMotion } from "../engine/SceneProvider";
 import { wedding } from "../data/wedding";
-import { Divider, JaaliPanel, JharokhaArch } from "../ui/Ornaments";
+import { Divider, JaaliPanel } from "../ui/Ornaments";
 import { AmbientLayer, WarmGlow } from "../ui/Ambient";
 import { PeacockFeathers } from "../ui/PeacockFeathers";
 
@@ -11,11 +11,11 @@ import welcomeMan from "/assets/welcome-man.png";
 import welcomeWomen from "/assets/welcome-women.png";
 import coupleFrame from "/assets/couple-frame.png";
 
-import reelMehendi from "@/assets/reel-mehendi.jpg";
-import reelJewellery from "@/assets/reel-jewellery.jpg";
-import reelMarigold from "@/assets/reel-marigold.jpg";
-import reelPalace from "@/assets/reel-palace.jpg";
-import palaceNight from "@/assets/palace-night.jpg";
+import reelMehendi from "/assets/reel-mehendi.jpg";
+import reelJewellery from "/assets/reel-jewellery.jpg";
+import reelMarigold from "/assets/reel-marigold.jpg";
+import reelPalace from "/assets/reel-palace.jpg";
+import palaceNight from "/assets/palace-night.jpg";
 import couplePhoto from "/assets/couple.jpg?url";
 
 /** 6-frame film strip ending with couple photo */
@@ -167,20 +167,20 @@ export default function WelcomeScene() {
     // Initialize film strip position centered at Frame 1
     gsap.set(filmStripRef.current, { x: () => getFrame1CenterX(), opacity: 0 });
 
-    // Phase 1: Pure Reel Motion (No text overlay)
+    // Phase 1: Pure Reel Motion
     tl.to(filmReelRef.current, { opacity: 1, scale: 1, duration: 1.2, ease: "power2.out" })
       .to(filmStripRef.current, { opacity: 1, duration: 0.6 }, 0.4)
 
-      // Phase 2 & 3: Reel rotates and film strip rolls continuously through frames 1-5 to Frame 6 (Couple Photo at DEAD CENTER)
+      // Phase 2 & 3: Reel rotates and film strip rolls continuously to Frame 6 (Couple Photo at DEAD CENTER)
       .to(filmReelRef.current, { rotation: 360, duration: 4.8, ease: "none" }, 0.6)
       .to(filmStripRef.current, { x: () => getHeroCenterX(), duration: 3.2, ease: "power2.inOut" }, 0.6)
 
-      // Phase 4: Reel stops completely — circle disappears immediately, focus on couple photo
+      // Phase 4: Focus on couple photo
       .to(filmReelRef.current, { opacity: 0, duration: 0.5 }, 3.8)
       .to(heroImageRef.current, { filter: "grayscale(0%)", opacity: 1, scale: 1, duration: 1.0 }, 3.8)
       .to(heroSpotlightRef.current, { opacity: 0.8, duration: 1.0 }, 3.8)
 
-      // Phase 5: Writing animation for "Rohan & Ananya" at TOP (clean gold text, no background glow box)
+      // Phase 5: Writing animation for "Rohan & Ananya"
       .to(handwritingTitleRef.current, { opacity: 1, duration: 0.3 });
 
     const titleH1 = handwritingTitleRef.current?.querySelector("h1");
@@ -194,7 +194,7 @@ export default function WelcomeScene() {
     }
 
     tl
-      // Phase 6: Photo zooms smoothly just enough to cover the whole screen (dead-centered, no left drift!)
+      // Phase 6: Photo zooms smoothly to cover screen
       .to(
         heroFrameRef.current,
         {
@@ -207,7 +207,7 @@ export default function WelcomeScene() {
       )
       .to([filmReelRef.current, handwritingTitleRef.current], { opacity: 0, duration: 1.0, ease: "power2.out" }, "-=1.5")
 
-      // Phase 7: Screen becomes white (white flash transition)
+      // Phase 7: White flash transition
       .to(whiteFlashRef.current, { opacity: 1, duration: 0.8, ease: "power2.in" })
 
       // Phase 8: Welcome page appears cleanly out of the white transition
@@ -233,7 +233,7 @@ export default function WelcomeScene() {
       <JaaliPanel className="absolute inset-0 opacity-[0.07] pointer-events-none" />
       <WarmGlow className="left-1/2 top-[26%] h-64 w-64 -translate-x-1/2 opacity-45 pointer-events-none" />
 
-      {/* Film Overlays from Stitch MCP */}
+      {/* Film Overlays */}
       <div className="film-grain" />
       <div className="light-leak" id="lightLeak" />
 
@@ -249,30 +249,30 @@ export default function WelcomeScene() {
           welcomeRevealed ? "pointer-events-none opacity-0" : "opacity-100"
         }`}
       >
-        {/* Handwriting Title "Rohan & Ananya" at Top (Clean gold text, NO glowing background box) */}
+        {/* Handwriting Title "Rohan & Ananya" */}
         <div
           ref={handwritingTitleRef}
           className="absolute top-4 sm:top-6 md:top-10 inset-x-0 z-30 flex justify-center opacity-0 pointer-events-none"
         >
-          <h1 className="font-script text-[36px] sm:text-[54px] md:text-[80px] text-[#e9c349] tracking-wider text-center leading-tight px-4">
+          <h1 className="font-script text-[32px] sm:text-[54px] md:text-[80px] text-[#e9c349] tracking-wider text-center leading-tight px-4">
             Rohan & Ananya
           </h1>
         </div>
 
-        {/* Vintage Reel Silhouette - Centered in viewport */}
+        {/* Vintage Reel Silhouette */}
         <div
           ref={filmReelRef}
-          className="absolute w-[240px] h-[240px] sm:w-[320px] sm:h-[320px] md:w-[480px] md:h-[480px] opacity-0 scale-50 z-10 rounded-full border-[6px] md:border-[10px] border-[#e9c349]/30 flex items-center justify-center shadow-[0_0_60px_rgba(233,195,73,0.15)] pointer-events-none"
+          className="absolute w-[200px] h-[200px] sm:w-[320px] sm:h-[320px] md:w-[480px] md:h-[480px] opacity-0 scale-50 z-10 rounded-full border-[5px] sm:border-[6px] md:border-[10px] border-[#e9c349]/30 flex items-center justify-center shadow-[0_0_60px_rgba(233,195,73,0.15)] pointer-events-none"
         >
           <div className="absolute inset-0 border-3 md:border-4 border-dashed border-[#e9c349]/40 rounded-full animate-[spin_20s_linear_infinite]" />
-          <div className="w-10 h-10 md:w-20 md:h-20 bg-[#e9c349]/80 rounded-full shadow-[0_0_30px_rgba(233,195,73,0.5)]" />
+          <div className="w-8 h-8 sm:w-10 sm:h-10 md:w-20 md:h-20 bg-[#e9c349]/80 rounded-full shadow-[0_0_30px_rgba(233,195,73,0.5)]" />
         </div>
 
-        {/* 6-Frame Film Strip - Centered in flex container */}
+        {/* 6-Frame Film Strip */}
         <div className="relative w-full h-full flex items-center justify-center overflow-hidden z-0">
           <div
             ref={filmStripRef}
-            className="absolute flex gap-4 md:gap-10 items-center"
+            className="absolute flex gap-3 sm:gap-4 md:gap-10 items-center"
           >
             {reelFrames.map((frame) => {
               if (frame.hero) {
@@ -280,7 +280,7 @@ export default function WelcomeScene() {
                   <div
                     key={frame.id}
                     ref={heroFrameRef}
-                    className="w-[240px] h-[160px] sm:w-[320px] sm:h-[213px] md:w-[540px] md:h-[360px] relative shrink-0 border-y-[8px] md:border-y-[14px] border-x-[3px] md:border-x-[5px] border-[#12140c] bg-[#12140c] p-1.5 md:p-2.5 flex items-center justify-center overflow-hidden origin-center"
+                    className="w-[220px] h-[147px] sm:w-[320px] sm:h-[213px] md:w-[540px] md:h-[360px] relative shrink-0 border-y-[6px] sm:border-y-[8px] md:border-y-[14px] border-x-[2.5px] sm:border-x-[3px] md:border-x-[5px] border-[#12140c] bg-[#12140c] p-1 sm:p-1.5 md:p-2.5 flex items-center justify-center overflow-hidden origin-center"
                   >
                     <img
                       ref={heroImageRef}
@@ -299,7 +299,7 @@ export default function WelcomeScene() {
               return (
                 <div
                   key={frame.id}
-                  className="w-[220px] h-[147px] sm:w-[300px] sm:h-[200px] md:w-[500px] md:h-[333px] relative shrink-0 border-y-[8px] md:border-y-[14px] border-x-[3px] md:border-x-[5px] border-[#12140c] bg-[#12140c] p-1.5 md:p-2.5 flex items-center justify-center"
+                  className="w-[200px] h-[133px] sm:w-[300px] sm:h-[200px] md:w-[500px] md:h-[333px] relative shrink-0 border-y-[6px] sm:border-y-[8px] md:border-y-[14px] border-x-[2.5px] sm:border-x-[3px] md:border-x-[5px] border-[#12140c] bg-[#12140c] p-1 sm:p-1.5 md:p-2.5 flex items-center justify-center"
                 >
                   <img
                     src={frame.src}
@@ -312,12 +312,12 @@ export default function WelcomeScene() {
           </div>
         </div>
 
-        {/* Skip to Welcome Button */}
+        {/* Skip Button */}
         {!welcomeRevealed && (
           <button
             type="button"
             onClick={revealWelcomeCard}
-            className="fixed top-6 right-6 z-50 text-[#c4c7c7] font-sans text-[11px] uppercase tracking-[0.25em] font-medium hover:text-[#e9c349] transition-colors cursor-pointer bg-[#12140c]/70 px-3 py-1.5 rounded-full border border-[#e9c349]/30 backdrop-blur-sm"
+            className="fixed top-4 right-4 sm:top-6 sm:right-6 z-50 text-[#c4c7c7] font-sans text-[10px] sm:text-[11px] uppercase tracking-[0.25em] font-medium hover:text-[#e9c349] transition-colors cursor-pointer bg-[#12140c]/70 px-3 py-1.5 rounded-full border border-[#e9c349]/30 backdrop-blur-xs"
           >
             Skip Intro →
           </button>
@@ -327,7 +327,7 @@ export default function WelcomeScene() {
       {/* ── STAGE 2: Welcome Page & Open Invitation Button ─────── */}
       <div
         ref={welcomeCardRef}
-        className="absolute inset-0 z-20 flex flex-col items-center justify-center px-6 pb-20 pt-10 opacity-0 scale-95 transition-all duration-700 overflow-hidden"
+        className="absolute inset-0 z-20 flex flex-col items-center justify-center px-4 sm:px-6 pb-12 sm:pb-20 pt-6 sm:pt-10 opacity-0 scale-95 transition-all duration-700 overflow-hidden"
       >
         {/* Full Cover Welcome Background Image (z-0) */}
         <div className="absolute inset-0 z-0 pointer-events-none overflow-hidden">
@@ -336,39 +336,41 @@ export default function WelcomeScene() {
             alt="Welcome Background"
             className="w-full h-full object-cover object-center scale-105"
           />
-          {/* Elegant dark vignette overlay to ensure text readability */}
+          {/* Elegant dark vignette overlay */}
           <div className="absolute inset-0 bg-gradient-to-t from-[#0d0f07]/85 via-[#0d0f07]/50 to-[#0d0f07]/65" />
         </div>
 
-        {/* Falling Particles Layer (z-10): Peacock Feathers & Golden Petals (falling BEHIND couple image & text) */}
+        {/* Falling Particles Layer (z-10): Peacock Feathers & Golden Petals */}
         <div className="absolute inset-0 z-10 pointer-events-none overflow-hidden">
           <PeacockFeathers active={welcomeRevealed} count={16} />
         </div>
 
-        {/* Left Corner: Royal Rajasthani Welcome Man */}
-        <div className="absolute left-0 bottom-0 z-15 pointer-events-none max-w-[28vw] sm:max-w-[32vw] md:max-w-[340px]">
+        {/* ==================== CORNER WELCOME IMAGES LAYERED ON TOP (z-30) ==================== */}
+
+        {/* Left Corner: Royal Rajasthani Welcome Man - LAYERED ON TOP OF CARD (z-30) */}
+        <div className="absolute left-0 bottom-0 z-30 pointer-events-none max-w-[130px] sm:max-w-[200px] md:max-w-[320px] lg:max-w-[340px] max-h-[38vh] sm:max-h-[55vh] md:max-h-[65vh]">
           <img
             src={welcomeMan}
             alt="Royal Rajasthani Welcome Man"
-            className="w-full h-auto max-h-[50vh] sm:max-h-[65vh] object-contain object-left-bottom filter drop-shadow-[0_10px_30px_rgba(0,0,0,0.85)]"
+            className="w-full h-auto object-contain object-left-bottom filter drop-shadow-[0_10px_30px_rgba(0,0,0,0.9)]"
           />
         </div>
 
-        {/* Right Corner: Royal Rajasthani Welcome Woman */}
-        <div className="absolute right-0 bottom-0 z-15 pointer-events-none max-w-[28vw] sm:max-w-[32vw] md:max-w-[340px]">
+        {/* Right Corner: Royal Rajasthani Welcome Woman - LAYERED ON TOP OF CARD (z-30) */}
+        <div className="absolute right-0 bottom-0 z-30 pointer-events-none max-w-[130px] sm:max-w-[200px] md:max-w-[320px] lg:max-w-[340px] max-h-[38vh] sm:max-h-[55vh] md:max-h-[65vh]">
           <img
             src={welcomeWomen}
             alt="Royal Rajasthani Welcome Woman"
-            className="w-full h-auto max-h-[50vh] sm:max-h-[65vh] object-contain object-right-bottom filter drop-shadow-[0_10px_30px_rgba(0,0,0,0.85)]"
+            className="w-full h-auto object-contain object-right-bottom filter drop-shadow-[0_10px_30px_rgba(0,0,0,0.9)]"
           />
         </div>
 
         {/* Foreground Content Layer (z-20): Couple Image, Text & Button */}
         <div className="relative z-20 flex flex-col items-center justify-center w-full max-w-xl">
           {/* Royal Couple Frame (couple-frame.png) */}
-          <div className="relative w-[86%] max-w-[22rem] md:max-w-[27rem] aspect-[4/3] flex items-center justify-center my-2">
-            {/* Inner Photo - precisely positioned inside the frame's golden border window */}
-            <div className="absolute top-[16%] bottom-[16%] left-[16%] right-[16%] overflow-hidden rounded-sm z-0 bg-[#0d0f07]">
+          <div className="relative w-[82%] max-w-[17rem] sm:max-w-[22rem] md:max-w-[27rem] aspect-[4/3] flex items-center justify-center my-1.5 sm:my-2">
+            {/* Inner Photo */}
+            <div className="absolute top-[16%] bottom-[16%] left-[16%] right-[16%] overflow-hidden rounded-xs z-0 bg-[#0d0f07]">
               <img
                 src={wedding.couple.portrait}
                 alt={`${wedding.couple.groom} and ${wedding.couple.bride}`}
@@ -387,18 +389,16 @@ export default function WelcomeScene() {
             />
           </div>
 
-
-
           {/* Guest Greeting */}
-          <p className="mt-6 font-display text-xl md:text-2xl tracking-wide text-[#e3e3d5]">
+          <p className="mt-3 sm:mt-5 font-display text-lg sm:text-xl md:text-2xl tracking-wide text-[#e3e3d5] text-center">
             Dear <span className="text-[#e9c349]">{guestName}</span>
           </p>
-          <Divider className="mt-2.5 h-3 w-32 text-[#e9c349]/70" />
+          <Divider className="mt-2 h-2.5 sm:h-3 w-28 sm:w-32 text-[#e9c349]/70" />
 
-          <p className="mt-3.5 max-w-[20rem] md:max-w-[24rem] text-center font-display text-sm md:text-base italic leading-relaxed text-[#e9c349]/90">
+          <p className="mt-2.5 max-w-[17rem] sm:max-w-[20rem] md:max-w-[24rem] text-center font-display text-xs sm:text-sm md:text-base italic leading-relaxed text-[#e9c349]/90 px-2">
             “{quote}”
           </p>
-          <p className="mt-3 max-w-[21rem] md:max-w-[26rem] text-center font-sans text-[0.75rem] md:text-[0.82rem] leading-relaxed text-[#e3e3d5]/70">
+          <p className="mt-2 max-w-[18rem] sm:max-w-[21rem] md:max-w-[26rem] text-center font-sans text-[0.72rem] sm:text-[0.75rem] md:text-[0.82rem] leading-relaxed text-[#e3e3d5]/70 px-2">
             {message}
           </p>
 
@@ -406,14 +406,13 @@ export default function WelcomeScene() {
           <button
             type="button"
             onClick={goNext}
-            className="mt-6 group relative inline-flex items-center gap-3 px-8 py-3.5 rounded-full bg-gradient-to-r from-[#e9c349] via-[#f7e08b] to-[#e9c349] text-[#12140c] font-sans text-[12px] md:text-[13px] font-semibold uppercase tracking-[0.3em] shadow-[0_0_25px_rgba(233,195,73,0.4)] hover:shadow-[0_0_35px_rgba(233,195,73,0.7)] hover:scale-105 active:scale-95 transition-all duration-300 cursor-pointer"
+            className="mt-4 sm:mt-6 group relative inline-flex items-center gap-2.5 sm:gap-3 px-6 sm:px-8 py-3 sm:py-3.5 rounded-full bg-gradient-to-r from-[#e9c349] via-[#f7e08b] to-[#e9c349] text-[#12140c] font-sans text-[11px] sm:text-[12px] md:text-[13px] font-semibold uppercase tracking-[0.25em] sm:tracking-[0.3em] shadow-[0_0_25px_rgba(233,195,73,0.4)] hover:shadow-[0_0_35px_rgba(233,195,73,0.7)] hover:scale-105 active:scale-95 transition-all duration-300 cursor-pointer z-20"
           >
             <span>Open Invitation</span>
-            <span className="text-[14px] group-hover:translate-x-1 transition-transform">→</span>
+            <span className="text-[13px] sm:text-[14px] group-hover:translate-x-1 transition-transform">→</span>
           </button>
         </div>
       </div>
-
 
       <AmbientLayer dust={9} petals={3} />
     </section>

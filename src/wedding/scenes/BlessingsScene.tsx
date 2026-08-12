@@ -10,7 +10,7 @@ import {
 import { wedding, type Blessing } from "../data/wedding";
 import { usePrefersReducedMotion } from "../engine/SceneProvider";
 import { AmbientLayer } from "../ui/Ambient";
-import bookBgImage from "@/assets/blessings-open-book-bg.jpg";
+import bookBgImage from "/assets/blessings-open-book-bg.jpg";
 
 interface TagItem extends Blessing {
   id: string;

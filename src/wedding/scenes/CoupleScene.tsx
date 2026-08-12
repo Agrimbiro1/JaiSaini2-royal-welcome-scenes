@@ -78,7 +78,7 @@ export default function CoupleScene() {
           pointer-events: none;
         }
 
-        /* Fixed Single-Screen Calligraphy Content Box (No Scrolling) */
+        /* Calligraphy Content Box - Positioned safely inside parchment scroll */
         .scroll-calligraphy-single-screen {
           position: relative;
           z-index: 20;
@@ -96,11 +96,40 @@ export default function CoupleScene() {
           overflow: hidden; /* Strictly no scrollbar */
         }
 
+        /* Mobile specific scroll parchment containment - Strictly inside inner golden line boundaries */
+        @media (max-width: 640px) {
+          .scroll-calligraphy-single-screen {
+            position: absolute;
+            top: 53.5%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            width: min(240px, 62vw);
+            height: calc(100svh - 260px);
+            max-height: 480px;
+            margin: 0;
+            padding: 4px 0;
+            justify-content: space-between;
+          }
+          .wedding-date-stamp {
+            font-size: 7.5px !important;
+            letter-spacing: 0.6px !important;
+            padding: 2.5px 8px !important;
+            max-width: 230px !important;
+            line-height: 1.25 !important;
+          }
+          .wax-seal-button {
+            top: 112px;
+            right: 5%;
+            width: 32px;
+            height: 32px;
+          }
+        }
+
         .scroll-header-tag {
           font-family: 'Rajdhani', sans-serif;
-          font-size: 10px;
+          font-size: 9px;
           font-weight: 700;
-          letter-spacing: 0.3em;
+          letter-spacing: 0.25em;
           text-transform: uppercase;
           color: #7a1d36;
           border-bottom: 1.5px solid #c59b27;
@@ -109,11 +138,11 @@ export default function CoupleScene() {
 
         .scroll-shloka-text {
           font-family: 'Cinzel', 'Noto Serif Devanagari', serif;
-          font-size: 11px;
-          line-height: 1.4;
+          font-size: 9.5px;
+          line-height: 1.35;
           color: #5c1426;
           font-weight: 600;
-          max-width: 90%;
+          max-width: 95%;
         }
 
         .groom-title, .bride-title {
@@ -152,12 +181,12 @@ export default function CoupleScene() {
           background: linear-gradient(135deg, #430e1f, #6e1b34);
           color: #ead59a;
           border: 1.5px solid #cba135;
-          padding: 4px 18px;
+          padding: 3px 14px;
           border-radius: 999px;
           font-family: 'Rajdhani', sans-serif;
-          font-size: 10.5px;
+          font-size: 9px;
           font-weight: 700;
-          letter-spacing: 1.6px;
+          letter-spacing: 1.2px;
           text-transform: uppercase;
           box-shadow: 0 4px 12px rgba(0,0,0,0.5);
         }
@@ -165,11 +194,11 @@ export default function CoupleScene() {
         /* Wax Seal Button on top-right */
         .wax-seal-button {
           position: absolute;
-          top: 60px;
-          right: 7%;
+          top: 36px;
+          right: 6%;
           z-index: 30;
-          width: 44px;
-          height: 44px;
+          width: 38px;
+          height: 38px;
           border-radius: 50%;
           background: radial-gradient(circle at 35% 35%, #c21c2c, #700914, #3a0207);
           border: 2px solid #ead59a;
@@ -191,7 +220,7 @@ export default function CoupleScene() {
           .scroll-shloka-text { font-size: 13.5px; }
           .royal-announcement-quote { font-size: 15px; }
           .wedding-date-stamp { font-size: 11.5px; padding: 5px 22px; }
-          .wax-seal-button { width: 52px; height: 52px; }
+          .wax-seal-button { top: 60px; right: 7%; width: 52px; height: 52px; }
         }
 
         @media (min-width: 1024px) {
@@ -239,7 +268,7 @@ export default function CoupleScene() {
           <span className="scroll-header-tag">
             शाही पैगाम • Chapter Two • The Royal Proclamation
           </span>
-          <Divider className="mt-1 h-2 w-24 sm:w-32 text-[#7a1d36]" />
+          <Divider className="mt-0.5 sm:mt-1 h-1.5 sm:h-2 w-20 sm:w-32 text-[#7a1d36]" />
         </div>
 
         {/* Sacred Devanagari Sanskrit Shloka */}
@@ -249,9 +278,9 @@ export default function CoupleScene() {
           </p>
         )}
 
-        {/* Rectangular Couple Portrait Frame - Shifted to Top of Couple Names */}
-        <div className="flex items-center justify-center shrink-0 my-0.5 sm:my-1">
-          <div className="w-36 sm:w-52 h-20 sm:h-28 rounded-xl overflow-hidden border-2 sm:border-3 border-[#cba135] shadow-xl ring-2 ring-[#7a1d36]/30 bg-[#1c0a02]">
+        {/* Rectangular Couple Portrait Frame */}
+        <div className="flex items-center justify-center shrink-0 my-0.5">
+          <div className="w-28 sm:w-52 h-16 sm:h-28 rounded-lg sm:rounded-xl overflow-hidden border-1.5 sm:border-3 border-[#cba135] shadow-lg ring-1 sm:ring-2 ring-[#7a1d36]/30 bg-[#1c0a02]">
             <img
               src={couplePhoto}
               alt="Rohan & Ananya Royal Portrait"
@@ -261,27 +290,27 @@ export default function CoupleScene() {
         </div>
 
         {/* Main Calligraphy Couple Names */}
-        <div className="flex flex-col items-center shrink-0 my-0.5">
-          <h1 className="groom-title text-2xl sm:text-4xl lg:text-5xl">
+        <div className="flex flex-col items-center shrink-0 my-0">
+          <h1 className="groom-title text-xl sm:text-4xl lg:text-5xl">
             {groomFull || wedding.couple.groom}
           </h1>
-          <div className="weds-script-text text-xl sm:text-3xl lg:text-4xl my-0.5">
+          <div className="weds-script-text text-sm sm:text-3xl lg:text-4xl my-0">
             — weds —
           </div>
-          <h1 className="bride-title text-2xl sm:text-4xl lg:text-5xl">
+          <h1 className="bride-title text-xl sm:text-4xl lg:text-5xl">
             {brideFull || wedding.couple.bride}
           </h1>
         </div>
 
         {/* Parentage & Royal Lineage */}
         <div className="lineage-text-box shrink-0">
-          <p className="text-[12px] sm:text-[15px] font-bold text-[#541221]">
+          <p className="text-[10px] sm:text-[15px] font-bold text-[#541221]">
             {groomParents}
           </p>
-          <div className="text-[9.5px] sm:text-[11px] uppercase tracking-widest font-sans text-[#8c1c38] my-0.5 font-bold">
+          <div className="text-[8px] sm:text-[11px] uppercase tracking-widest font-sans text-[#8c1c38] my-0.5 font-bold">
             • United In Holy Matrimony With •
           </div>
-          <p className="text-[12px] sm:text-[15px] font-bold text-[#541221]">
+          <p className="text-[10px] sm:text-[15px] font-bold text-[#541221]">
             {brideParents}
           </p>
         </div>
@@ -302,10 +331,10 @@ export default function CoupleScene() {
         <button
           type="button"
           onClick={goNext}
-          className="group inline-flex items-center gap-1.5 bg-gradient-to-r from-[#6E1B34] via-[#430E1F] to-[#2C0714] text-[#EAD59A] border border-[#CBA135] px-5 py-1.5 rounded-full font-sans text-[11px] sm:text-xs font-bold tracking-widest uppercase shadow-xl hover:shadow-[0_0_20px_rgba(203,161,53,0.7)] hover:border-[#F5D77F] transition-all duration-300 cursor-pointer active:scale-95 shrink-0"
+          className="group inline-flex items-center gap-1 bg-gradient-to-r from-[#6E1B34] via-[#430E1F] to-[#2C0714] text-[#EAD59A] border border-[#CBA135] px-3.5 sm:px-5 py-1 sm:py-1.5 rounded-full font-sans text-[9.5px] sm:text-xs font-bold tracking-widest uppercase shadow-xl hover:shadow-[0_0_20px_rgba(203,161,53,0.7)] hover:border-[#F5D77F] transition-all duration-300 cursor-pointer active:scale-95 shrink-0"
         >
           <span>Explore Our Story</span>
-          <span className="text-sm group-hover:translate-x-1 transition-transform">
+          <span className="text-xs sm:text-sm group-hover:translate-x-1 transition-transform">
             →
           </span>
         </button>

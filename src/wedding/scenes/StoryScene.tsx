@@ -1,4 +1,5 @@
-import { useState } from "react";
+import { useEffect, useRef, useState } from "react";
+import gsap from "gsap";
 import { usePrefersReducedMotion } from "../engine/SceneProvider";
 import { AmbientLayer, WarmGlow } from "../ui/Ambient";
 import { Divider } from "../ui/Ornaments";
@@ -20,7 +21,7 @@ interface StoryWaypoint {
   y: number; // percentage Y on full-screen map (0 - 100)
 }
 
-// Staggered in a winding S-wave pattern across Rajasthan (Top-Left -> Lower-Center -> Upper-Right -> Lower-Right)
+// Staggered in a winding pattern across Rajasthan map
 const storyNodes: StoryWaypoint[] = [
   {
     id: "node-1",
@@ -67,9 +68,134 @@ const storyNodes: StoryWaypoint[] = [
 export default function StoryScene() {
   const reduced = usePrefersReducedMotion();
   const [selectedNode, setSelectedNode] = useState<StoryWaypoint | null>(null);
+  const [isMobile, setIsMobile] = useState(false);
 
-  // SVG Wavy Bezier Curve String connecting (18, 28) -> (38, 64) -> (64, 32) -> (82, 72)
-  const pathD = `M ${storyNodes[0]!.x} ${storyNodes[0]!.y} C 24 45, 30 60, ${storyNodes[1]!.x} ${storyNodes[1]!.y} C 48 68, 54 34, ${storyNodes[2]!.x} ${storyNodes[2]!.y} C 72 30, 76 56, ${storyNodes[3]!.x} ${storyNodes[3]!.y}`;
+  const maskPathRef = useRef<SVGPathElement>(null);
+  const nodeRefs = useRef<(HTMLDivElement | null)[]>([]);
+
+  useEffect(() => {
+    const checkMobile = () => {
+      setIsMobile(window.innerWidth < 640);
+    };
+    checkMobile();
+    window.addEventListener("resize", checkMobile);
+    return () => window.removeEventListener("resize", checkMobile);
+  }, []);
+
+  // Compute responsive node coordinates matching user's diagram for mobile view:
+  // Node 1 (top-left) -> Node 2 (top-right) -> Node 3 (bottom-left) -> Node 4 (bottom-right)
+  const nodesToRender = storyNodes.map((n) => {
+    if (isMobile) {
+      if (n.id === "node-1") return { ...n, x: 22, y: 24 };
+      if (n.id === "node-2") return { ...n, x: 76, y: 32 };
+      if (n.id === "node-3") return { ...n, x: 24, y: 58 };
+      if (n.id === "node-4") return { ...n, x: 76, y: 68 };
+    }
+    return n;
+  });
+
+  // SVG Bezier Wavy Curve path connecting nodes
+  const n0 = nodesToRender[0]!;
+  const n1 = nodesToRender[1]!;
+  const n2 = nodesToRender[2]!;
+  const n3 = nodesToRender[3]!;
+
+  const pathD = isMobile
+    ? `M ${n0.x} ${n0.y} C 40 24, 58 30, ${n1.x} ${n1.y} C 70 45, 30 45, ${n2.x} ${n2.y} C 42 60, 60 66, ${n3.x} ${n3.y}`
+    : `M ${n0.x} ${n0.y} C 24 45, 30 60, ${n1.x} ${n1.y} C 48 68, 54 34, ${n2.x} ${n2.y} C 72 30, 76 56, ${n3.x} ${n3.y}`;
+
+  // Cinematic Sequential Dotted Wavy Path Reveal & Photo Pop-In Animation
+  useEffect(() => {
+    if (reduced) return;
+
+    const maskPath = maskPathRef.current;
+    if (!maskPath) return;
+
+    let length = 100;
+    try {
+      length = maskPath.getTotalLength();
+    } catch {
+      length = 100;
+    }
+
+    // Set up mask path stroke dash for revealing the dotted line
+    gsap.set(maskPath, {
+      strokeDasharray: length,
+      strokeDashoffset: length,
+    });
+
+    // Initially hide all 4 photo nodes
+    nodeRefs.current.forEach((el) => {
+      if (el) gsap.set(el, { scale: 0, opacity: 0 });
+    });
+
+    const tl = gsap.timeline({ delay: 0.3 });
+
+    // Step 1: 1st Photo pops in
+    if (nodeRefs.current[0]) {
+      tl.to(nodeRefs.current[0], {
+        scale: 1,
+        opacity: 1,
+        duration: 0.5,
+        ease: "back.out(1.7)",
+      });
+    }
+
+    // Step 2: Dotted wavy path draws from Node 1 to Node 2
+    tl.to(maskPath, {
+      strokeDashoffset: length * 0.67,
+      duration: 0.8,
+      ease: "power1.inOut",
+    });
+
+    // Step 3: 2nd Photo pops in
+    if (nodeRefs.current[1]) {
+      tl.to(nodeRefs.current[1], {
+        scale: 1,
+        opacity: 1,
+        duration: 0.5,
+        ease: "back.out(1.7)",
+      });
+    }
+
+    // Step 4: Dotted wavy path draws from Node 2 to Node 3
+    tl.to(maskPath, {
+      strokeDashoffset: length * 0.33,
+      duration: 0.8,
+      ease: "power1.inOut",
+    });
+
+    // Step 5: 3rd Photo pops in
+    if (nodeRefs.current[2]) {
+      tl.to(nodeRefs.current[2], {
+        scale: 1,
+        opacity: 1,
+        duration: 0.5,
+        ease: "back.out(1.7)",
+      });
+    }
+
+    // Step 6: Dotted wavy path draws from Node 3 to Node 4
+    tl.to(maskPath, {
+      strokeDashoffset: 0,
+      duration: 0.8,
+      ease: "power1.inOut",
+    });
+
+    // Step 7: 4th Photo pops in
+    if (nodeRefs.current[3]) {
+      tl.to(nodeRefs.current[3], {
+        scale: 1,
+        opacity: 1,
+        duration: 0.5,
+        ease: "back.out(1.7)",
+      });
+    }
+
+    return () => {
+      tl.kill();
+    };
+  }, [isMobile, reduced, pathD]);
 
   return (
     <section className="story-fullscreen-root relative w-full h-[100svh] overflow-hidden select-none">
@@ -104,6 +230,14 @@ export default function StoryScene() {
           transform: scale(1.02);
         }
 
+        /* Zoom background significantly more on mobile so top printed text (MAPPA REGNI RAJASTHAN) is completely cropped out */
+        @media (max-width: 640px) {
+          .fullscreen-map-img {
+            object-position: center 95%;
+            transform: scale(1.95);
+          }
+        }
+
         .jaali-overlay {
           position: absolute; inset: 0; opacity: 0.08;
           background-image:
@@ -119,7 +253,7 @@ export default function StoryScene() {
           pointer-events: none;
         }
 
-        /* SVG Connecting Path Overlay across Fullscreen (0 0 100 100 ViewBox) */
+        /* SVG Connecting Path Overlay across Fullscreen */
         .fullscreen-svg-overlay {
           position: absolute;
           inset: 0;
@@ -129,19 +263,14 @@ export default function StoryScene() {
           z-index: 10;
         }
 
-        /* Clean Thin Black Cartography Dashed Line (No Background Overlay) */
+        /* Vintage Cartography Dotted Wavy Line */
         .journey-path-dash {
           stroke: #1c0a02;
-          stroke-width: 0.3;
+          stroke-width: 0.35;
           stroke-dasharray: 1 1;
           stroke-linecap: round;
           fill: none;
-          opacity: 0.85;
-          animation: pathDash 24s linear infinite;
-        }
-
-        @keyframes pathDash {
-          to { stroke-dashoffset: -100; }
+          opacity: 0.9;
         }
 
         /* Circle Photo Node */
@@ -150,24 +279,24 @@ export default function StoryScene() {
           transform: translate(-50%, -50%);
           z-index: 20;
           cursor: pointer;
-          transition: transform 0.35s cubic-bezier(0.34, 1.56, 0.64, 1), box-shadow 0.35s ease;
+          transition: box-shadow 0.35s ease;
           display: flex;
           flex-direction: column;
           align-items: center;
         }
 
         .circle-photo-node:hover {
-          transform: translate(-50%, -55%) scale(1.12);
+          transform: translate(-50%, -55%) scale(1.08);
         }
 
         .circle-frame {
           position: relative;
-          width: 96px;
-          height: 96px;
+          width: 82px;
+          height: 82px;
           border-radius: 50%;
           background: linear-gradient(135deg, var(--gold-light), var(--gold), var(--maroon-mid));
-          padding: 3.5px;
-          box-shadow: 0 12px 28px rgba(0,0,0,0.85), 0 0 20px rgba(203,161,53,0.45);
+          padding: 3px;
+          box-shadow: 0 10px 22px rgba(0,0,0,0.85), 0 0 16px rgba(203,161,53,0.45);
           transition: box-shadow 0.35s ease;
         }
 
@@ -187,7 +316,7 @@ export default function StoryScene() {
         }
 
         .circle-frame.selected {
-          box-shadow: 0 0 0 4.5px var(--gold-light), 0 16px 36px rgba(0,0,0,0.9), 0 0 30px rgba(242,169,60,0.9);
+          box-shadow: 0 0 0 4px var(--gold-light), 0 16px 36px rgba(0,0,0,0.9), 0 0 30px rgba(242,169,60,0.9);
           transform: scale(1.08);
         }
 
@@ -212,25 +341,27 @@ export default function StoryScene() {
         }
 
         .node-pill-label {
-          margin-top: 10px;
+          margin-top: 5px;
           background: rgba(44, 7, 20, 0.92);
           backdrop-filter: blur(8px);
           border: 1px solid var(--gold);
           color: var(--gold-light);
-          padding: 4px 14px;
+          padding: 3px 11px;
           border-radius: 999px;
           font-family: 'Rajdhani', sans-serif;
-          font-size: 12px;
+          font-size: 10.5px;
           font-weight: 700;
-          letter-spacing: 1.5px;
+          letter-spacing: 0.8px;
           white-space: nowrap;
           box-shadow: 0 6px 14px rgba(0,0,0,0.7);
         }
 
         @media (min-width: 640px) {
           .node-pill-label {
+            margin-top: 10px;
             font-size: 13px;
             padding: 5px 16px;
+            letter-spacing: 1.5px;
           }
         }
 
@@ -242,7 +373,7 @@ export default function StoryScene() {
           background: linear-gradient(180deg, var(--ivory), #F5E7CC);
           color: var(--ink);
           border-radius: 16px;
-          padding: 24px 26px;
+          padding: 20px 22px;
           border: 2px solid var(--gold);
           box-shadow: 0 25px 65px rgba(0,0,0,0.92), 0 0 30px rgba(203,161,53,0.35);
           display: flex;
@@ -268,28 +399,48 @@ export default function StoryScene() {
       <WarmGlow className="left-1/2 top-1/3 h-96 w-96 -translate-x-1/2 -translate-y-1/2 opacity-30 pointer-events-none" />
 
       {/* Header Overlay at Top Center */}
-      <div className="absolute top-4 sm:top-6 left-1/2 -translate-x-1/2 z-20 flex flex-col items-center text-center px-4 pointer-events-none">
-        <span className="font-sans text-[10px] sm:text-[11.5px] uppercase tracking-[0.35em] text-[#EAD59A] font-bold drop-shadow-md">
+      <div className="absolute top-4 sm:top-6 left-1/2 -translate-x-1/2 z-20 flex flex-col items-center text-center px-4 pointer-events-none w-full max-w-xl">
+        <span className="font-sans text-[9.5px] sm:text-[11.5px] uppercase tracking-[0.3em] sm:tracking-[0.35em] text-[#EAD59A] font-bold drop-shadow-md">
           Chapter Three • Our Journey
         </span>
-        <h1 className="font-['Cormorant_Garamond',serif] italic font-semibold text-2xl sm:text-4xl text-[#EAD59A] tracking-wide drop-shadow-lg mt-0.5">
+        <h1 className="font-['Cormorant_Garamond',serif] italic font-semibold text-xl sm:text-4xl text-[#EAD59A] tracking-wide drop-shadow-lg mt-0.5">
           A Story Written in Gold
         </h1>
-        <Divider className="mt-2 h-2.5 w-32 sm:w-40 text-[#CBA135]" />
+        <Divider className="mt-1.5 sm:mt-2 h-2 sm:h-2.5 w-28 sm:w-40 text-[#CBA135]" />
       </div>
 
-      {/* SVG Wavy Path Overlay across Fullscreen */}
+      {/* SVG Wavy Path Overlay across Fullscreen (Masked for Sequential Reveal of Dotted Wavy Path) */}
       <svg className="fullscreen-svg-overlay" viewBox="0 0 100 100" preserveAspectRatio="none">
-        {/* Single Thin Black Cartography Dashed Line (No Background) */}
-        <path d={pathD} className="journey-path-dash" />
+        <defs>
+          <mask id="story-dotted-path-mask" maskUnits="userSpaceOnUse" x="0" y="0" width="100" height="100">
+            <path
+              ref={maskPathRef}
+              d={pathD}
+              fill="none"
+              stroke="white"
+              strokeWidth="4"
+              strokeLinecap="round"
+            />
+          </mask>
+        </defs>
+
+        {/* Visible Dotted Wavy Cartography Path */}
+        <path
+          d={pathD}
+          className="journey-path-dash"
+          mask="url(#story-dotted-path-mask)"
+        />
       </svg>
 
       {/* 4 Staggered Wavy Circular Photo Nodes */}
-      {storyNodes.map((node) => {
+      {nodesToRender.map((node, idx) => {
         const isSelected = selectedNode?.id === node.id;
         return (
           <div
             key={node.id}
+            ref={(el) => {
+              nodeRefs.current[idx] = el;
+            }}
             className="circle-photo-node"
             style={{ left: `${node.x}%`, top: `${node.y}%` }}
             onClick={() => setSelectedNode(node)}
@@ -334,32 +485,32 @@ export default function StoryScene() {
             </button>
 
             {/* Header info */}
-            <span className="font-sans text-[11px] font-bold uppercase tracking-[0.3em] text-[#0F6B62] mb-1">
+            <span className="font-sans text-[10px] sm:text-[11px] font-bold uppercase tracking-[0.25em] sm:tracking-[0.3em] text-[#0F6B62] mb-1">
               {selectedNode.year} • {selectedNode.location}
             </span>
 
-            <h2 className="font-['Cormorant_Garamond',serif] text-2xl sm:text-3xl font-semibold text-[#430E1F] tracking-wide mb-3">
+            <h2 className="font-['Cormorant_Garamond',serif] text-xl sm:text-3xl font-semibold text-[#430E1F] tracking-wide mb-2 sm:mb-3">
               {selectedNode.title}
             </h2>
 
             {/* Photo inside Modal */}
-            <div className="w-full max-w-md h-52 sm:h-64 rounded-xl overflow-hidden border-2 border-[#CBA135] shadow-lg mb-4">
+            <div className="w-full max-w-md h-44 sm:h-64 rounded-xl overflow-hidden border-2 border-[#CBA135] shadow-lg mb-3 sm:mb-4">
               <img src={selectedNode.photo} alt={selectedNode.title} className="w-full h-full object-cover" />
             </div>
 
             {/* Description Quote */}
-            <p className="font-['Cormorant_Garamond',serif] italic text-base sm:text-lg text-[#331019] leading-relaxed mb-4 px-2">
+            <p className="font-['Cormorant_Garamond',serif] italic text-xs sm:text-lg text-[#331019] leading-relaxed mb-3 sm:mb-4 px-2">
               "{selectedNode.description}"
             </p>
 
             {/* Next/Prev Navigation inside Modal */}
-            <div className="flex items-center gap-3">
+            <div className="flex items-center gap-2 sm:gap-3 flex-wrap justify-center">
               {storyNodes.map((n) => (
                 <button
                   key={n.id}
                   type="button"
                   onClick={() => setSelectedNode(n)}
-                  className={`px-3 py-1 rounded-full text-xs font-bold font-sans tracking-wider transition-all ${
+                  className={`px-2.5 sm:px-3 py-1 rounded-full text-[11px] sm:text-xs font-bold font-sans tracking-wider transition-all ${
                     n.id === selectedNode.id
                       ? "bg-[#6E1B34] text-[#EAD59A] border border-[#CBA135]"
                       : "bg-[#0F6B62]/15 text-[#331019] hover:bg-[#0F6B62]/30"

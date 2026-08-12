@@ -1,7 +1,7 @@
 import { useEffect, useRef, useState } from "react";
 import gsap from "gsap";
-import ceremoniesBg from "@/assets/ceremonies-palace-courtyard.png";
-import ceremonyCardClean from "@/assets/ceremony-card-clean.png";
+import ceremoniesBg from "/assets/ceremonies-palace-courtyard.png";
+import ceremonyCardClean from "/assets/ceremony-card-clean.png";
 import { usePrefersReducedMotion } from "../engine/SceneProvider";
 import { AmbientLayer } from "../ui/Ambient";
 import { Calendar, Clock, MapPin, Navigation, CalendarPlus } from "lucide-react";
@@ -96,7 +96,7 @@ function TabIcon({ id, active }: { id: string; active: boolean }) {
   switch (id) {
     case "haldi":
       return (
-        <svg viewBox="0 0 40 40" className="w-7 h-7 sm:w-8 sm:h-8" aria-hidden="true">
+        <svg viewBox="0 0 40 40" className="w-4 h-4 sm:w-8 sm:h-8" aria-hidden="true">
           <ellipse cx="20" cy="25" rx="13" ry="6" stroke={strokeColor} strokeWidth="2" fill="none" />
           <path d="M11 25 C11 31 29 31 29 25" fill={fillColor} stroke={strokeColor} strokeWidth="1.5" />
           <circle cx="20" cy="18" r="4.5" fill="#f7d44a" />
@@ -106,14 +106,14 @@ function TabIcon({ id, active }: { id: string; active: boolean }) {
       );
     case "mehendi":
       return (
-        <svg viewBox="0 0 40 40" className="w-7 h-7 sm:w-8 sm:h-8" aria-hidden="true">
+        <svg viewBox="0 0 40 40" className="w-4 h-4 sm:w-8 sm:h-8" aria-hidden="true">
           <path d="M20 5 C14 11 10 19 14 29 C18 33 26 33 28 25 C30 17 24 9 20 5 Z" stroke={strokeColor} strokeWidth="2" fill={active ? "#7a1c1c" : "none"} opacity="0.9" />
           <path d="M20 11 L20 25 M16 17 L24 17 M17 21 L23 21" stroke={active ? "#fff" : strokeColor} strokeWidth="1.2" />
         </svg>
       );
     case "sangeet":
       return (
-        <svg viewBox="0 0 40 40" className="w-7 h-7 sm:w-8 sm:h-8" aria-hidden="true">
+        <svg viewBox="0 0 40 40" className="w-4 h-4 sm:w-8 sm:h-8" aria-hidden="true">
           <rect x="9" y="16" width="22" height="13" rx="4" stroke={strokeColor} strokeWidth="2" fill={fillColor} />
           <ellipse cx="9" cy="22.5" rx="2" ry="6.5" stroke={strokeColor} strokeWidth="1.5" />
           <ellipse cx="31" cy="22.5" rx="2" ry="6.5" stroke={strokeColor} strokeWidth="1.5" />
@@ -123,7 +123,7 @@ function TabIcon({ id, active }: { id: string; active: boolean }) {
     case "shaadi":
     case "wedding":
       return (
-        <svg viewBox="0 0 40 40" className="w-7 h-7 sm:w-8 sm:h-8" aria-hidden="true">
+        <svg viewBox="0 0 40 40" className="w-4 h-4 sm:w-8 sm:h-8" aria-hidden="true">
           <path d="M7 32 L7 16 L20 8 L33 16 L33 32" stroke={strokeColor} strokeWidth="2" fill="none" />
           <path d="M11 16 L20 10 L29 16" stroke={strokeColor} strokeWidth="1.5" fill="none" />
           <path d="M20 28 C18 24 18 21 20 19 C22 21 22 24 20 28 Z" fill="#e2790e" stroke="#f7d44a" strokeWidth="1" />
@@ -132,7 +132,7 @@ function TabIcon({ id, active }: { id: string; active: boolean }) {
       );
     case "reception":
       return (
-        <svg viewBox="0 0 40 40" className="w-7 h-7 sm:w-8 sm:h-8" aria-hidden="true">
+        <svg viewBox="0 0 40 40" className="w-4 h-4 sm:w-8 sm:h-8" aria-hidden="true">
           <path d="M20 5 L20 13 M11 17 C11 23 29 23 29 17 M15 23 L15 29 M25 23 L25 29 M11 29 H29" stroke={strokeColor} strokeWidth="2" strokeLinecap="round" fill="none" />
           <circle cx="20" cy="15" r="2" fill={strokeColor} />
           <circle cx="13" cy="17" r="1.5" fill={strokeColor} />
@@ -148,16 +148,35 @@ export default function CeremoniesScene() {
   const reduced = usePrefersReducedMotion();
   const rootRef = useRef<HTMLDivElement>(null);
   const cardRef = useRef<HTMLDivElement>(null);
+  const parchmentRef = useRef<HTMLDivElement>(null);
 
   const [activeId, setActiveId] = useState<string>("shaadi");
   const active = ceremonyDetails.find((c) => c.id === activeId) || ceremonyDetails[3]!;
 
+  // Smooth continuous levitation animation using GSAP sine easing (120fps GPU accelerated)
   useEffect(() => {
     if (!cardRef.current || reduced) return;
+
+    const floatTween = gsap.to(cardRef.current, {
+      y: -14,
+      duration: 3.4,
+      repeat: -1,
+      yoyo: true,
+      ease: "sine.inOut",
+    });
+
+    return () => {
+      floatTween.kill();
+    };
+  }, [reduced]);
+
+  // Smooth tab switch animation for inner parchment content
+  useEffect(() => {
+    if (!parchmentRef.current || reduced) return;
     gsap.fromTo(
-      cardRef.current,
-      { scale: 0.96, opacity: 0.85 },
-      { scale: 1, opacity: 1, duration: 0.45, ease: "back.out(1.3)" }
+      parchmentRef.current,
+      { opacity: 0.65, scale: 0.97 },
+      { opacity: 1, scale: 1, duration: 0.38, ease: "power2.out" }
     );
   }, [activeId, reduced]);
 
@@ -202,12 +221,12 @@ export default function CeremoniesScene() {
           pointer-events: none;
         }
 
-        /* --- Top Header --- */
+        /* --- Top Header Section: Placed high at the top on desktop --- */
         .ceremonies-scene-root .top-header-section {
           position: relative;
           z-index: 20;
           text-align: center;
-          margin-top: 2px;
+          margin-top: 10px;
         }
 
         .ceremonies-scene-root .header-flourish {
@@ -217,9 +236,9 @@ export default function CeremoniesScene() {
 
         .ceremonies-scene-root .header-title {
           font-family: 'Cinzel', 'Playfair Display', serif;
-          font-size: min(1.85rem, 4.8vw);
+          font-size: min(1.5rem, 3.8vw);
           font-weight: 700;
-          letter-spacing: 6px;
+          letter-spacing: 5px;
           color: #ffffff;
           text-transform: uppercase;
           text-shadow: 0 2px 10px rgba(0, 0, 0, 0.7);
@@ -228,14 +247,14 @@ export default function CeremoniesScene() {
 
         .ceremonies-scene-root .header-subtitle {
           font-family: 'Cinzel', serif;
-          font-size: min(0.66rem, 2.4vw);
-          letter-spacing: 3px;
+          font-size: min(0.58rem, 2.0vw);
+          letter-spacing: 2.5px;
           color: rgba(255, 235, 200, 0.92);
           text-transform: uppercase;
           text-shadow: 0 1px 4px rgba(0, 0, 0, 0.6);
         }
 
-        /* --- Grand Ornate Card Frame Wrapper --- */
+        /* --- Grand Ornate Card Frame Wrapper (Hardware-Accelerated Floating) --- */
         .ceremonies-scene-root .ornate-card-wrapper {
           position: relative;
           z-index: 20;
@@ -246,7 +265,8 @@ export default function CeremoniesScene() {
           align-items: center;
           justify-content: center;
           margin: 1px 0;
-          filter: drop-shadow(0 22px 48px rgba(0, 0, 0, 0.45));
+          filter: drop-shadow(0 26px 52px rgba(0, 0, 0, 0.52)) drop-shadow(0 0 25px rgba(233, 195, 73, 0.2));
+          will-change: transform;
         }
 
         .ceremonies-scene-root .ornate-card-img {
@@ -259,7 +279,7 @@ export default function CeremoniesScene() {
           z-index: 0;
         }
 
-        /* STRICT PARCHMENT SAFE AREA (top: 23.5%, bottom: 21% to shift buttons down slightly) */
+        /* STRICT PARCHMENT SAFE AREA (Desktop Default) */
         .ceremonies-scene-root .parchment-safe-area {
           position: absolute;
           top: 23.5%;
@@ -277,9 +297,9 @@ export default function CeremoniesScene() {
 
         .ceremonies-scene-root .ceremony-main-title {
           font-family: 'Playfair Display', Georgia, serif;
-          font-size: min(2.1rem, 6vw);
+          font-size: min(1.65rem, 4.5vw);
           font-weight: 700;
-          letter-spacing: 6px;
+          letter-spacing: 5px;
           color: #7a1c1c;
           line-height: 1;
           margin-bottom: 2px;
@@ -287,8 +307,8 @@ export default function CeremoniesScene() {
 
         .ceremonies-scene-root .ceremony-tagline {
           font-family: 'Cinzel', serif;
-          font-size: 0.68rem;
-          letter-spacing: 2.8px;
+          font-size: 0.6rem;
+          letter-spacing: 2.5px;
           color: #634331;
           text-transform: uppercase;
           font-weight: 600;
@@ -301,14 +321,14 @@ export default function CeremoniesScene() {
           margin: 4px auto 6px;
         }
 
-        /* 3 Details Grid - Shifted further right (+34px padding-left) for optimal centering & visibility */
+        /* 3 Details Grid - Desktop Default */
         .ceremonies-scene-root .details-container {
           display: flex;
           flex-direction: column;
           align-items: center;
           width: 100%;
           margin: 2px 0;
-          padding-left: 34px;
+          padding-left: 44px;
         }
 
         .ceremonies-scene-root .detail-row {
@@ -318,7 +338,7 @@ export default function CeremoniesScene() {
           gap: 12px;
           width: 100%;
           max-width: 290px;
-          margin-bottom: 6px;
+          margin-bottom: 8px;
           text-align: left;
         }
 
@@ -337,9 +357,9 @@ export default function CeremoniesScene() {
 
         .ceremonies-scene-root .detail-text-primary {
           font-family: 'Cinzel', serif;
-          font-size: 0.82rem;
+          font-size: 0.74rem;
           font-weight: 700;
-          letter-spacing: 1.3px;
+          letter-spacing: 1.2px;
           color: #3d261a;
           text-transform: uppercase;
           line-height: 1.2;
@@ -347,14 +367,14 @@ export default function CeremoniesScene() {
 
         .ceremonies-scene-root .detail-text-sub {
           font-family: 'Inter', system-ui, sans-serif;
-          font-size: 0.68rem;
-          letter-spacing: 1.1px;
+          font-size: 0.6rem;
+          letter-spacing: 1px;
           color: #7a5843;
           text-transform: uppercase;
           font-weight: 500;
         }
 
-        /* --- Two Action Buttons Stacked VERTICALLY Shifted Down --- */
+        /* --- Two Action Buttons Stacked VERTICALLY (Desktop Default) --- */
         .ceremonies-scene-root .action-buttons-vertical {
           display: flex;
           flex-direction: column;
@@ -372,12 +392,12 @@ export default function CeremoniesScene() {
           align-items: center;
           justify-content: center;
           gap: 6px;
-          padding: 7px 14px;
+          padding: 6.5px 14px;
           border-radius: 18px;
           font-family: 'Cinzel', serif;
           font-weight: 700;
-          font-size: min(0.7rem, 2.4vw);
-          letter-spacing: 1.2px;
+          font-size: min(0.64rem, 2.0vw);
+          letter-spacing: 1.1px;
           text-transform: uppercase;
           cursor: pointer;
           text-decoration: none;
@@ -408,7 +428,7 @@ export default function CeremoniesScene() {
           box-shadow: 0 6px 16px rgba(120, 25, 15, 0.52);
         }
 
-        /* --- Bottom 5 Jharokha Arch Tabs Bar (RAISED ABOVE NAVBAR WITH 50PX MARGIN) --- */
+        /* --- Bottom 5 Arch Tabs Bar (Desktop Default) --- */
         .ceremonies-scene-root .tabs-bar-container {
           position: relative;
           z-index: 25;
@@ -463,29 +483,90 @@ export default function CeremoniesScene() {
           color: #7a1c1c;
         }
 
-        @media (max-width: 480px) {
+        /* MOBILE RESPONSIVE MEDIA QUERIES ONLY - Strictly scoped to mobile screens (<= 640px) */
+        @media (max-width: 640px) {
+          .ceremonies-scene-root .top-header-section {
+            margin-top: 46px;
+          }
+          .ceremonies-scene-root .header-title {
+            font-size: 1.25rem;
+            letter-spacing: 3px;
+          }
+          .ceremonies-scene-root .header-subtitle {
+            font-size: 0.52rem;
+            letter-spacing: 1.8px;
+          }
           .ceremonies-scene-root .ornate-card-wrapper {
-            height: min(600px, 78vh);
+            height: min(490px, 64vh);
+            max-width: 340px;
           }
           .ceremonies-scene-root .parchment-safe-area {
-            top: 22.5%;
-            bottom: 20%;
+            top: 24%;
+            bottom: 24.5%;
             left: 18%;
             right: 18%;
+            padding: 1px 2px;
+          }
+          .ceremonies-scene-root .ceremony-main-title {
+            font-size: 1.15rem;
+            letter-spacing: 2px;
+            margin-bottom: 0px;
+          }
+          .ceremonies-scene-root .ceremony-tagline {
+            font-size: 0.5rem;
+            letter-spacing: 1.5px;
+          }
+          .ceremonies-scene-root .divider-ornament {
+            margin: 2px auto 2px;
+            width: 40px;
           }
           .ceremonies-scene-root .details-container {
             padding-left: 20px;
+            margin: 2px 0;
           }
           .ceremonies-scene-root .detail-row {
-            max-width: 250px;
-            gap: 10px;
+            max-width: 170px;
+            gap: 7px;
+            margin-bottom: 7px;
+            grid-template-columns: 20px 1fr;
+          }
+          .ceremonies-scene-root .detail-icon-badge {
+            width: 20px;
+            height: 20px;
+          }
+          .ceremonies-scene-root .detail-text-primary {
+            font-size: 0.6rem;
+            letter-spacing: 0.4px;
+            line-height: 1.15;
+          }
+          .ceremonies-scene-root .detail-text-sub {
+            font-size: 0.5rem;
+            letter-spacing: 0.4px;
+          }
+          .ceremonies-scene-root .action-buttons-vertical {
+            gap: 3px;
+            max-width: 155px;
+            margin-top: 2px;
+            margin-bottom: 6px;
+          }
+          .ceremonies-scene-root .btn-action-vertical {
+            padding: 3.5px 6px;
+            font-size: 0.5rem;
+            letter-spacing: 0.5px;
+            border-radius: 10px;
           }
           .ceremonies-scene-root .tabs-bar-container {
-            margin-bottom: 44px;
+            margin-bottom: 58px;
+            gap: 3px;
           }
           .ceremonies-scene-root .arch-tab-btn {
-            height: 68px;
-            border-radius: 24px 24px 6px 6px;
+            height: 50px;
+            border-radius: 16px 16px 4px 4px;
+            padding: 2px 1px;
+          }
+          .ceremonies-scene-root .tab-label {
+            font-size: 0.52rem;
+            letter-spacing: 0.3px;
           }
         }
 
@@ -526,7 +607,7 @@ export default function CeremoniesScene() {
         />
 
         {/* Strict Parchment Safe Area Overlay */}
-        <div className="parchment-safe-area">
+        <div ref={parchmentRef} className="parchment-safe-area">
           {/* Header Title & Tagline */}
           <div>
             <h2 className="ceremony-main-title">{active.name}</h2>
@@ -534,12 +615,12 @@ export default function CeremoniesScene() {
             <div className="divider-ornament" aria-hidden="true" />
           </div>
 
-          {/* 3 Detail Rows with Icons Aligned 100% Perfectly Straight & Shifted Further Right */}
+          {/* 3 Detail Rows with Icons Aligned 100% Perfectly Straight */}
           <div className="details-container">
             {/* Date Row */}
             <div className="detail-row">
               <div className="detail-icon-badge">
-                <Calendar className="w-4 h-4 text-[#7a1c1c]" />
+                <Calendar className="w-3.5 h-3.5 sm:w-4 sm:h-4 text-[#7a1c1c]" />
               </div>
               <div>
                 <div className="detail-text-primary">{active.day}</div>
@@ -550,7 +631,7 @@ export default function CeremoniesScene() {
             {/* Time Row */}
             <div className="detail-row">
               <div className="detail-icon-badge">
-                <Clock className="w-4 h-4 text-[#7a1c1c]" />
+                <Clock className="w-3.5 h-3.5 sm:w-4 sm:h-4 text-[#7a1c1c]" />
               </div>
               <div>
                 <div className="detail-text-primary">{active.time}</div>
@@ -560,7 +641,7 @@ export default function CeremoniesScene() {
             {/* Venue Row */}
             <div className="detail-row">
               <div className="detail-icon-badge">
-                <MapPin className="w-4 h-4 text-[#7a1c1c]" />
+                <MapPin className="w-3.5 h-3.5 sm:w-4 sm:h-4 text-[#7a1c1c]" />
               </div>
               <div>
                 <div className="detail-text-primary">{active.venue}</div>
@@ -569,7 +650,7 @@ export default function CeremoniesScene() {
             </div>
           </div>
 
-          {/* Two Action Buttons Stacked VERTICALLY Shifted Down */}
+          {/* Two Action Buttons Stacked VERTICALLY */}
           <div className="action-buttons-vertical">
             <a
               href={active.mapUrl}
@@ -578,7 +659,7 @@ export default function CeremoniesScene() {
               className="btn-action-vertical btn-action-direction"
               title="Get Direction"
             >
-              <Navigation className="w-3.5 h-3.5" />
+              <Navigation className="w-3 h-3 sm:w-3.5 sm:h-3.5" />
               <span>Get Direction</span>
             </a>
 
@@ -589,14 +670,14 @@ export default function CeremoniesScene() {
               className="btn-action-vertical btn-action-calendar"
               title="Add to Calendar"
             >
-              <CalendarPlus className="w-3.5 h-3.5" />
+              <CalendarPlus className="w-3 h-3 sm:w-3.5 sm:h-3.5" />
               <span>Add to Calendar</span>
             </a>
           </div>
         </div>
       </div>
 
-      {/* Bottom 5 Arch Tabs Bar (RAISED ABOVE NAVBAR WITH 50PX MARGIN) */}
+      {/* Bottom 5 Arch Tabs Bar */}
       <div className="tabs-bar-container">
         {ceremonyDetails.map((c) => {
           const isActive = c.id === activeId;

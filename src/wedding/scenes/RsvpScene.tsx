@@ -1,6 +1,6 @@
 import { useEffect, useRef, useState } from "react";
 import confetti from "canvas-confetti";
-import haveliWallBg from "@/assets/haveli-wall-bg.jpg";
+import haveliWallBg from "/assets/haveli-wall-bg.jpg";
 import { wedding } from "../data/wedding";
 import { useScene, usePrefersReducedMotion } from "../engine/SceneProvider";
 import { AmbientLayer } from "../ui/Ambient";
