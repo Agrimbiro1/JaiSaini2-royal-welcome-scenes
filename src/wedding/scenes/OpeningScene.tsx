@@ -59,6 +59,9 @@ export default function OpeningScene() {
   const heroImageRef = useRef<HTMLImageElement>(null);
   const heroSpotlightRef = useRef<HTMLDivElement>(null);
   const textContainerRef = useRef<HTMLDivElement>(null);
+  const rohanRef = useRef<HTMLSpanElement>(null);
+  const ampRef = useRef<HTMLSpanElement>(null);
+  const ananyaRef = useRef<HTMLSpanElement>(null);
   const skipBtnRef = useRef<HTMLButtonElement>(null);
   const tlRef = useRef<gsap.core.Timeline | null>(null);
   const [closing, setClosing] = useState(false);
@@ -112,7 +115,7 @@ export default function OpeningScene() {
   useEffect(() => {
     if (!root.current || reduced) {
       if (reduced) {
-        gsap.set(textContainerRef.current, { opacity: 1, y: -20, scale: 1 });
+        gsap.set(textContainerRef.current, { opacity: 1, y: 0, scale: 1 });
         gsap.set(heroImageRef.current, { filter: "grayscale(0%)", opacity: 1, scale: 1 });
         gsap.set(heroSpotlightRef.current, { opacity: 0.8 });
       }
@@ -159,23 +162,45 @@ export default function OpeningScene() {
       .to(heroImageRef.current, { filter: "grayscale(0%)", opacity: 1, scale: 1, duration: 1.2 }, "-=1.2")
       .to(heroSpotlightRef.current, { opacity: 0.8, duration: 1.2 }, "-=1.2")
 
-      // Phase 5: Reveal Typography
+      // Phase 5: Reveal Typography Container
       .to(filmReelRef.current, { opacity: 0, duration: 0.8 }, "-=1.0")
-      .to(textContainerRef.current, { opacity: 1, y: -20, duration: 1.6, ease: "power2.out" })
+      .to(textContainerRef.current, { opacity: 1, y: 0, duration: 0.4, ease: "power2.out" });
 
-      // Phase 6: Zoom in & expand couple photo into full screen, then transition to Welcome page
-      .to(
-        heroFrameRef.current,
-        {
-          width: "100vw",
-          height: "100vh",
-          borderWidth: 0,
-          padding: 0,
-          duration: 1.8,
-          ease: "expo.inOut",
-          delay: 1.8,
-        },
+    // Writing Animation for Staggered Rohan & Ananya Heading
+    if (rohanRef.current && ampRef.current && ananyaRef.current) {
+      tl.fromTo(
+        rohanRef.current,
+        { clipPath: "inset(-25px 100% -25px 0)" },
+        { clipPath: "inset(-25px -25px -25px -25px)", duration: 0.85, ease: "power1.inOut" },
+        "-=0.2"
       )
+        .fromTo(
+          ampRef.current,
+          { opacity: 0, scale: 0.4 },
+          { opacity: 1, scale: 1, duration: 0.35, ease: "back.out(1.7)" },
+          "-=0.15"
+        )
+        .fromTo(
+          ananyaRef.current,
+          { clipPath: "inset(-25px 100% -25px 0)" },
+          { clipPath: "inset(-25px -25px -25px -25px)", duration: 0.85, ease: "power1.inOut" },
+          "-=0.15"
+        );
+    }
+
+    // Phase 6: Zoom in & expand couple photo into full screen, then transition to Welcome page
+    tl.to(
+      heroFrameRef.current,
+      {
+        width: "100vw",
+        height: "100vh",
+        borderWidth: 0,
+        padding: 0,
+        duration: 1.8,
+        ease: "expo.inOut",
+        delay: 1.8,
+      },
+    )
       .to(skipBtnRef.current, { opacity: 0, duration: 0.4 }, "-=1.8")
       .to(textContainerRef.current, { scale: 1.05, opacity: 0, duration: 1.2, ease: "power1.out" }, "-=1.2")
       .add(() => {
@@ -199,19 +224,38 @@ export default function OpeningScene() {
       {/* Main Container for Animation Sequence */}
       <div className="relative w-full h-full flex items-center justify-center overflow-hidden" id="introContainer">
         
-        {/* Responsive Typography Container */}
+        {/* Responsive Typography Container (NO top margin on PC version) */}
         <div
           ref={textContainerRef}
-          className="absolute inset-0 flex flex-col items-center justify-center z-20 opacity-0 pointer-events-none drop-shadow-2xl translate-y-5 px-4"
+          className="absolute inset-0 flex flex-col items-center justify-center z-20 opacity-0 pointer-events-none drop-shadow-2xl pt-6 sm:pt-2 px-4"
           id="textContainer"
         >
-          <h2 className="font-display text-[14px] sm:text-[18px] md:text-[24px] text-[#e9c349] mb-3 md:mb-6 tracking-[0.35em] sm:tracking-[0.6em] uppercase drop-shadow-[0_0_15px_rgba(233,195,73,0.6)] text-center">
-            {wedding.couple.groom.toUpperCase()} × {wedding.couple.bride.toUpperCase()}
-          </h2>
-          <h1 className="font-display text-[26px] sm:text-[40px] md:text-[80px] text-[#e3e3d5] text-center max-w-5xl leading-[1.15] tracking-wider sm:tracking-widest drop-shadow-[0_0_25px_rgba(233,195,73,0.3)]">
+          {/* Staggered Big Font Title with Writing Animation: Rohan & Ananya */}
+          <div className="flex flex-col items-center select-none my-0 w-full max-w-md sm:max-w-xl overflow-visible">
+            <span
+              ref={rohanRef}
+              className="font-script text-[48px] sm:text-[68px] md:text-[96px] text-[#e9c349] tracking-wider self-start pl-2 sm:pl-8 pt-1 pb-0 leading-tight overflow-visible drop-shadow-[0_4px_14px_rgba(0,0,0,0.95)]"
+            >
+              Rohan
+            </span>
+            <span
+              ref={ampRef}
+              className="font-serif italic font-bold text-[26px] sm:text-[38px] md:text-[54px] text-[#FBF1DE] opacity-90 -my-3 sm:-my-5 md:-my-7 drop-shadow-[0_2px_8px_rgba(0,0,0,0.9)]"
+            >
+              &
+            </span>
+            <span
+              ref={ananyaRef}
+              className="font-script text-[48px] sm:text-[68px] md:text-[96px] text-[#e9c349] tracking-wider self-end pr-2 sm:pr-8 pt-1 pb-0 leading-tight overflow-visible drop-shadow-[0_4px_14px_rgba(0,0,0,0.95)]"
+            >
+              Ananya
+            </span>
+          </div>
+
+          <h1 className="font-display text-[22px] sm:text-[38px] md:text-[64px] text-[#e3e3d5] text-center max-w-5xl leading-[1.15] tracking-wider sm:tracking-widest mt-1 drop-shadow-[0_0_25px_rgba(233,195,73,0.3)]">
             {wedding.couple.tagline || "Glimpse of Our Forever"}
           </h1>
-          <p className="mt-3 sm:mt-4 text-[10px] sm:text-[12px] md:text-[14px] text-[#c4c7c7] font-sans tracking-[0.2em] sm:tracking-[0.3em] uppercase opacity-80 text-center">
+          <p className="mt-2 sm:mt-4 text-[10px] sm:text-[12px] md:text-[14px] text-[#c4c7c7] font-sans tracking-[0.2em] sm:tracking-[0.3em] uppercase opacity-80 text-center">
             {wedding.couple.subtitle || "A Royal Wedding Invitation"}
           </p>
         </div>
@@ -222,7 +266,7 @@ export default function OpeningScene() {
           {/* Vintage Reel Silhouette */}
           <div
             ref={filmReelRef}
-            className="absolute w-[240px] h-[240px] sm:w-[320px] sm:h-[320px] md:w-[600px] md:h-[600px] opacity-0 scale-50 z-10 rounded-full border-[6px] sm:border-[8px] md:border-[12px] border-[#e9c349]/30 flex items-center justify-center shadow-[0_0_80px_rgba(233,195,73,0.15)] pointer-events-none"
+            className="absolute w-[300px] h-[300px] sm:w-[340px] sm:h-[340px] md:w-[600px] md:h-[600px] opacity-0 scale-50 z-10 rounded-full border-[6px] sm:border-[8px] md:border-[12px] border-[#e9c349]/30 flex items-center justify-center shadow-[0_0_80px_rgba(233,195,73,0.15)] pointer-events-none"
             id="filmReel"
           >
             <div className="absolute inset-0 border-3 sm:border-4 border-dashed border-[#e9c349]/40 rounded-full animate-[spin_20s_linear_infinite]" />
@@ -242,7 +286,7 @@ export default function OpeningScene() {
                   <div
                     key={frame.id}
                     ref={heroFrameRef}
-                    className="w-[280px] h-[186px] sm:w-[340px] sm:h-[226px] md:w-[800px] md:h-[533px] relative shrink-0 border-y-[8px] sm:border-y-[10px] md:border-y-[16px] border-x-[3px] sm:border-x-[4px] md:border-x-[6px] border-[#12140c] bg-[#12140c] p-1.5 sm:p-2 md:p-3 flex items-center justify-center overflow-hidden transition-all duration-1000 origin-center"
+                    className="w-[360px] h-[240px] sm:w-[380px] sm:h-[253px] md:w-[800px] md:h-[533px] relative shrink-0 border-y-[8px] sm:border-y-[10px] md:border-y-[16px] border-x-[3px] sm:border-x-[4px] md:border-x-[6px] border-[#12140c] bg-[#12140c] p-1.5 sm:p-2 md:p-3 flex items-center justify-center overflow-hidden transition-all duration-1000 origin-center"
                     id="heroFrame"
                   >
                     <img
@@ -262,10 +306,10 @@ export default function OpeningScene() {
               }
 
               return (
-                /* Regular Film Frames 1 to 5 */
+                /* Regular Film Frames 1 to 5 - ENLARGED ON MOBILE */
                 <div
                   key={frame.id}
-                  className="w-[260px] h-[173px] sm:w-[320px] sm:h-[213px] md:w-[800px] md:h-[533px] relative shrink-0 border-y-[8px] sm:border-y-[10px] md:border-y-[16px] border-x-[3px] sm:border-x-[4px] md:border-x-[6px] border-[#12140c] bg-[#12140c] p-1.5 sm:p-2 md:p-3 flex items-center justify-center"
+                  className="w-[340px] h-[226px] sm:w-[360px] sm:h-[240px] md:w-[800px] md:h-[533px] relative shrink-0 border-y-[8px] sm:border-y-[10px] md:border-y-[16px] border-x-[3px] sm:border-x-[4px] md:border-x-[6px] border-[#12140c] bg-[#12140c] p-1.5 sm:p-2 md:p-3 flex items-center justify-center"
                 >
                   <img
                     src={frame.src}

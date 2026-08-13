@@ -185,19 +185,61 @@ export default function CountdownScene() {
           position: relative; text-align:center; max-width:540px; margin-bottom:8px; z-index:2; margin-top: 4px;
         }
         .shubh-muhurat-root .head .eyebrow {
-          font-family:'Cinzel', serif; font-size:11px; letter-spacing:4px; text-transform:uppercase; color:var(--teal-light); margin:0 0 4px;
+          font-family: 'Cinzel', serif; font-weight: 700; font-size: 11px; letter-spacing: 0.18em; text-transform: uppercase; color: var(--gold-light); margin: 0 0 4px;
         }
         .shubh-muhurat-root .head h2 {
-          font-family:'Cormorant Garamond', serif; font-style:italic; font-weight:600; font-size:30px; margin:0 0 4px; color:var(--gold-light); leading-tight;
+          font-family: 'Cinzel', serif; font-weight: 700; font-size: 25px; letter-spacing: 0.12em; text-transform: uppercase; color: var(--ivory); margin: 0 0 4px; line-height: 1.15;
         }
         .shubh-muhurat-root .head p {
-          font-family:'Rajdhani', sans-serif; font-size:12.5px; letter-spacing:1px; text-transform:uppercase; color:#d8c1af; margin:0;
+          font-family: 'Cormorant_Garamond', serif; font-style: italic; font-weight: 600; font-size: 15px; letter-spacing: 0.5px; color: var(--gold-light); margin: 0;
+        }
+
+        @media (max-width: 639px) {
+          .shubh-muhurat-root {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: space-between;
+            padding-top: 36px;
+            padding-bottom: 95px;
+            overflow-y: auto;
+          }
+          .shubh-muhurat-root .head {
+            position: relative;
+            top: auto;
+            left: auto;
+            transform: none;
+            width: 100%;
+            max-width: 480px;
+            margin-top: 0;
+            margin-bottom: 8px;
+            z-index: 5;
+            flex-shrink: 0;
+          }
+          .countdown-body-center {
+            position: relative;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            width: 100%;
+            margin-top: auto;
+            margin-bottom: auto;
+            z-index: 2;
+          }
         }
 
         @media (min-width: 640px) {
-          .shubh-muhurat-root .head .eyebrow { font-size:12.5px; }
-          .shubh-muhurat-root .head h2 { font-size:35px; }
-          .shubh-muhurat-root .head p { font-size:14px; }
+          .shubh-muhurat-root .head .eyebrow { font-size: 12.5px; }
+          .shubh-muhurat-root .head h2 { font-size: 34px; }
+          .shubh-muhurat-root .head p { font-size: 17px; }
+          .countdown-body-center {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            width: 100%;
+          }
         }
 
         /* Standalone Analog Clock Dial */
@@ -301,11 +343,11 @@ export default function CountdownScene() {
 
         .unit-label { margin-top:6px; text-align:center; }
         .unit-label .en {
-          display:block; font-family:'Rajdhani', sans-serif; font-weight:700; font-size:11px;
-          letter-spacing:2px; text-transform:uppercase; color:var(--gold-light);
+          display:block; font-family:'Cinzel', serif; font-weight:700; font-size:11px;
+          letter-spacing:0.16em; text-transform:uppercase; color:var(--gold-light);
         }
         .unit-label .hi {
-          display:block; font-family:'Cormorant Garamond', serif; font-style:italic; font-size:12px;
+          display:block; font-family:'Cormorant_Garamond', serif; font-style:italic; font-weight:600; font-size:13px;
           color: var(--teal-light); margin-top:1px;
         }
 
@@ -358,8 +400,8 @@ export default function CountdownScene() {
           pointer-events: none;
         }
         .complete-reveal.show { opacity:1; transform:translateY(0); pointer-events:auto; }
-        .complete-reveal .r-eyebrow { font-family:'Cinzel', serif; font-size:12px; letter-spacing:3px; text-transform:uppercase; color:var(--gold-light); margin:0 0 8px; }
-        .complete-reveal .r-msg { font-family:'Cormorant Garamond', serif; font-style:italic; font-size:28px; color:var(--ivory); margin:0; }
+        .complete-reveal .r-eyebrow { font-family:'Cinzel', serif; font-weight:700; font-size:12px; letter-spacing:0.18em; text-transform:uppercase; color:var(--gold-light); margin:0 0 8px; }
+        .complete-reveal .r-msg { font-family:'Cormorant_Garamond', serif; font-style:italic; font-weight:600; font-size:28px; color:var(--ivory); margin:0; }
 
         .mandap.hidden { display:none; }
 
@@ -407,176 +449,179 @@ export default function CountdownScene() {
         <p id="targetLabel">{wedding.countdown.displayDate} · Jaipur, Rajasthan</p>
       </div>
 
-      {/* Standalone Analog Clock Dial (Only Clock, No Box) Above the Timer */}
-      <div className="standalone-clock-wrap" title="Royal Heirloom Clock">
-        <div className="analog-clock-dial">
-          <div className="analog-clock-inner">
-            <svg viewBox="0 0 200 200" className="w-full h-full text-[#451a03]">
-              {/* Outer Minute Ring */}
-              <circle cx="100" cy="100" r="92" stroke="currentColor" strokeWidth="1.5" fill="none" opacity="0.4" />
-              <circle cx="100" cy="100" r="86" stroke="currentColor" strokeWidth="0.8" fill="none" opacity="0.6" />
+      {/* Countdown Center Body (Watch, Mandap Canopy, Timer, Diya & Reveal) */}
+      <div className="countdown-body-center">
+        {/* Standalone Analog Clock Dial (Only Clock, No Box) Above the Timer */}
+        <div className="standalone-clock-wrap" title="Royal Heirloom Clock">
+          <div className="analog-clock-dial">
+            <div className="analog-clock-inner">
+              <svg viewBox="0 0 200 200" className="w-full h-full text-[#451a03]">
+                {/* Outer Minute Ring */}
+                <circle cx="100" cy="100" r="92" stroke="currentColor" strokeWidth="1.5" fill="none" opacity="0.4" />
+                <circle cx="100" cy="100" r="86" stroke="currentColor" strokeWidth="0.8" fill="none" opacity="0.6" />
 
-              {/* Roman Numerals */}
-              <text x="100" y="32" textAnchor="middle" fontSize="17" fontFamily="serif" fontWeight="bold" fill="#3b1502">
-                XII
-              </text>
-              <text x="172" y="106" textAnchor="middle" fontSize="16" fontFamily="serif" fontWeight="bold" fill="#3b1502">
-                III
-              </text>
-              <text x="100" y="180" textAnchor="middle" fontSize="17" fontFamily="serif" fontWeight="bold" fill="#3b1502">
-                VI
-              </text>
-              <text x="28" y="106" textAnchor="middle" fontSize="16" fontFamily="serif" fontWeight="bold" fill="#3b1502">
-                IX
-              </text>
+                {/* Roman Numerals */}
+                <text x="100" y="32" textAnchor="middle" fontSize="17" fontFamily="serif" fontWeight="bold" fill="#3b1502">
+                  XII
+                </text>
+                <text x="172" y="106" textAnchor="middle" fontSize="16" fontFamily="serif" fontWeight="bold" fill="#3b1502">
+                  III
+                </text>
+                <text x="100" y="180" textAnchor="middle" fontSize="17" fontFamily="serif" fontWeight="bold" fill="#3b1502">
+                  VI
+                </text>
+                <text x="28" y="106" textAnchor="middle" fontSize="16" fontFamily="serif" fontWeight="bold" fill="#3b1502">
+                  IX
+                </text>
 
-              {/* Minute Ticks */}
-              {Array.from({ length: 60 }, (_, i) => {
-                const angle = i * 6;
-                const isMajor = i % 5 === 0;
-                return (
-                  <line
-                    key={i}
-                    x1="100"
-                    y1={isMajor ? "12" : "14"}
-                    x2="100"
-                    y2={isMajor ? "20" : "17"}
-                    stroke="currentColor"
-                    strokeWidth={isMajor ? "2" : "0.9"}
-                    opacity={isMajor ? "0.85" : "0.45"}
-                    transform={`rotate(${angle} 100 100)`}
-                  />
-                );
-              })}
+                {/* Minute Ticks */}
+                {Array.from({ length: 60 }, (_, i) => {
+                  const angle = i * 6;
+                  const isMajor = i % 5 === 0;
+                  return (
+                    <line
+                      key={i}
+                      x1="100"
+                      y1={isMajor ? "12" : "14"}
+                      x2="100"
+                      y2={isMajor ? "20" : "17"}
+                      stroke="currentColor"
+                      strokeWidth={isMajor ? "2" : "0.9"}
+                      opacity={isMajor ? "0.85" : "0.45"}
+                      transform={`rotate(${angle} 100 100)`}
+                    />
+                  );
+                })}
 
-              {/* Rotating Internal Gear */}
-              <g opacity="0.28" style={{ transformOrigin: "100px 100px", transform: `rotate(${cwSeconds * 6}deg)` }}>
-                <circle cx="100" cy="100" r="30" stroke="#78350f" strokeWidth="2" strokeDasharray="4 3" fill="none" />
-              </g>
+                {/* Rotating Internal Gear */}
+                <g opacity="0.28" style={{ transformOrigin: "100px 100px", transform: `rotate(${cwSeconds * 6}deg)` }}>
+                  <circle cx="100" cy="100" r="30" stroke="#78350f" strokeWidth="2" strokeDasharray="4 3" fill="none" />
+                </g>
 
-              {/* Hour Hand */}
-              <line
-                x1="100"
-                y1="100"
-                x2="100"
-                y2="56"
-                stroke="#3b1502"
-                strokeWidth="3.5"
-                strokeLinecap="round"
-                style={{
-                  transformOrigin: "100px 100px",
-                  transform: `rotate(${(cwHours + cwMinutes / 60) * 30}deg)`,
-                }}
+                {/* Hour Hand */}
+                <line
+                  x1="100"
+                  y1="100"
+                  x2="100"
+                  y2="56"
+                  stroke="#3b1502"
+                  strokeWidth="3.5"
+                  strokeLinecap="round"
+                  style={{
+                    transformOrigin: "100px 100px",
+                    transform: `rotate(${(cwHours + cwMinutes / 60) * 30}deg)`,
+                  }}
+                />
+
+                {/* Minute Hand */}
+                <line
+                  x1="100"
+                  y1="100"
+                  x2="100"
+                  y2="38"
+                  stroke="#451a03"
+                  strokeWidth="2.5"
+                  strokeLinecap="round"
+                  style={{
+                    transformOrigin: "100px 100px",
+                    transform: `rotate(${cwMinutes * 6}deg)`,
+                  }}
+                />
+
+                {/* Second Hand */}
+                <line
+                  x1="100"
+                  y1="110"
+                  x2="100"
+                  y2="28"
+                  stroke="#b91c1c"
+                  strokeWidth="1.4"
+                  strokeLinecap="round"
+                  style={{
+                    transformOrigin: "100px 100px",
+                    transform: `rotate(${cwSeconds * 6}deg)`,
+                    transition: "transform 0.15s cubic-bezier(0.4, 2.08, 0.55, 0.44)",
+                  }}
+                />
+
+                {/* Center Pivot */}
+                <circle cx="100" cy="100" r="5.5" fill="#ca8a04" stroke="#451a03" strokeWidth="1.5" />
+                <circle cx="100" cy="100" r="2" fill="#fef08a" />
+              </svg>
+            </div>
+          </div>
+        </div>
+
+        {/* Mandap Timer */}
+        <div className={`mandap ${time.over ? "hidden" : ""}`}>
+          <svg className="finial" viewBox="0 0 26 26" aria-hidden="true">
+            <circle cx="13" cy="16" r="7" fill="#CBA135" />
+            <path d="M13,2 C9,7 9,11 13,14 C17,11 17,7 13,2 Z" fill="#0F6B62" />
+          </svg>
+
+          <svg className="canopy" viewBox="0 0 640 44" preserveAspectRatio="none" aria-hidden="true">
+            <path
+              d="M0,40 Q80,2 160,40 Q240,2 320,40 Q400,2 480,40 Q560,2 640,40"
+              fill="none"
+              stroke="#CBA135"
+              strokeWidth="2.4"
+            />
+            <path
+              d="M0,40 Q80,10 160,40 Q240,10 320,40 Q400,10 480,40 Q560,10 640,40"
+              fill="none"
+              stroke="#0F6B62"
+              strokeWidth="1"
+              opacity="0.7"
+            />
+          </svg>
+
+          <div className="garland-wrap animate">
+            <svg className="garland" viewBox="0 0 640 46" preserveAspectRatio="none" aria-hidden="true">
+              <path
+                d={garlandPathD}
+                fill="none"
+                stroke="#8a5a1f"
+                strokeWidth="1"
+                opacity="0.5"
               />
-
-              {/* Minute Hand */}
-              <line
-                x1="100"
-                y1="100"
-                x2="100"
-                y2="38"
-                stroke="#451a03"
-                strokeWidth="2.5"
-                strokeLinecap="round"
-                style={{
-                  transformOrigin: "100px 100px",
-                  transform: `rotate(${cwMinutes * 6}deg)`,
-                }}
-              />
-
-              {/* Second Hand */}
-              <line
-                x1="100"
-                y1="110"
-                x2="100"
-                y2="28"
-                stroke="#b91c1c"
-                strokeWidth="1.4"
-                strokeLinecap="round"
-                style={{
-                  transformOrigin: "100px 100px",
-                  transform: `rotate(${cwSeconds * 6}deg)`,
-                  transition: "transform 0.15s cubic-bezier(0.4, 2.08, 0.55, 0.44)",
-                }}
-              />
-
-              {/* Center Pivot */}
-              <circle cx="100" cy="100" r="5.5" fill="#ca8a04" stroke="#451a03" strokeWidth="1.5" />
-              <circle cx="100" cy="100" r="2" fill="#fef08a" />
+              {beads.map((b, idx) => (
+                <circle
+                  key={idx}
+                  cx={b.cx}
+                  cy={b.cy}
+                  r={b.r}
+                  fill={b.fill}
+                  className="bead"
+                  style={{ animationDelay: b.delay }}
+                />
+              ))}
             </svg>
           </div>
-        </div>
-      </div>
 
-      {/* Mandap Timer */}
-      <div className={`mandap ${time.over ? "hidden" : ""}`}>
-        <svg className="finial" viewBox="0 0 26 26" aria-hidden="true">
-          <circle cx="13" cy="16" r="7" fill="#CBA135" />
-          <path d="M13,2 C9,7 9,11 13,14 C17,11 17,7 13,2 Z" fill="#0F6B62" />
-        </svg>
+          {/* Pillars & Independent 3D Flip Card Tiles */}
+          <div className="pillars">
+            <FlipTile value={time.days} labelEn="Days" labelHi="दिन" />
+            <FlipTile value={time.hours} labelEn="Hours" labelHi="घंटे" />
+            <FlipTile value={time.minutes} labelEn="Minutes" labelHi="मिनट" />
+            <FlipTile value={time.seconds} labelEn="Seconds" labelHi="सेकंड" />
+          </div>
 
-        <svg className="canopy" viewBox="0 0 640 44" preserveAspectRatio="none" aria-hidden="true">
-          <path
-            d="M0,40 Q80,2 160,40 Q240,2 320,40 Q400,2 480,40 Q560,2 640,40"
-            fill="none"
-            stroke="#CBA135"
-            strokeWidth="2.4"
-          />
-          <path
-            d="M0,40 Q80,10 160,40 Q240,10 320,40 Q400,10 480,40 Q560,10 640,40"
-            fill="none"
-            stroke="#0F6B62"
-            strokeWidth="1"
-            opacity="0.7"
-          />
-        </svg>
+          <div className="plinth" />
 
-        <div className="garland-wrap animate">
-          <svg className="garland" viewBox="0 0 640 46" preserveAspectRatio="none" aria-hidden="true">
-            <path
-              d={garlandPathD}
-              fill="none"
-              stroke="#8a5a1f"
-              strokeWidth="1"
-              opacity="0.5"
-            />
-            {beads.map((b, idx) => (
-              <circle
-                key={idx}
-                cx={b.cx}
-                cy={b.cy}
-                r={b.r}
-                fill={b.fill}
-                className="bead"
-                style={{ animationDelay: b.delay }}
-              />
-            ))}
-          </svg>
-        </div>
-
-        {/* Pillars & Independent 3D Flip Card Tiles */}
-        <div className="pillars">
-          <FlipTile value={time.days} labelEn="Days" labelHi="दिन" />
-          <FlipTile value={time.hours} labelEn="Hours" labelHi="घंटे" />
-          <FlipTile value={time.minutes} labelEn="Minutes" labelHi="मिनट" />
-          <FlipTile value={time.seconds} labelEn="Seconds" labelHi="सेकंड" />
-        </div>
-
-        <div className="plinth" />
-
-        <div className="diya-row">
-          <div className="diya">
-            <div className="glow" />
-            <div className="oil" />
-            <div className="flame" />
+          <div className="diya-row">
+            <div className="diya">
+              <div className="glow" />
+              <div className="oil" />
+              <div className="flame" />
+            </div>
           </div>
         </div>
-      </div>
 
-      {/* Complete Reveal State */}
-      <div className={`complete-reveal ${time.over ? "show" : ""}`}>
-        <p className="r-eyebrow">Shubh Muhurat</p>
-        <p className="r-msg">The moment has arrived — thank you for being here.</p>
+        {/* Complete Reveal State */}
+        <div className={`complete-reveal ${time.over ? "show" : ""}`}>
+          <p className="r-eyebrow">Shubh Muhurat</p>
+          <p className="r-msg">The moment has arrived — thank you for being here.</p>
+        </div>
       </div>
 
       {/* Falling Petals when completed */}

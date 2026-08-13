@@ -86,10 +86,10 @@ export default function StoryScene() {
   // Node 1 (top-left) -> Node 2 (top-right) -> Node 3 (bottom-left) -> Node 4 (bottom-right)
   const nodesToRender = storyNodes.map((n) => {
     if (isMobile) {
-      if (n.id === "node-1") return { ...n, x: 22, y: 24 };
-      if (n.id === "node-2") return { ...n, x: 76, y: 32 };
+      if (n.id === "node-1") return { ...n, x: 24, y: 22 };
+      if (n.id === "node-2") return { ...n, x: 76, y: 34 };
       if (n.id === "node-3") return { ...n, x: 24, y: 58 };
-      if (n.id === "node-4") return { ...n, x: 76, y: 68 };
+      if (n.id === "node-4") return { ...n, x: 76, y: 74 };
     }
     return n;
   });
@@ -291,11 +291,11 @@ export default function StoryScene() {
 
         .circle-frame {
           position: relative;
-          width: 82px;
-          height: 82px;
+          width: 114px;
+          height: 114px;
           border-radius: 50%;
           background: linear-gradient(135deg, var(--gold-light), var(--gold), var(--maroon-mid));
-          padding: 3px;
+          padding: 3.5px;
           box-shadow: 0 10px 22px rgba(0,0,0,0.85), 0 0 16px rgba(203,161,53,0.45);
           transition: box-shadow 0.35s ease;
         }
@@ -494,7 +494,7 @@ export default function StoryScene() {
             </h2>
 
             {/* Photo inside Modal */}
-            <div className="w-full max-w-md h-44 sm:h-64 rounded-xl overflow-hidden border-2 border-[#CBA135] shadow-lg mb-3 sm:mb-4">
+            <div className="w-full max-w-md h-52 sm:h-64 rounded-xl overflow-hidden border-2 border-[#CBA135] shadow-lg mb-3 sm:mb-4">
               <img src={selectedNode.photo} alt={selectedNode.title} className="w-full h-full object-cover" />
             </div>
 

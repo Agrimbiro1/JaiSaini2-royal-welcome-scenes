@@ -96,32 +96,57 @@ export default function CoupleScene() {
           overflow: hidden; /* Strictly no scrollbar */
         }
 
-        /* Mobile specific scroll parchment containment - Strictly inside inner golden line boundaries */
+        /* Mobile specific scroll parchment containment - Zoomed background & enlarged readable fonts */
         @media (max-width: 640px) {
+          .fullscreen-scroll-bg {
+            transform: scale(1.4);
+            object-position: center 48%;
+          }
           .scroll-calligraphy-single-screen {
             position: absolute;
-            top: 53.5%;
+            top: 52%;
             left: 50%;
             transform: translate(-50%, -50%);
-            width: min(240px, 62vw);
-            height: calc(100svh - 260px);
-            max-height: 480px;
+            width: min(340px, 88vw);
+            height: calc(100svh - 120px);
+            max-height: 580px;
             margin: 0;
-            padding: 4px 0;
-            justify-content: space-between;
+            padding: 8px 6px;
+            justify-content: space-evenly;
+          }
+          .scroll-header-tag {
+            font-size: 10.5px !important;
+            letter-spacing: 0.15em !important;
+          }
+          .scroll-shloka-text {
+            font-size: 11.5px !important;
+            line-height: 1.35 !important;
+          }
+          .groom-title, .bride-title {
+            font-size: 1.5rem !important;
+            line-height: 1.1 !important;
+          }
+          .weds-script-text {
+            font-size: 1.25rem !important;
+          }
+          .lineage-text-box p {
+            font-size: 12px !important;
+          }
+          .lineage-text-box div {
+            font-size: 9.5px !important;
           }
           .wedding-date-stamp {
-            font-size: 7.5px !important;
-            letter-spacing: 0.6px !important;
-            padding: 2.5px 8px !important;
-            max-width: 230px !important;
-            line-height: 1.25 !important;
+            font-size: 10px !important;
+            letter-spacing: 1px !important;
+            padding: 4px 16px !important;
+            max-width: 300px !important;
+            line-height: 1.3 !important;
           }
           .wax-seal-button {
-            top: 112px;
+            top: 45px;
             right: 5%;
-            width: 32px;
-            height: 32px;
+            width: 36px;
+            height: 36px;
           }
         }
 
@@ -280,7 +305,7 @@ export default function CoupleScene() {
 
         {/* Rectangular Couple Portrait Frame */}
         <div className="flex items-center justify-center shrink-0 my-0.5">
-          <div className="w-28 sm:w-52 h-16 sm:h-28 rounded-lg sm:rounded-xl overflow-hidden border-1.5 sm:border-3 border-[#cba135] shadow-lg ring-1 sm:ring-2 ring-[#7a1d36]/30 bg-[#1c0a02]">
+          <div className="w-36 sm:w-52 h-20 sm:h-28 rounded-lg sm:rounded-xl overflow-hidden border-1.5 sm:border-3 border-[#cba135] shadow-lg ring-1 sm:ring-2 ring-[#7a1d36]/30 bg-[#1c0a02]">
             <img
               src={couplePhoto}
               alt="Rohan & Ananya Royal Portrait"

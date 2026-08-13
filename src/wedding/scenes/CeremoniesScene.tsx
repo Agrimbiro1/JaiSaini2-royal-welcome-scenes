@@ -261,12 +261,15 @@ export default function CeremoniesScene() {
           max-width: 560px;
           width: 100%;
           height: min(720px, 80vh);
+          aspect-ratio: 560 / 720;
           display: flex;
           align-items: center;
           justify-content: center;
           margin: 1px 0;
           filter: drop-shadow(0 26px 52px rgba(0, 0, 0, 0.52)) drop-shadow(0 0 25px rgba(233, 195, 73, 0.2));
           will-change: transform;
+          container-type: inline-size;
+          container-name: ornate-card;
         }
 
         .ceremonies-scene-root .ornate-card-img {
@@ -279,7 +282,7 @@ export default function CeremoniesScene() {
           z-index: 0;
         }
 
-        /* STRICT PARCHMENT SAFE AREA (Desktop Default) */
+        /* STRICT PARCHMENT SAFE AREA - Strictly clipped inside floral frame */
         .ceremonies-scene-root .parchment-safe-area {
           position: absolute;
           top: 23.5%;
@@ -292,14 +295,16 @@ export default function CeremoniesScene() {
           align-items: center;
           justify-content: space-between;
           text-align: center;
-          padding: 2px 6px;
+          padding: 2px 4px;
+          overflow: hidden;
+          box-sizing: border-box;
         }
 
         .ceremonies-scene-root .ceremony-main-title {
           font-family: 'Playfair Display', Georgia, serif;
-          font-size: min(1.65rem, 4.5vw);
+          font-size: clamp(1.15rem, 6.8cqw, 1.65rem);
           font-weight: 700;
-          letter-spacing: 5px;
+          letter-spacing: clamp(2.5px, 1cqw, 5px);
           color: #7a1c1c;
           line-height: 1;
           margin-bottom: 2px;
@@ -307,44 +312,44 @@ export default function CeremoniesScene() {
 
         .ceremonies-scene-root .ceremony-tagline {
           font-family: 'Cinzel', serif;
-          font-size: 0.6rem;
-          letter-spacing: 2.5px;
+          font-size: clamp(0.48rem, 2.4cqw, 0.6rem);
+          letter-spacing: clamp(1.5px, 0.6cqw, 2.5px);
           color: #634331;
           text-transform: uppercase;
           font-weight: 600;
         }
 
         .ceremonies-scene-root .divider-ornament {
-          width: 70px;
+          width: clamp(40px, 14cqw, 70px);
           height: 1px;
           background: linear-gradient(90deg, transparent, #c39b73, transparent);
-          margin: 4px auto 6px;
+          margin: 3px auto 5px;
         }
 
-        /* 3 Details Grid - Desktop Default */
+        /* 3 Details Grid - Dynamically Scaled with Container Query */
         .ceremonies-scene-root .details-container {
           display: flex;
           flex-direction: column;
           align-items: center;
           width: 100%;
           margin: 2px 0;
-          padding-left: 44px;
+          padding-left: clamp(10px, 6cqw, 44px);
         }
 
         .ceremonies-scene-root .detail-row {
           display: grid;
-          grid-template-columns: 32px 1fr;
+          grid-template-columns: clamp(20px, 6cqw, 32px) 1fr;
           align-items: center;
-          gap: 12px;
+          gap: clamp(6px, 2.5cqw, 12px);
           width: 100%;
-          max-width: 290px;
-          margin-bottom: 8px;
+          max-width: clamp(170px, 58cqw, 290px);
+          margin-bottom: clamp(4px, 1.5cqw, 8px);
           text-align: left;
         }
 
         .ceremonies-scene-root .detail-icon-badge {
-          width: 32px;
-          height: 32px;
+          width: clamp(20px, 6cqw, 32px);
+          height: clamp(20px, 6cqw, 32px);
           border-radius: 50%;
           background: rgba(247, 212, 74, 0.18);
           border: 1.5px solid rgba(195, 155, 115, 0.6);
@@ -357,9 +362,9 @@ export default function CeremoniesScene() {
 
         .ceremonies-scene-root .detail-text-primary {
           font-family: 'Cinzel', serif;
-          font-size: 0.74rem;
+          font-size: clamp(0.58rem, 2.9cqw, 0.74rem);
           font-weight: 700;
-          letter-spacing: 1.2px;
+          letter-spacing: 1px;
           color: #3d261a;
           text-transform: uppercase;
           line-height: 1.2;
@@ -367,22 +372,22 @@ export default function CeremoniesScene() {
 
         .ceremonies-scene-root .detail-text-sub {
           font-family: 'Inter', system-ui, sans-serif;
-          font-size: 0.6rem;
-          letter-spacing: 1px;
+          font-size: clamp(0.48rem, 2.3cqw, 0.6rem);
+          letter-spacing: 0.8px;
           color: #7a5843;
           text-transform: uppercase;
           font-weight: 500;
         }
 
-        /* --- Two Action Buttons Stacked VERTICALLY (Desktop Default) --- */
+        /* --- Two Action Buttons Stacked VERTICALLY --- */
         .ceremonies-scene-root .action-buttons-vertical {
           display: flex;
           flex-direction: column;
           align-items: center;
-          gap: 7px;
+          gap: clamp(4px, 1.6cqw, 7px);
           width: 100%;
-          max-width: 270px;
-          margin-top: 6px;
+          max-width: clamp(160px, 55cqw, 270px);
+          margin-top: clamp(2px, 1.2cqw, 6px);
           margin-bottom: 2px;
         }
 
@@ -392,12 +397,12 @@ export default function CeremoniesScene() {
           align-items: center;
           justify-content: center;
           gap: 6px;
-          padding: 6.5px 14px;
+          padding: clamp(4px, 1.4cqw, 6.5px) clamp(8px, 3cqw, 14px);
           border-radius: 18px;
           font-family: 'Cinzel', serif;
           font-weight: 700;
-          font-size: min(0.64rem, 2.0vw);
-          letter-spacing: 1.1px;
+          font-size: clamp(0.52rem, 2.6cqw, 0.64rem);
+          letter-spacing: 1px;
           text-transform: uppercase;
           cursor: pointer;
           text-decoration: none;
@@ -483,63 +488,77 @@ export default function CeremoniesScene() {
           color: #7a1c1c;
         }
 
-        /* MOBILE RESPONSIVE MEDIA QUERIES ONLY - Strictly scoped to mobile screens (<= 640px) */
+        /* MOBILE RESPONSIVE MEDIA QUERIES ONLY - ENLARGED BACKGROUND CARD WITH SLEEK COMPACT TEXT */
         @media (max-width: 640px) {
+          .ceremonies-scene-root {
+            padding: 2px 4px;
+          }
           .ceremonies-scene-root .top-header-section {
-            margin-top: 10px;
+            margin-top: 2px;
+            margin-bottom: 2px;
           }
           .ceremonies-scene-root .header-title {
-            font-size: 1.25rem;
-            letter-spacing: 3px;
+            font-size: 1.15rem;
+            letter-spacing: 2.5px;
           }
           .ceremonies-scene-root .header-subtitle {
-            font-size: 0.52rem;
-            letter-spacing: 1.8px;
+            font-size: 0.5rem;
+            letter-spacing: 1.4px;
           }
+          /* Card Container Wrapper & Background Image - LARGER CARD FRAME FOR MOBILE */
           .ceremonies-scene-root .ornate-card-wrapper {
-            height: min(580px, 78vh);
-            max-width: min(390px, 96vw);
+            width: min(520px, 98vw);
+            max-width: 98vw;
+            height: min(650px, 78vh);
+            aspect-ratio: 560 / 720;
+            margin: auto 0;
           }
+          .ceremonies-scene-root .ornate-card-img {
+            object-fit: contain;
+          }
+          /* Parchment Safe Area - Centered & Spacious */
           .ceremonies-scene-root .parchment-safe-area {
-            top: 20%;
-            bottom: 20.5%;
-            left: 17%;
-            right: 17%;
-            padding: 2px 2px;
-            justify-content: center;
-            gap: 18px;
+            top: 22%;
+            bottom: 20%;
+            left: 18%;
+            right: 18%;
+            padding: 4px 6px;
+            justify-content: space-around;
+            gap: 6px;
           }
+          /* Sleek Fixed Font Sizes (Not Scaling Up with Container) */
           .ceremonies-scene-root .ceremony-main-title {
-            margin-top: 0px;
             font-size: 1.15rem;
             letter-spacing: 2px;
-            margin-bottom: 0px;
+            line-height: 1;
+            margin-top: 0;
+            margin-bottom: 0;
           }
           .ceremonies-scene-root .ceremony-tagline {
             font-size: 0.5rem;
             letter-spacing: 1.5px;
           }
           .ceremonies-scene-root .divider-ornament {
-            margin: 2px auto 2px;
+            margin: 2px auto;
             width: 40px;
           }
           .ceremonies-scene-root .details-container {
-            padding-left: 20px;
+            padding-left: 14px;
             margin: 0;
           }
           .ceremonies-scene-root .detail-row {
-            max-width: 170px;
-            gap: 7px;
-            margin-bottom: 6px;
-            grid-template-columns: 20px 1fr;
+            max-width: 190px;
+            gap: 8px;
+            margin-bottom: 5px;
+            grid-template-columns: 22px 1fr;
           }
           .ceremonies-scene-root .detail-icon-badge {
-            width: 20px;
-            height: 20px;
+            width: 22px;
+            height: 22px;
           }
           .ceremonies-scene-root .detail-text-primary {
             font-size: 0.6rem;
-            letter-spacing: 0.4px;
+            letter-spacing: 0.5px;
             line-height: 1.15;
           }
           .ceremonies-scene-root .detail-text-sub {
@@ -548,27 +567,27 @@ export default function CeremoniesScene() {
           }
           .ceremonies-scene-root .action-buttons-vertical {
             gap: 3.5px;
-            max-width: 155px;
-            margin-top: 0px;
+            max-width: 165px;
+            margin-top: 2px;
             margin-bottom: 0px;
           }
           .ceremonies-scene-root .btn-action-vertical {
-            padding: 3.5px 6px;
-            font-size: 0.5rem;
+            padding: 4px 8px;
+            font-size: 0.52rem;
             letter-spacing: 0.5px;
-            border-radius: 10px;
+            border-radius: 12px;
           }
           .ceremonies-scene-root .tabs-bar-container {
-            margin-bottom: 58px;
+            margin-bottom: 50px;
             gap: 3px;
           }
           .ceremonies-scene-root .arch-tab-btn {
-            height: 50px;
+            height: 48px;
             border-radius: 16px 16px 4px 4px;
             padding: 2px 1px;
           }
           .ceremonies-scene-root .tab-label {
-            font-size: 0.52rem;
+            font-size: 0.5rem;
             letter-spacing: 0.3px;
           }
         }

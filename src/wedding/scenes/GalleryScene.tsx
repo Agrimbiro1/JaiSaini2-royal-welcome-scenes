@@ -14,9 +14,27 @@ export default function GalleryScene() {
   const spotlightRef = useRef<HTMLDivElement>(null);
   const frameRefs = useRef<(HTMLDivElement | null)[]>([]);
 
-  // Array of gallery items in state to support swapping clicked items into center position (index 2)
-  const [items, setItems] = useState<GalleryItem[]>(wedding.gallery);
-  const [focusedItem, setFocusedItem] = useState<GalleryItem | null>(null);
+  const touchStartX = useRef(0);
+
+  const handleNextPhoto = () => {
+    setItems((prev) => {
+      if (prev.length < 2) return prev;
+      const next = [...prev];
+      const first = next.shift()!;
+      next.push(first);
+      return next;
+    });
+  };
+
+  const handlePrevPhoto = () => {
+    setItems((prev) => {
+      if (prev.length < 2) return prev;
+      const next = [...prev];
+      const last = next.pop()!;
+      next.unshift(last);
+      return next;
+    });
+  };
 
   // Position layout configuration for 5 frames on the haveli wall
   // Vertically raised so bottom frames leave ample clearance above the bottom navigation bar
@@ -55,6 +73,12 @@ export default function GalleryScene() {
     },
   ];
 
+  const mobileShowcaseRef = useRef<HTMLDivElement>(null);
+
+  // Array of gallery items in state to support swapping clicked items into center position (index 2)
+  const [items, setItems] = useState<GalleryItem[]>(wedding.gallery);
+  const [focusedItem, setFocusedItem] = useState<GalleryItem | null>(null);
+
   // Physical Entrance Animation: Frames drop IMMEDIATELY when section opens
   useEffect(() => {
     if (!rootRef.current || reduced) return;
@@ -62,17 +86,23 @@ export default function GalleryScene() {
     const tl = gsap.timeline({ defaults: { ease: "power3.out" } });
 
     // Step 1: Background light sweep reveals in parallel (no blocking delay)
-    tl.to(
-      lightSweepRef.current,
-      {
-        opacity: 0.4,
-        duration: 0.6,
-        ease: "power1.inOut",
-      },
-      0
-    ).to(spotlightRef.current, { opacity: 0.75, duration: 0.8 }, 0.2);
+    if (lightSweepRef.current) {
+      tl.to(
+        lightSweepRef.current,
+        {
+          opacity: 0.4,
+          duration: 0.6,
+          ease: "power1.inOut",
+        },
+        0
+      );
+    }
 
-    // Step 2: Drop all 5 frames IMMEDIATELY with fast stagger
+    if (spotlightRef.current) {
+      tl.to(spotlightRef.current, { opacity: 0.75, duration: 0.8 }, 0.2);
+    }
+
+    // Step 2: Drop desktop frames if mounted
     const dropOrder = [0, 1, 3, 4, 2];
 
     dropOrder.forEach((itemIdx, seqIdx) => {
@@ -96,9 +126,19 @@ export default function GalleryScene() {
           duration: isHero ? 0.7 : 0.55,
           ease: "back.out(1.2)",
         },
-        seqIdx * 0.08 // Fast 80ms stagger between frames!
+        seqIdx * 0.08
       );
     });
+
+    // Step 3: Animate mobile showcase container if mounted
+    if (mobileShowcaseRef.current) {
+      tl.fromTo(
+        mobileShowcaseRef.current,
+        { opacity: 0, scale: 0.95, y: 30 },
+        { opacity: 1, scale: 1, y: 0, duration: 0.6, ease: "power2.out" },
+        0.1
+      );
+    }
 
     return () => {
       tl.kill();
@@ -230,8 +270,8 @@ export default function GalleryScene() {
         </h2>
       </div>
 
-      {/* ── Haveli Wall Gallery Canvas ─────────────────────────── */}
-      <div className="relative z-10 w-full h-full flex items-center justify-center">
+      {/* ── Haveli Wall Gallery Canvas (Desktop: >= 640px) ───────────────── */}
+      <div className="hidden sm:flex relative z-10 w-full h-full items-center justify-center">
         <div className="relative w-full max-w-5xl h-full">
           {items.map((item, idx) => {
             const layout = frameLayouts[idx] || frameLayouts[0]!;
@@ -258,6 +298,86 @@ export default function GalleryScene() {
                   onClick={() => handlePhotoClick(idx)}
                 />
               </div>
+            );
+          })}
+        </div>
+      </div>
+
+      {/* ── Mobile Responsive Interactive Showcase (Mobile: < 640px) ───────── */}
+      <div
+        ref={mobileShowcaseRef}
+        className="flex sm:hidden relative z-10 w-full h-full flex-col items-center justify-between pt-14 pb-20 px-3 overflow-y-auto select-none"
+        onTouchStart={(e) => {
+          touchStartX.current = e.targetTouches[0]?.clientX || 0;
+        }}
+        onTouchEnd={(e) => {
+          const endX = e.changedTouches[0]?.clientX || 0;
+          const diff = touchStartX.current - endX;
+          if (diff > 40) {
+            // Swiped left -> Next photo
+            handleNextPhoto();
+          } else if (diff < -40) {
+            // Swiped right -> Previous photo
+            handlePrevPhoto();
+          }
+        }}
+      >
+        {/* Main Active Hero Spotlight Frame with Nav Arrows */}
+        <div className="relative w-full flex items-center justify-center my-auto">
+          {/* Left Arrow Button */}
+          <button
+            type="button"
+            onClick={handlePrevPhoto}
+            aria-label="Previous Photo"
+            className="absolute left-0 z-30 w-8 h-8 rounded-full bg-[#1c1917]/90 border border-[#e9c349]/60 text-[#e9c349] flex items-center justify-center text-sm shadow-[0_4px_12px_rgba(0,0,0,0.8)] active:scale-95 transition-transform"
+          >
+            ‹
+          </button>
+
+          {/* Featured Center Frame */}
+          <div className="w-[82vw] max-w-[310px]">
+            {items[2] && (
+              <RoyalFrame
+                item={items[2]}
+                isHero={true}
+                isSelected={true}
+                onClick={() => setFocusedItem(items[2] || null)}
+              />
+            )}
+          </div>
+
+          {/* Right Arrow Button */}
+          <button
+            type="button"
+            onClick={handleNextPhoto}
+            aria-label="Next Photo"
+            className="absolute right-0 z-30 w-8 h-8 rounded-full bg-[#1c1917]/90 border border-[#e9c349]/60 text-[#e9c349] flex items-center justify-center text-sm shadow-[0_4px_12px_rgba(0,0,0,0.8)] active:scale-95 transition-transform"
+          >
+            ›
+          </button>
+        </div>
+
+        {/* Horizontal Interactive Thumbnail Bar for 4 Side Photos */}
+        <div className="w-full flex items-center justify-center gap-2 mt-2 px-1 z-20">
+          {items.map((item, idx) => {
+            const isCurrent = idx === 2;
+            return (
+              <button
+                key={item.id}
+                type="button"
+                onClick={() => handlePhotoClick(idx)}
+                className={`relative rounded overflow-hidden border-2 transition-all duration-300 ${
+                  isCurrent
+                    ? "w-14 h-11 border-[#e9c349] shadow-[0_0_12px_rgba(233,195,73,0.6)] scale-105 z-10"
+                    : "w-11 h-9 border-[#e9c349]/40 opacity-70 hover:opacity-100"
+                }`}
+              >
+                <img
+                  src={item.image}
+                  alt={item.caption}
+                  className="w-full h-full object-cover"
+                />
+              </button>
             );
           })}
         </div>

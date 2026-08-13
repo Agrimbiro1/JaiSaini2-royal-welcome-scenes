@@ -11,6 +11,7 @@ import { wedding, type Blessing } from "../data/wedding";
 import { usePrefersReducedMotion } from "../engine/SceneProvider";
 import { AmbientLayer } from "../ui/Ambient";
 import bookBgImage from "/assets/blessings-open-book-bg.jpg";
+import mobileBlessingsBg from "/assets/mobile-blessings-bg.jpg";
 
 interface TagItem extends Blessing {
   id: string;
@@ -56,6 +57,7 @@ const initialBlessingsList: Blessing[] = [
 
 export default function BlessingsScene() {
   const reduced = usePrefersReducedMotion();
+  const touchStartX = useRef(0);
 
   const [blessings, setBlessings] = useState<TagItem[]>(() =>
     initialBlessingsList.map((b, idx) => ({
@@ -281,8 +283,8 @@ export default function BlessingsScene() {
         }
       `}</style>
 
-      {/* 16:9 SYNCHRONIZED STAGE - FULL VIEWPORT COVERAGE */}
-      <div className="relative w-full h-full min-h-screen flex items-center justify-center overflow-hidden">
+      {/* ── DESKTOP VIEW (>= 640px): 3D MANUSCRIPT GUESTBOOK ────────────────── */}
+      <div className="hidden sm:flex relative w-full h-full min-h-screen flex-col items-center justify-center overflow-hidden">
         {/* Synchronized 16:9 Book Container */}
         <div className="relative w-full aspect-[16/9] max-h-screen flex items-center justify-center">
           
@@ -477,6 +479,191 @@ export default function BlessingsScene() {
           </div>
 
         </div>
+      </div>
+
+      {/* ── MOBILE FIRST VIEW (< 640px): INTEGRATED WITH USER'S EXACT DESIGN ARTWORK ───── */}
+      <div className="flex sm:hidden relative z-10 w-full h-[100svh] min-h-screen flex-col overflow-hidden select-none">
+        
+        {/* Fullscreen Mobile Background Image matching user's exact artwork */}
+        <img
+          src={mobileBlessingsBg}
+          alt="Royal Manuscript Book & Parchment Background"
+          className="absolute inset-0 w-full h-full object-cover object-center pointer-events-none z-0"
+        />
+
+        {/* 1. TOP BOOK AREA: LEAVE A BLESSING FORM (Positioned strictly inside upper open book page) */}
+        <div className="absolute top-[16.5%] left-1/2 -translate-x-1/2 w-[62vw] max-w-[240px] z-10 flex flex-col items-center text-center">
+          <h2 className="printed-heading text-[11px] font-bold uppercase tracking-wider text-[#3B0D1A]">
+            LEAVE A BLESSING
+          </h2>
+          <ScrollOrnament />
+
+          <form onSubmit={handleSubmit} className="w-full flex flex-col gap-1 mt-0.5 text-left relative z-10">
+            {/* Field 1: YOUR NAME */}
+            <div className="flex flex-col gap-0.5">
+              <label htmlFor="mobileGuestName" className="printed-label text-[8.5px] uppercase font-bold text-[#3B0D1A]">
+                YOUR NAME
+              </label>
+              <div className="embedded-input-box px-2 py-0.5 flex items-center justify-between min-h-[30px]">
+                <input
+                  type="text"
+                  id="mobileGuestName"
+                  maxLength={35}
+                  value={name}
+                  onChange={(e) => setName(e.target.value)}
+                  placeholder="Enter your name"
+                  className="text-[10.5px] font-semibold text-[#2E0B15]"
+                  required
+                />
+                <LotusMotif className="w-2.5 h-2.5 text-[#8C2338] shrink-0 ml-1 opacity-80" />
+              </div>
+            </div>
+
+            {/* Field 2: YOUR BLESSING */}
+            <div className="flex flex-col gap-0.5">
+              <label htmlFor="mobileGuestMsg" className="printed-label text-[8.5px] uppercase font-bold text-[#3B0D1A]">
+                YOUR BLESSING
+              </label>
+              <div className="embedded-input-box p-1.5 flex flex-col justify-between h-[64px]">
+                <textarea
+                  id="mobileGuestMsg"
+                  maxLength={120}
+                  value={msg}
+                  onChange={(e) => setMsg(e.target.value)}
+                  placeholder="Write your blessing or message..."
+                  className="resize-none h-full text-[10.5px] font-semibold text-[#2E0B15] leading-tight"
+                  required
+                />
+                <div className="flex items-center justify-between pt-0.5 border-t border-[#8C2338]/15">
+                  <span className="text-[7.5px] text-[#7C4554] font-sans font-semibold">
+                    {msg.length}/120
+                  </span>
+                  <LotusMotif className="w-2.5 h-2.5 text-[#8C2338] shrink-0 opacity-80" />
+                </div>
+              </div>
+            </div>
+
+            {/* Form Feedback Message */}
+            {formStatus.text && (
+              <div
+                className={`text-[8.5px] font-semibold px-2 py-0.5 rounded flex items-center gap-1 transition-all ${
+                  formStatus.type === "success"
+                    ? "text-[#3B0D1A] bg-[#3B0D1A]/10 border border-[#A37326]/30"
+                    : "text-red-900 bg-red-900/10 border border-red-900/20"
+                }`}
+              >
+                {formStatus.type === "success" && <CheckCircle2 className="w-2.5 h-2.5 text-[#A37326] shrink-0" />}
+                <span className="truncate">{formStatus.text}</span>
+              </div>
+            )}
+
+            {/* Button: SEND BLESSING (Enlarged for Mobile) */}
+            <div className="flex justify-center mt-1">
+              <button
+                type="submit"
+                className="embedded-send-btn py-1.5 px-7 flex items-center justify-center gap-1.5 text-[11px] font-bold uppercase cursor-pointer shadow-md"
+              >
+                <LotusMotif className="w-3 h-3 text-[#CBA135]" />
+                <span>SEND BLESSING</span>
+              </button>
+            </div>
+          </form>
+        </div>
+
+        {/* 2. BOTTOM PARCHMENT SHEET AREA: AUTOMATIC BLESSING CAROUSEL (Positioned strictly inside bottom paper sheet) */}
+        <div className="absolute top-[63.5%] left-1/2 -translate-x-1/2 w-[74vw] max-w-[285px] z-10 flex flex-col items-center text-center">
+          <h2 className="printed-heading text-[10.5px] font-bold uppercase tracking-wider text-[#3B0D1A]">
+            BLESSINGS FROM LOVED ONES
+          </h2>
+          <ScrollOrnament />
+
+          {/* Paper Blessing Card with Side Arrow Controls & Touch Swipe */}
+          <div
+            className="relative w-full my-0.5 flex items-center justify-center"
+            onTouchStart={(e) => {
+              touchStartX.current = e.targetTouches[0]?.clientX || 0;
+            }}
+            onTouchEnd={(e) => {
+              const endX = e.changedTouches[0]?.clientX || 0;
+              const diff = touchStartX.current - endX;
+              if (diff > 40) goNext();
+              else if (diff < -40) goPrev();
+            }}
+          >
+            {/* Left Arrow Button */}
+            <button
+              type="button"
+              onClick={goPrev}
+              className="carousel-arrow-btn absolute -left-1.5 z-20 w-6 h-6 flex items-center justify-center rounded-full shadow-md bg-[#FAF0D7]/90 border border-[#8C2338]/40 text-[#3B0D1A]"
+              title="Previous blessing"
+            >
+              <ChevronLeft className="w-3 h-3" />
+            </button>
+
+            {/* Inner Blessing Message Container */}
+            <div
+              className={`w-full mx-3 px-2 py-1 flex flex-col items-center justify-center text-center min-h-[74px] transition-all duration-300 ${
+                isFading ? "opacity-0 scale-95" : "opacity-100 scale-100"
+              }`}
+            >
+              <span className="font-['Cormorant_Garamond',serif] text-base text-[#A37326] leading-none select-none">
+                “
+              </span>
+              <p className="font-['Cormorant_Garamond',serif] text-[11px] font-medium italic leading-snug text-[#2E0B15] px-1 max-w-[205px]">
+                {currentTag.message}
+              </p>
+              <div className="w-7 h-[1px] bg-[#A37326]/35 my-0.5" />
+              <p className="printed-heading text-[9.5px] uppercase text-[#3B0D1A]">
+                — {currentTag.guestName}
+              </p>
+            </div>
+
+            {/* Right Arrow Button */}
+            <button
+              type="button"
+              onClick={goNext}
+              className="carousel-arrow-btn absolute -right-1.5 z-20 w-6 h-6 flex items-center justify-center rounded-full shadow-md bg-[#FAF0D7]/90 border border-[#8C2338]/40 text-[#3B0D1A]"
+              title="Next blessing"
+            >
+              <ChevronRight className="w-3 h-3" />
+            </button>
+          </div>
+
+          {/* Counter Ticker & Pagination Dots */}
+          <div className="flex items-center gap-1.5 text-[8px] font-bold text-[#3B0D1A] font-sans uppercase tracking-widest mt-0.5">
+            <span className="text-[#A37326]">❖</span>
+            <span>
+              {String(activeIndex + 1).padStart(2, "0")} / {String(blessings.length).padStart(2, "0")}
+            </span>
+            <span className="text-[#A37326]">❖</span>
+          </div>
+
+          <div className="flex items-center gap-1 mt-0.5">
+            {blessings.slice(0, 7).map((_, i) => (
+              <button
+                key={i}
+                type="button"
+                onClick={() => changeSlide(i)}
+                className={`rounded-full transition-all ${
+                  i === activeIndex % 7
+                    ? "w-1.5 h-1.5 bg-[#8C2338] shadow-[0_0_4px_rgba(140,35,56,0.6)]"
+                    : "w-1 h-1 bg-[#A37326]/40 hover:bg-[#A37326]"
+                }`}
+              />
+            ))}
+          </div>
+
+          {/* View All Blessings Button */}
+          <button
+            type="button"
+            onClick={() => setIsViewAllOpen(true)}
+            className="inline-flex items-center gap-1 px-2 py-0.5 mt-0.5 rounded-full bg-[#3B0D1A]/10 hover:bg-[#3B0D1A] text-[#3B0D1A] hover:text-[#FBF1DE] border border-[#A37326]/50 font-['Cinzel',serif] text-[7.5px] uppercase tracking-wider transition-all cursor-pointer shadow-xs"
+          >
+            <BookOpen className="w-2.5 h-2.5 text-[#A37326]" />
+            <span>VIEW ALL BLESSINGS ({blessings.length})</span>
+          </button>
+        </div>
+
       </div>
 
       {/* POPUP MODAL: ALL GUEST BLESSINGS */}

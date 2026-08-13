@@ -68,6 +68,9 @@ export default function WelcomeScene() {
   const heroImageRef = useRef<HTMLImageElement>(null);
   const heroSpotlightRef = useRef<HTMLDivElement>(null);
   const handwritingTitleRef = useRef<HTMLDivElement>(null);
+  const rohanRef = useRef<HTMLSpanElement>(null);
+  const ampRef = useRef<HTMLSpanElement>(null);
+  const ananyaRef = useRef<HTMLSpanElement>(null);
   const whiteFlashRef = useRef<HTMLDivElement>(null);
   const welcomeCardRef = useRef<HTMLDivElement>(null);
   const tlRef = useRef<gsap.core.Timeline | null>(null);
@@ -180,17 +183,29 @@ export default function WelcomeScene() {
       .to(heroImageRef.current, { filter: "grayscale(0%)", opacity: 1, scale: 1, duration: 1.0 }, 3.8)
       .to(heroSpotlightRef.current, { opacity: 0.8, duration: 1.0 }, 3.8)
 
-      // Phase 5: Writing animation for "Rohan & Ananya"
+      // Phase 5: Reveal Title Container
       .to(handwritingTitleRef.current, { opacity: 1, duration: 0.3 });
 
-    const titleH1 = handwritingTitleRef.current?.querySelector("h1");
-    if (titleH1) {
+    // Writing Animation for Staggered Rohan & Ananya Heading
+    if (rohanRef.current && ampRef.current && ananyaRef.current) {
       tl.fromTo(
-        titleH1,
-        { clipPath: "inset(0 100% 0 0)" },
-        { clipPath: "inset(0 0% 0 0)", duration: 2.2, ease: "power1.inOut" },
-        "-=0.2",
-      );
+        rohanRef.current,
+        { clipPath: "inset(-25px 100% -25px 0)" },
+        { clipPath: "inset(-25px -25px -25px -25px)", duration: 0.85, ease: "power1.inOut" },
+        "-=0.2"
+      )
+        .fromTo(
+          ampRef.current,
+          { opacity: 0, scale: 0.4 },
+          { opacity: 1, scale: 1, duration: 0.35, ease: "back.out(1.7)" },
+          "-=0.15"
+        )
+        .fromTo(
+          ananyaRef.current,
+          { clipPath: "inset(-25px 100% -25px 0)" },
+          { clipPath: "inset(-25px -25px -25px -25px)", duration: 0.85, ease: "power1.inOut" },
+          "-=0.15"
+        );
     }
 
     tl
@@ -199,25 +214,22 @@ export default function WelcomeScene() {
         heroFrameRef.current,
         {
           scale: () => getCoverageScale(),
-          transformOrigin: "50% 50%",
-          duration: 1.5,
-          ease: "power2.inOut",
-          delay: 0.4,
+          borderWidth: 0,
+          padding: 0,
+          duration: 1.6,
+          ease: "expo.inOut",
+          delay: 1.4,
         },
       )
-      .to([filmReelRef.current, handwritingTitleRef.current], { opacity: 0, duration: 1.0, ease: "power2.out" }, "-=1.5")
-
-      // Phase 7: White flash transition
-      .to(whiteFlashRef.current, { opacity: 1, duration: 0.8, ease: "power2.in" })
-
-      // Phase 8: Welcome page appears cleanly out of the white transition
+      .to(handwritingTitleRef.current, { scale: 1.05, opacity: 0, duration: 0.8 }, "-=1.0")
+      .to(whiteFlashRef.current, { opacity: 1, duration: 0.4 }, "-=0.4")
       .add(() => {
         setWelcomeRevealed(true);
         if (welcomeCardRef.current) {
           gsap.set(welcomeCardRef.current, { opacity: 1, scale: 1 });
         }
       })
-      .to(whiteFlashRef.current, { opacity: 0, duration: 1.2, ease: "power2.out" });
+      .to(whiteFlashRef.current, { opacity: 0, duration: 0.8 }, "+=0.1");
 
     return () => {
       tl.kill();
@@ -227,11 +239,11 @@ export default function WelcomeScene() {
   return (
     <section
       ref={rootRef}
-      className="relative w-full h-full overflow-hidden bg-[#0d0f07] text-[#e3e3d5] font-sans select-none"
+      className="relative w-full h-full min-h-screen overflow-hidden bg-[#0d0f07] text-[#e3e3d5] font-sans select-none"
     >
       {/* Background Ornaments */}
       <JaaliPanel className="absolute inset-0 opacity-[0.07] pointer-events-none" />
-      <WarmGlow className="left-1/2 top-[26%] h-64 w-64 -translate-x-1/2 opacity-45 pointer-events-none" />
+      <WarmGlow className="absolute inset-0 pointer-events-none" />
 
       {/* Film Overlays */}
       <div className="film-grain" />
@@ -249,20 +261,37 @@ export default function WelcomeScene() {
           welcomeRevealed ? "pointer-events-none opacity-0" : "opacity-100"
         }`}
       >
-        {/* Handwriting Title "Rohan & Ananya" */}
+        {/* Handwriting Title "Rohan & Ananya" Staggered Big Fonts with Writing Animation (NO top margin on PC) */}
         <div
           ref={handwritingTitleRef}
-          className="absolute top-4 sm:top-6 md:top-10 inset-x-0 z-30 flex justify-center opacity-0 pointer-events-none"
+          className="absolute top-6 sm:top-2 md:top-4 inset-x-0 z-30 flex justify-center opacity-0 pointer-events-none px-4 pt-4 sm:pt-0"
         >
-          <h1 className="font-script text-[32px] sm:text-[54px] md:text-[80px] text-[#e9c349] tracking-wider text-center leading-tight px-4">
-            Rohan & Ananya
-          </h1>
+          <div className="flex flex-col items-center select-none my-0 w-full max-w-xs sm:max-w-md overflow-visible">
+            <span
+              ref={rohanRef}
+              className="font-script text-[44px] sm:text-[64px] md:text-[88px] text-[#e9c349] tracking-wider self-start pl-2 sm:pl-8 pt-1 pb-0 leading-tight overflow-visible drop-shadow-[0_4px_14px_rgba(0,0,0,0.95)]"
+            >
+              Rohan
+            </span>
+            <span
+              ref={ampRef}
+              className="font-serif italic font-bold text-[24px] sm:text-[36px] md:text-[50px] text-[#FBF1DE] opacity-90 -my-3 sm:-my-5 md:-my-7 drop-shadow-[0_2px_8px_rgba(0,0,0,0.9)]"
+            >
+              &
+            </span>
+            <span
+              ref={ananyaRef}
+              className="font-script text-[44px] sm:text-[64px] md:text-[88px] text-[#e9c349] tracking-wider self-end pr-2 sm:pr-8 pt-1 pb-0 leading-tight overflow-visible drop-shadow-[0_4px_14px_rgba(0,0,0,0.95)]"
+            >
+              Ananya
+            </span>
+          </div>
         </div>
 
         {/* Vintage Reel Silhouette */}
         <div
           ref={filmReelRef}
-          className="absolute w-[200px] h-[200px] sm:w-[320px] sm:h-[320px] md:w-[480px] md:h-[480px] opacity-0 scale-50 z-10 rounded-full border-[5px] sm:border-[6px] md:border-[10px] border-[#e9c349]/30 flex items-center justify-center shadow-[0_0_60px_rgba(233,195,73,0.15)] pointer-events-none"
+          className="absolute w-[300px] h-[300px] sm:w-[340px] sm:h-[340px] md:w-[480px] md:h-[480px] opacity-0 scale-50 z-10 rounded-full border-[5px] sm:border-[6px] md:border-[10px] border-[#e9c349]/30 flex items-center justify-center shadow-[0_0_60px_rgba(233,195,73,0.15)] pointer-events-none"
         >
           <div className="absolute inset-0 border-3 md:border-4 border-dashed border-[#e9c349]/40 rounded-full animate-[spin_20s_linear_infinite]" />
           <div className="w-8 h-8 sm:w-10 sm:h-10 md:w-20 md:h-20 bg-[#e9c349]/80 rounded-full shadow-[0_0_30px_rgba(233,195,73,0.5)]" />
@@ -273,14 +302,17 @@ export default function WelcomeScene() {
           <div
             ref={filmStripRef}
             className="absolute flex gap-3 sm:gap-4 md:gap-10 items-center"
+            id="filmStrip"
           >
             {reelFrames.map((frame) => {
               if (frame.hero) {
                 return (
+                  /* Frame 6 (Final Hero Frame - Couple Photo) */
                   <div
                     key={frame.id}
                     ref={heroFrameRef}
-                    className="w-[220px] h-[147px] sm:w-[320px] sm:h-[213px] md:w-[540px] md:h-[360px] relative shrink-0 border-y-[6px] sm:border-y-[8px] md:border-y-[14px] border-x-[2.5px] sm:border-x-[3px] md:border-x-[5px] border-[#12140c] bg-[#12140c] p-1 sm:p-1.5 md:p-2.5 flex items-center justify-center overflow-hidden origin-center"
+                    className="w-[360px] h-[240px] sm:w-[380px] sm:h-[253px] md:w-[600px] md:h-[400px] relative shrink-0 border-y-[6px] sm:border-y-[8px] md:border-y-[14px] border-x-[2.5px] sm:border-x-[3px] md:border-x-[5px] border-[#12140c] bg-[#12140c] p-1 sm:p-1.5 md:p-2.5 flex items-center justify-center overflow-hidden transition-all duration-1000 origin-center"
+                    id="heroFrame"
                   >
                     <img
                       ref={heroImageRef}
@@ -297,9 +329,10 @@ export default function WelcomeScene() {
               }
 
               return (
+                /* Regular Film Frames 1 to 5 - ENLARGED ON MOBILE */
                 <div
                   key={frame.id}
-                  className="w-[200px] h-[133px] sm:w-[300px] sm:h-[200px] md:w-[500px] md:h-[333px] relative shrink-0 border-y-[6px] sm:border-y-[8px] md:border-y-[14px] border-x-[2.5px] sm:border-x-[3px] md:border-x-[5px] border-[#12140c] bg-[#12140c] p-1 sm:p-1.5 md:p-2.5 flex items-center justify-center"
+                  className="w-[340px] h-[226px] sm:w-[360px] sm:h-[240px] md:w-[500px] md:h-[333px] relative shrink-0 border-y-[6px] sm:border-y-[8px] md:border-y-[14px] border-x-[2.5px] sm:border-x-[3px] md:border-x-[5px] border-[#12140c] bg-[#12140c] p-1 sm:p-1.5 md:p-2.5 flex items-center justify-center"
                 >
                   <img
                     src={frame.src}

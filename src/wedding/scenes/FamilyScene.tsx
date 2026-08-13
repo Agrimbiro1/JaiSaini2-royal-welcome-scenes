@@ -175,7 +175,7 @@ export default function FamilyScene() {
   const selectedFamily = activeModal === "groom" ? groomFamilyData : activeModal === "bride" ? brideFamilyData : null;
 
   return (
-    <section className="family-scene-root relative w-full h-full min-h-screen max-h-screen overflow-hidden flex flex-col items-center justify-between py-3 px-4 select-none">
+    <section className="family-scene-root relative w-full h-full min-h-screen max-h-none sm:max-h-screen overflow-y-auto sm:overflow-hidden flex flex-col items-center justify-between py-3 px-4 select-none">
       <style>{`
         .family-scene-root {
           font-family: 'Rajdhani', sans-serif;
@@ -192,6 +192,23 @@ export default function FamilyScene() {
           width: min(1040px, 100%);
           margin: auto 0;
           z-index: 2;
+        }
+
+        @media (max-width: 767px) {
+          .family-scene-root {
+            overflow-y: auto !important;
+            max-height: none !important;
+            padding-bottom: 110px !important;
+          }
+          .family-cards-container {
+            margin: 20px 0;
+            gap: 28px;
+          }
+          .royal-arch-card {
+            height: 490px;
+            max-width: 330px;
+            padding: 92px 20px 44px;
+          }
         }
 
         @media (min-width: 768px) {
@@ -292,7 +309,7 @@ export default function FamilyScene() {
         src={familyBg}
         alt="Royal Palace Courtyard Background"
         aria-hidden="true"
-        className="absolute inset-0 w-full h-full object-cover object-center select-none pointer-events-none z-0"
+        className="fixed inset-0 w-full h-full object-cover object-center select-none pointer-events-none z-0"
       />
 
       {/* Ambient Glow */}
