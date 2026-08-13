@@ -674,30 +674,35 @@ export default function BlessingsScene() {
         >
           <div
             onClick={(e) => e.stopPropagation()}
-            className="relative w-full max-w-2xl max-h-[85vh] bg-[#FBF1DE] text-[#2E0B15] p-5 sm:p-7 rounded-xl border-2 border-[#CBA135] shadow-[0_30px_70px_rgba(0,0,0,0.95),0_0_30px_rgba(203,161,53,0.35)] flex flex-col overflow-hidden animate-in zoom-in-95 duration-300 select-none"
+            data-lenis-prevent
+            className="relative w-full max-w-2xl max-h-[80vh] sm:max-h-[85vh] bg-[#FBF1DE] text-[#2E0B15] p-4 sm:p-7 rounded-xl border-2 border-[#CBA135] shadow-[0_30px_70px_rgba(0,0,0,0.95),0_0_30px_rgba(203,161,53,0.35)] flex flex-col overflow-hidden animate-in zoom-in-95 duration-300 select-text"
           >
             {/* Close Button */}
             <button
               type="button"
               onClick={() => setIsViewAllOpen(false)}
-              className="absolute top-3.5 right-3.5 z-20 w-8 h-8 rounded-full bg-[#3B0D1A]/10 hover:bg-[#3B0D1A] text-[#3B0D1A] hover:text-[#FBF1DE] border border-[#CBA135]/50 flex items-center justify-center cursor-pointer transition-colors font-bold"
+              className="absolute top-3 right-3 sm:top-3.5 sm:right-3.5 z-20 w-8 h-8 rounded-full bg-[#3B0D1A]/10 hover:bg-[#3B0D1A] text-[#3B0D1A] hover:text-[#FBF1DE] border border-[#CBA135]/50 flex items-center justify-center cursor-pointer transition-colors font-bold"
               aria-label="Close modal"
             >
               <X className="w-4 h-4" />
             </button>
 
             {/* Modal Header */}
-            <div className="relative z-10 text-center pb-3 border-b border-[#A37326]/40">
-              <span className="font-['Cinzel',serif] text-[11px] uppercase tracking-[0.3em] font-bold text-[#3B0D1A]">
+            <div className="relative z-10 text-center pb-2.5 sm:pb-3 border-b border-[#A37326]/40 shrink-0">
+              <span className="font-['Cinzel',serif] text-[10px] sm:text-[11px] uppercase tracking-[0.3em] font-bold text-[#3B0D1A]">
                 Complete Collection
               </span>
-              <h3 className="font-['Cormorant_Garamond',serif] text-2xl sm:text-3xl font-bold text-[#3B0D1A] tracking-wide mt-0.5">
+              <h3 className="font-['Cormorant_Garamond',serif] text-xl sm:text-3xl font-bold text-[#3B0D1A] tracking-wide mt-0.5">
                 All Guest Blessings ({blessings.length})
               </h3>
             </div>
 
-            {/* Scrollable Grid */}
-            <div className="relative z-10 mt-4 flex-1 overflow-y-auto pr-1.5 grid grid-cols-1 sm:grid-cols-2 gap-3.5">
+            {/* Scrollable Grid with Lenis Prevention and Touch Pan Y */}
+            <div
+              data-lenis-prevent
+              className="relative z-10 mt-3 sm:mt-4 flex-1 overflow-y-auto pr-1 sm:pr-1.5 grid grid-cols-1 sm:grid-cols-2 gap-2.5 sm:gap-3.5 touch-pan-y overscroll-contain"
+              style={{ WebkitOverflowScrolling: "touch" }}
+            >
               {blessings.map((b, i) => (
                 <div
                   key={b.id || i}
@@ -705,14 +710,14 @@ export default function BlessingsScene() {
                     changeSlide(i);
                     setIsViewAllOpen(false);
                   }}
-                  className="p-4 rounded-lg bg-[#F8EBCD] border border-[#A37326]/40 shadow-xs flex flex-col justify-between hover:border-[#3B0D1A] hover:shadow-md cursor-pointer transition-all hover:-translate-y-0.5"
+                  className="p-3 sm:p-4 rounded-lg bg-[#F8EBCD] border border-[#A37326]/40 shadow-xs flex flex-col justify-between hover:border-[#3B0D1A] hover:shadow-md cursor-pointer transition-all hover:-translate-y-0.5 active:scale-[0.98]"
                 >
-                  <p className="font-['Cormorant_Garamond',serif] text-base italic leading-relaxed text-[#2E0B15] font-medium">
+                  <p className="font-['Cormorant_Garamond',serif] text-sm sm:text-base italic leading-relaxed text-[#2E0B15] font-medium">
                     "{b.message}"
                   </p>
-                  <div className="mt-3 pt-2 border-t border-[#A37326]/25 flex items-center justify-between">
+                  <div className="mt-2.5 sm:mt-3 pt-1.5 sm:pt-2 border-t border-[#A37326]/25 flex items-center justify-between">
                     <LotusMotif className="w-3.5 h-3.5 text-[#8C2338]" />
-                    <p className="font-['Cinzel',serif] text-[11px] uppercase tracking-[0.18em] font-bold text-[#3B0D1A]">
+                    <p className="font-['Cinzel',serif] text-[10px] sm:text-[11px] uppercase tracking-[0.18em] font-bold text-[#3B0D1A]">
                       — {b.guestName}
                     </p>
                   </div>
