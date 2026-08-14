@@ -548,19 +548,6 @@ export default function CeremoniesScene() {
           animation: gold-shimmer-sweep 4.5s cubic-bezier(0.4, 0, 0.2, 1) infinite;
           z-index: 15;
         }
-
-        @keyframes active-card-pulse {
-          0%, 100% {
-            box-shadow: 0 16px 40px rgba(0,0,0,0.18), 0 0 25px rgba(203,161,53,0.35);
-          }
-          50% {
-            box-shadow: 0 20px 48px rgba(0,0,0,0.24), 0 0 35px rgba(203,161,53,0.6);
-          }
-        }
-
-        .active-3d-card-glow {
-          animation: active-card-pulse 3.5s ease-in-out infinite;
-        }
       `}</style>
 
       {/* White & Grey Paper Noise Texture & Vignette Background */}
@@ -577,7 +564,7 @@ export default function CeremoniesScene() {
           <span>Royal Celebrations & Events</span>
           <Sparkles className="w-3 h-3 sm:w-3.5 sm:h-3.5 text-[#CBA135] animate-pulse" />
         </span>
-        <h1 className="font-['Playfair_Display',serif] text-2xl sm:text-4xl lg:text-5xl font-black text-[#3B0D1A] tracking-widest uppercase mt-0.5 sm:mt-1.5 drop-shadow-xs">
+        <h1 className="font-['Playfair_Display',serif] text-2xl sm:text-4xl lg:text-5xl font-black text-[#3B0D1A] tracking-widest uppercase mt-0.5 sm:mt-1.5">
           THE CEREMONIES
         </h1>
         {/* Subtle Ornate Gold Divider */}
@@ -591,7 +578,7 @@ export default function CeremoniesScene() {
       {/* Main Responsive Layout Container */}
       <div className="relative z-20 w-full max-w-6xl h-auto sm:h-full sm:max-h-[calc(100svh-175px)] my-auto flex flex-col lg:grid lg:grid-cols-12 gap-5 sm:gap-5 items-stretch pb-2 sm:pb-2">
         
-        {/* MOBILE VIEW: Luxury 3D Coverflow Perspective Carousel & Interactive Effects */}
+        {/* MOBILE VIEW: Luxury 3D Coverflow Perspective Carousel Clean of Box Shadows */}
         <div className="block sm:hidden w-full flex flex-col items-center justify-center my-0 px-0">
           
           {/* Quick Ceremony Category Pills in Wrapped Multi-Row Format */}
@@ -605,12 +592,12 @@ export default function CeremoniesScene() {
                   onClick={() => selectMobileIndex(idx)}
                   className={`px-3 py-1 rounded-full font-['Cinzel',serif] text-[10px] font-bold tracking-wider uppercase transition-all duration-300 flex items-center gap-1.5 border cursor-pointer ${
                     isSelected
-                      ? "bg-[#7A1C1C] text-[#FFFDF8] border-[#CBA135] shadow-[0_4px_12px_rgba(122,28,28,0.4)] scale-105"
-                      : "bg-[#FFFDF8] text-[#3D261A] border-[#CBA135]/60 hover:border-[#7A1C1C] shadow-xs"
+                      ? "bg-[#7A1C1C] text-[#FFFDF8] border-[#CBA135] scale-105"
+                      : "bg-[#FFFDF8] text-[#3D261A] border-[#CBA135]/60 hover:border-[#7A1C1C]"
                   }`}
                 >
                   <span
-                    className="w-2 h-2 rounded-full shrink-0 shadow-xs"
+                    className="w-2 h-2 rounded-full shrink-0"
                     style={{ backgroundColor: item.themeColor }}
                   />
                   <span className="whitespace-nowrap">{item.name}</span>
@@ -645,7 +632,7 @@ export default function CeremoniesScene() {
               touchDeltaX.current = 0;
             }}
           >
-            {/* Render 3D Stack Cards */}
+            {/* Render 3D Stack Cards Without Heavy Shadows */}
             {ceremonyDetails.map((item, idx) => {
               const count = ceremonyDetails.length;
               let diff = (idx - mobileIndex + count) % count;
@@ -685,8 +672,8 @@ export default function CeremoniesScene() {
                   }}
                   className={`absolute w-[265px] max-w-[82vw] h-[315px] bg-gradient-to-b from-[#FFFDF8] via-[#FAF6F0] to-[#F5EFE6] rounded-[24px] p-3.5 border-2 flex flex-col items-center justify-between text-center select-none cursor-pointer overflow-hidden ${
                     isCurrent
-                      ? "border-[#CBA135] active-3d-card-glow shadow-[0_16px_40px_rgba(0,0,0,0.18)]"
-                      : "border-[#CBA135]/40 shadow-[0_6px_16px_rgba(0,0,0,0.08)] pointer-events-auto"
+                      ? "border-[#CBA135]"
+                      : "border-[#CBA135]/40 pointer-events-auto"
                   }`}
                 >
                   {/* Luxury Gold Shimmer Sweep Effect on Current Card */}
@@ -728,7 +715,7 @@ export default function CeremoniesScene() {
                   <div className="relative z-10 w-full pb-0.5">
                     <button
                       type="button"
-                      className="w-full py-1.5 px-3 rounded-full bg-gradient-to-r from-[#7A1C1C] via-[#8C2338] to-[#7A1C1C] text-[#FFFDF8] border border-[#CBA135] font-['Cinzel',serif] text-[9.5px] font-black uppercase tracking-widest flex items-center justify-center gap-1.5 shadow-md active:scale-95 transition-transform"
+                      className="w-full py-1.5 px-3 rounded-full bg-gradient-to-r from-[#7A1C1C] via-[#8C2338] to-[#7A1C1C] text-[#FFFDF8] border border-[#CBA135] font-['Cinzel',serif] text-[9.5px] font-black uppercase tracking-widest flex items-center justify-center gap-1.5 active:scale-95 transition-transform"
                     >
                       <Sparkles className="w-3 h-3 text-[#FDE68A]" />
                       <span>EXPLORE CEREMONY</span>
@@ -746,10 +733,10 @@ export default function CeremoniesScene() {
                 e.stopPropagation();
                 handlePrevMobileCard();
               }}
-              className="absolute left-1 z-30 p-2 rounded-full bg-[#FFFDF8]/90 backdrop-blur-xs border-2 border-[#CBA135] text-[#7A1C1C] shadow-lg active:scale-90 transition-transform cursor-pointer"
+              className="absolute left-1 z-30 p-2 rounded-full bg-[#FFFDF8]/90 backdrop-blur-xs border-2 border-[#CBA135] text-[#7A1C1C] active:scale-90 transition-transform cursor-pointer"
               aria-label="Previous Ceremony"
             >
-              <ChevronLeft className="w-4 h-4 stroke-[2.5]" />
+              <ChevronLeft className="w-5 h-5" />
             </button>
 
             {/* Right Carousel Arrow Button */}
@@ -759,10 +746,10 @@ export default function CeremoniesScene() {
                 e.stopPropagation();
                 handleNextMobileCard();
               }}
-              className="absolute right-1 z-30 p-2 rounded-full bg-[#FFFDF8]/90 backdrop-blur-xs border-2 border-[#CBA135] text-[#7A1C1C] shadow-lg active:scale-90 transition-transform cursor-pointer"
+              className="absolute right-1 z-30 p-2 rounded-full bg-[#FFFDF8]/90 backdrop-blur-xs border-2 border-[#CBA135] text-[#7A1C1C] active:scale-90 transition-transform cursor-pointer"
               aria-label="Next Ceremony"
             >
-              <ChevronRight className="w-4 h-4 stroke-[2.5]" />
+              <ChevronRight className="w-5 h-5" />
             </button>
           </div>
 

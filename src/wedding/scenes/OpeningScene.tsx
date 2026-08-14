@@ -231,22 +231,22 @@ export default function OpeningScene() {
           id="textContainer"
         >
           {/* Staggered Big Font Title with Writing Animation: Rohan & Ananya */}
-          <div className="flex flex-col items-center select-none my-0 w-full max-w-xs sm:max-w-sm md:max-w-md overflow-visible">
+          <div className="flex flex-col items-center select-none my-0 w-full max-w-[280px] sm:max-w-sm md:max-w-md overflow-visible">
             <span
               ref={rohanRef}
-              className="font-script text-[42px] sm:text-[58px] md:text-[70px] lg:text-[78px] text-[#e9c349] tracking-wider self-start pl-2 sm:pl-6 pt-1 pb-0 leading-tight overflow-visible drop-shadow-[0_4px_14px_rgba(0,0,0,0.95)]"
+              className="font-script text-[36px] sm:text-[50px] md:text-[66px] lg:text-[74px] text-[#e9c349] tracking-wider self-start pl-2 sm:pl-6 pt-0 pb-0 leading-tight overflow-visible drop-shadow-[0_4px_14px_rgba(0,0,0,0.95)]"
             >
               Rohan
             </span>
             <span
               ref={ampRef}
-              className="font-serif italic font-bold text-[22px] sm:text-[32px] md:text-[40px] text-[#FBF1DE] opacity-90 -my-2.5 sm:-my-4 md:-my-5 drop-shadow-[0_2px_8px_rgba(0,0,0,0.9)]"
+              className="font-serif italic font-bold text-[18px] sm:text-[26px] md:text-[36px] text-[#FBF1DE] opacity-90 -my-2 sm:-my-3 md:-my-4 drop-shadow-[0_2px_8px_rgba(0,0,0,0.9)]"
             >
               &
             </span>
             <span
               ref={ananyaRef}
-              className="font-script text-[42px] sm:text-[58px] md:text-[70px] lg:text-[78px] text-[#e9c349] tracking-wider self-end pr-2 sm:pr-6 pt-1 pb-0 leading-tight overflow-visible drop-shadow-[0_4px_14px_rgba(0,0,0,0.95)]"
+              className="font-script text-[36px] sm:text-[50px] md:text-[66px] lg:text-[74px] text-[#e9c349] tracking-wider self-end pr-2 sm:pr-6 pt-0 pb-0 leading-tight overflow-visible drop-shadow-[0_4px_14px_rgba(0,0,0,0.95)]"
             >
               Ananya
             </span>

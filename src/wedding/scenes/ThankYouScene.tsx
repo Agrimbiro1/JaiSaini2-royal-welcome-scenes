@@ -38,7 +38,7 @@ export default function ThankYouScene() {
   return (
     <section
       ref={rootRef}
-      className="relative w-full h-full min-h-screen max-h-none sm:max-h-screen overflow-y-auto sm:overflow-hidden bg-[#0a0205] text-[#FBF1DE] font-sans select-none flex flex-col items-center justify-between py-6 sm:py-8 px-4"
+      className="relative w-full h-[100svh] min-h-[100svh] max-h-[100svh] overflow-hidden bg-[#0a0205] text-[#FBF1DE] font-sans select-none flex flex-col items-center justify-center pt-2 pb-20 sm:pb-8 px-3 sm:px-4"
     >
       {/* Background Image Layer */}
       <div
@@ -59,10 +59,10 @@ export default function ThankYouScene() {
       {/* Ambient Warm Glow */}
       <WarmGlow className="left-1/2 top-1/2 h-[550px] w-[550px] -translate-x-1/2 -translate-y-1/2 opacity-40 pointer-events-none z-15" />
 
-      {/* Royal Thank You Card Container */}
+      {/* Royal Thank You Card Container - Centered */}
       <div
         ref={contentRef}
-        className="relative z-20 flex flex-col items-center text-center my-auto w-full max-w-lg px-6 sm:px-9 py-7 sm:py-9 rounded-2xl bg-gradient-to-b from-[#2E0715]/85 via-[#1E050E]/90 to-[#120207]/95 backdrop-blur-md border-2 border-[#CBA135]/80 shadow-[0_30px_70px_rgba(0,0,0,0.95),0_0_40px_rgba(203,161,53,0.35)] pointer-events-auto"
+        className="relative z-20 flex flex-col items-center text-center my-auto w-full max-w-md sm:max-w-lg px-5 sm:px-9 py-5 sm:py-9 rounded-2xl bg-gradient-to-b from-[#2E0715]/85 via-[#1E050E]/90 to-[#120207]/95 backdrop-blur-md border-2 border-[#CBA135]/80 shadow-[0_30px_70px_rgba(0,0,0,0.95),0_0_40px_rgba(203,161,53,0.35)] pointer-events-auto"
       >
         {/* Ornate Filigree Corner Accents */}
         <div className="absolute top-3 left-3 w-5 h-5 border-t-2 border-l-2 border-[#CBA135] rounded-tl-sm pointer-events-none opacity-85" />

@@ -546,27 +546,34 @@ export default function FamilyScene() {
         @media (max-width: 767px) {
           .family-scene-root {
             overflow: hidden !important;
+            height: 100svh !important;
             max-height: 100svh !important;
-            padding-bottom: 74px !important;
+            padding-top: 6px !important;
+            padding-bottom: 70px !important;
+            justify-content: space-between !important;
           }
           .family-cards-container {
-            margin: 4px auto 0;
-            gap: 0;
+            margin: auto 0 !important;
+            display: flex !important;
+            align-items: center !important;
+            justify-content: center !important;
+            width: 100% !important;
+            flex: 1 !important;
           }
           .royal-arch-card {
-            height: 450px;
+            height: 440px;
             max-width: 315px;
-            padding: 94px 18px 46px;
+            padding: 92px 18px 44px;
           }
           .family-photo-wrap {
             max-width: 215px;
-            height: 114px;
-            margin: 4px 0;
+            height: 112px;
+            margin: 3px 0;
           }
           .view-family-btn {
-            padding: 6.5px 22px;
+            padding: 6px 22px;
             font-size: 10px;
-            margin-bottom: 4px;
+            margin-bottom: 3px;
           }
         }
 

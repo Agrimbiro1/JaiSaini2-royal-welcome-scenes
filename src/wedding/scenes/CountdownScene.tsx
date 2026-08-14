@@ -198,7 +198,12 @@ export default function CountdownScene() {
 
         /* Header Styles */
         .shubh-muhurat-root .head {
-          position: relative; text-align: center; max-width: 620px; z-index: 2; margin-top: 2px;
+          position: relative;
+          text-align: center;
+          max-width: 620px;
+          z-index: 2;
+          margin-top: 14px;
+          padding: 0 8px;
         }
 
         .shubh-badge {
@@ -237,6 +242,7 @@ export default function CountdownScene() {
         }
 
         @media (min-width: 640px) {
+          .shubh-muhurat-root .head { margin-top: 4px; }
           .shubh-badge { font-size: 12px; padding: 4px 18px; }
           .shubh-muhurat-root .head h1 { font-size: 32px; }
           .shubh-shloka { font-size: 15px; }
@@ -443,23 +449,30 @@ export default function CountdownScene() {
         }
 
         .save-date-btn {
-          margin-top: 6px;
+          margin-top: 8px;
           display: inline-flex;
           align-items: center;
           gap: 6px;
           font-family: 'Cinzel', serif;
           font-weight: 700;
-          font-size: 10px;
+          font-size: 10.5px;
           letter-spacing: 0.16em;
           text-transform: uppercase;
           color: #3E0C1B;
           background: linear-gradient(135deg, #FDF3E3 0%, #E6CA85 100%);
           border: 1.5px solid #CBA135;
-          padding: 6px 18px;
+          padding: 10px 22px;
           border-radius: 999px;
           cursor: pointer;
           box-shadow: 0 4px 14px rgba(0,0,0,0.4), 0 0 10px rgba(203,161,53,0.3);
           transition: all 0.25s ease;
+        }
+
+        @media (min-width: 640px) {
+          .save-date-btn {
+            font-size: 11px;
+            padding: 12px 26px;
+          }
         }
 
         .save-date-btn:hover {
