@@ -514,7 +514,7 @@ export default function RsvpScene() {
         />
       ))}
 
-      <AmbientLayer dust={5} petals={2} />
+      <AmbientLayer dust={5} petals={8} />
     </section>
   );
 }

@@ -231,22 +231,22 @@ export default function OpeningScene() {
           id="textContainer"
         >
           {/* Staggered Big Font Title with Writing Animation: Rohan & Ananya */}
-          <div className="flex flex-col items-center select-none my-0 w-full max-w-md sm:max-w-xl overflow-visible">
+          <div className="flex flex-col items-center select-none my-0 w-full max-w-xs sm:max-w-sm md:max-w-md overflow-visible">
             <span
               ref={rohanRef}
-              className="font-script text-[48px] sm:text-[68px] md:text-[96px] text-[#e9c349] tracking-wider self-start pl-2 sm:pl-8 pt-1 pb-0 leading-tight overflow-visible drop-shadow-[0_4px_14px_rgba(0,0,0,0.95)]"
+              className="font-script text-[42px] sm:text-[58px] md:text-[70px] lg:text-[78px] text-[#e9c349] tracking-wider self-start pl-2 sm:pl-6 pt-1 pb-0 leading-tight overflow-visible drop-shadow-[0_4px_14px_rgba(0,0,0,0.95)]"
             >
               Rohan
             </span>
             <span
               ref={ampRef}
-              className="font-serif italic font-bold text-[26px] sm:text-[38px] md:text-[54px] text-[#FBF1DE] opacity-90 -my-3 sm:-my-5 md:-my-7 drop-shadow-[0_2px_8px_rgba(0,0,0,0.9)]"
+              className="font-serif italic font-bold text-[22px] sm:text-[32px] md:text-[40px] text-[#FBF1DE] opacity-90 -my-2.5 sm:-my-4 md:-my-5 drop-shadow-[0_2px_8px_rgba(0,0,0,0.9)]"
             >
               &
             </span>
             <span
               ref={ananyaRef}
-              className="font-script text-[48px] sm:text-[68px] md:text-[96px] text-[#e9c349] tracking-wider self-end pr-2 sm:pr-8 pt-1 pb-0 leading-tight overflow-visible drop-shadow-[0_4px_14px_rgba(0,0,0,0.95)]"
+              className="font-script text-[42px] sm:text-[58px] md:text-[70px] lg:text-[78px] text-[#e9c349] tracking-wider self-end pr-2 sm:pr-6 pt-1 pb-0 leading-tight overflow-visible drop-shadow-[0_4px_14px_rgba(0,0,0,0.95)]"
             >
               Ananya
             </span>
@@ -282,18 +282,18 @@ export default function OpeningScene() {
             {reelFrames.map((frame) => {
               if (frame.hero) {
                 return (
-                  /* Frame 6 (Final Hero Frame - Couple Photo) */
+                  /* Frame 6 (Final Hero Frame - Couple Photo: Same size as other frames) */
                   <div
                     key={frame.id}
                     ref={heroFrameRef}
-                    className="w-[360px] h-[240px] sm:w-[380px] sm:h-[253px] md:w-[800px] md:h-[533px] relative shrink-0 border-y-[8px] sm:border-y-[10px] md:border-y-[16px] border-x-[3px] sm:border-x-[4px] md:border-x-[6px] border-[#12140c] bg-[#12140c] p-1.5 sm:p-2 md:p-3 flex items-center justify-center overflow-hidden transition-all duration-1000 origin-center"
+                    className="w-[340px] h-[226px] sm:w-[360px] sm:h-[240px] md:w-[700px] md:h-[466px] relative shrink-0 border-y-[8px] sm:border-y-[10px] md:border-y-[16px] border-x-[3px] sm:border-x-[4px] md:border-x-[6px] border-[#12140c] bg-[#12140c] p-1.5 sm:p-2 md:p-3 flex items-center justify-center overflow-hidden transition-all duration-1000 origin-center"
                     id="heroFrame"
                   >
                     <img
                       ref={heroImageRef}
                       src={frame.src}
                       alt={frame.alt}
-                      className="w-full h-full object-cover filter grayscale opacity-70 transition-all duration-1000 scale-105"
+                      className="w-full h-full object-cover filter grayscale opacity-70 transition-all duration-1000"
                       id="heroImage"
                     />
                     <div
@@ -306,10 +306,10 @@ export default function OpeningScene() {
               }
 
               return (
-                /* Regular Film Frames 1 to 5 - ENLARGED ON MOBILE */
+                /* Regular Film Frames 1 to 5 */
                 <div
                   key={frame.id}
-                  className="w-[340px] h-[226px] sm:w-[360px] sm:h-[240px] md:w-[800px] md:h-[533px] relative shrink-0 border-y-[8px] sm:border-y-[10px] md:border-y-[16px] border-x-[3px] sm:border-x-[4px] md:border-x-[6px] border-[#12140c] bg-[#12140c] p-1.5 sm:p-2 md:p-3 flex items-center justify-center"
+                  className="w-[340px] h-[226px] sm:w-[360px] sm:h-[240px] md:w-[700px] md:h-[466px] relative shrink-0 border-y-[8px] sm:border-y-[10px] md:border-y-[16px] border-x-[3px] sm:border-x-[4px] md:border-x-[6px] border-[#12140c] bg-[#12140c] p-1.5 sm:p-2 md:p-3 flex items-center justify-center"
                 >
                   <img
                     src={frame.src}

@@ -729,7 +729,7 @@ export default function BlessingsScene() {
       )}
 
       {/* Floating Ambient Layer */}
-      <AmbientLayer dust={6} petals={2} />
+      <AmbientLayer dust={6} petals={8} />
     </section>
   );
 }

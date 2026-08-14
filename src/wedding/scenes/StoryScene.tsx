@@ -524,7 +524,7 @@ export default function StoryScene() {
         </div>
       )}
 
-      <AmbientLayer dust={7} petals={2} />
+      <AmbientLayer dust={7} petals={8} />
     </section>
   );
 }

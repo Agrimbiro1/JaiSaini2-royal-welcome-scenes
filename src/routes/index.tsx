@@ -1,7 +1,7 @@
 import { createFileRoute } from "@tanstack/react-router";
 import { WeddingExperience } from "@/wedding/WeddingExperience";
 
-const TITLE = "Rohan × Ananya — A Rajasthani Wedding Invitation";
+const TITLE = "Rohan & Ananya — A Rajasthani Wedding Invitation";
 const DESCRIPTION =
   "Step through eleven royal scenes — curtains, jharokhas, a golden thread and a wish tree — and accept your invitation to Rohan and Ananya's Rajasthani wedding.";
 

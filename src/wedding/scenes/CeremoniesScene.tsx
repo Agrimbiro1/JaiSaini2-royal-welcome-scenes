@@ -1,9 +1,10 @@
 import { useEffect, useRef, useState } from "react";
 import Matter from "matter-js";
 import gsap from "gsap";
+import confetti from "canvas-confetti";
 import { usePrefersReducedMotion } from "../engine/SceneProvider";
 import { AmbientLayer } from "../ui/Ambient";
-import { Calendar, Clock, MapPin, Navigation, CalendarPlus, X, BookOpen, ChevronLeft, ChevronRight } from "lucide-react";
+import { Calendar, Clock, MapPin, Navigation, CalendarPlus, X, BookOpen, ChevronLeft, ChevronRight, Sparkles } from "lucide-react";
 
 export type CeremonyDetail = {
   id: string;
@@ -18,6 +19,8 @@ export type CeremonyDetail = {
   isoStart: string;
   isoEnd: string;
   mapUrl: string;
+  themeColor: string;
+  dressCode?: string;
 };
 
 const ceremonyDetails: CeremonyDetail[] = [
@@ -34,6 +37,8 @@ const ceremonyDetails: CeremonyDetail[] = [
     isoStart: "20261114T053000Z",
     isoEnd: "20261114T093000Z",
     mapUrl: "https://maps.google.com/?q=Suvarna+Mahal+Jaipur",
+    themeColor: "#F59E0B",
+    dressCode: "Yellow & Mustard Festive",
   },
   {
     id: "mehendi",
@@ -48,6 +53,8 @@ const ceremonyDetails: CeremonyDetail[] = [
     isoStart: "20261114T113000Z",
     isoEnd: "20261114T163000Z",
     mapUrl: "https://maps.google.com/?q=Zanana+Gardens+Jaipur",
+    themeColor: "#10B981",
+    dressCode: "Emerald & Floral Chic",
   },
   {
     id: "sangeet",
@@ -62,6 +69,8 @@ const ceremonyDetails: CeremonyDetail[] = [
     isoStart: "20261115T143000Z",
     isoEnd: "20261115T193000Z",
     mapUrl: "https://maps.google.com/?q=Palace+Lawns+Jaipur",
+    themeColor: "#8B5CF6",
+    dressCode: "Glamorous Indo-Western",
   },
   {
     id: "shaadi",
@@ -76,6 +85,8 @@ const ceremonyDetails: CeremonyDetail[] = [
     isoStart: "20261221T133000Z",
     isoEnd: "20261221T193000Z",
     mapUrl: "https://maps.google.com/?q=The+Grand+Palace+Jaipur",
+    themeColor: "#DC2626",
+    dressCode: "Imperial Royal Traditional",
   },
   {
     id: "reception",
@@ -90,6 +101,8 @@ const ceremonyDetails: CeremonyDetail[] = [
     isoStart: "20261205T143000Z",
     isoEnd: "20261205T193000Z",
     mapUrl: "https://maps.google.com/?q=Royal+Ballroom+Jaipur",
+    themeColor: "#D97706",
+    dressCode: "Royal Formal / Black Tie",
   },
   {
     id: "banquet",
@@ -104,6 +117,8 @@ const ceremonyDetails: CeremonyDetail[] = [
     isoStart: "20261206T073000Z",
     isoEnd: "20261206T123000Z",
     mapUrl: "https://maps.google.com/?q=Palace+Courtyard+Jaipur",
+    themeColor: "#CA8A04",
+    dressCode: "Regal Daywear",
   },
 ];
 
@@ -117,16 +132,39 @@ const CEREMONY_FLORAL_PALETTES: Record<string, string[]> = {
   banquet: ["#CA8A04", "#EAB308", "#FEF08A", "#A16207", "#FDE047"],
 };
 
-// Blend-in SVG Icons with Soft Glowing Radial Aura matching user's exact reference image
-function CardBlendedSVG({ id }: { id: string }) {
+// Rotating Sacred Mandala Halo behind Ceremony SVGs
+function RotatingMandalaAura({ color = "#CBA135" }: { color?: string }) {
+  return (
+    <div className="absolute inset-0 flex items-center justify-center pointer-events-none scale-125">
+      <svg
+        viewBox="0 0 120 120"
+        className="w-full h-full animate-[spin_24s_linear_infinite] opacity-40"
+      >
+        <circle cx="60" cy="60" r="54" fill="none" stroke={color} strokeWidth="0.8" strokeDasharray="3 3" />
+        <circle cx="60" cy="60" r="44" fill="none" stroke={color} strokeWidth="1" opacity="0.6" />
+        <circle cx="60" cy="60" r="34" fill="none" stroke={color} strokeWidth="0.6" strokeDasharray="2 3" />
+        {[0, 30, 60, 90, 120, 150, 180, 210, 240, 270, 300, 330].map((deg) => (
+          <g key={deg} transform={`rotate(${deg} 60 60)`}>
+            <path d="M60 16 C62 26 62 30 60 40 C58 30 58 26 60 16 Z" fill={color} opacity="0.4" />
+            <circle cx="60" cy="12" r="1.5" fill={color} />
+          </g>
+        ))}
+      </svg>
+    </div>
+  );
+}
+
+// Blend-in SVG Icons with Soft Glowing Radial Aura and Mandala Backing
+function CardBlendedSVG({ id, isFocused = false }: { id: string; isFocused?: boolean }) {
   switch (id) {
     case "haldi":
       return (
-        <div className="relative flex items-center justify-center w-20 h-20 sm:w-24 sm:h-24 my-0.5">
-          <div className="absolute inset-0 rounded-full bg-amber-400/25 blur-xl scale-125" />
-          <svg viewBox="0 0 100 100" className="w-16 h-16 sm:w-20 sm:h-20 relative z-10 drop-shadow-xs">
-            <circle cx="50" cy="50" r="38" fill="none" stroke="#FBBF24" strokeWidth="1" strokeDasharray="3 3" opacity="0.5" />
-            <circle cx="50" cy="50" r="28" fill="rgba(251, 191, 36, 0.12)" />
+        <div className={`relative flex items-center justify-center w-20 h-20 sm:w-24 sm:h-24 my-0.5 transition-transform duration-500 ${isFocused ? "scale-110" : ""}`}>
+          <div className="absolute inset-0 rounded-full bg-amber-400/30 blur-xl scale-125 animate-pulse" />
+          <RotatingMandalaAura color="#FBBF24" />
+          <svg viewBox="0 0 100 100" className="w-16 h-16 sm:w-20 sm:h-20 relative z-10 drop-shadow-md">
+            <circle cx="50" cy="50" r="38" fill="none" stroke="#FBBF24" strokeWidth="1.2" strokeDasharray="3 3" opacity="0.6" />
+            <circle cx="50" cy="50" r="28" fill="rgba(251, 191, 36, 0.18)" />
             <ellipse cx="50" cy="62" rx="28" ry="12" fill="#D97706" />
             <ellipse cx="50" cy="60" rx="25" ry="10" fill="#F59E0B" />
             <ellipse cx="50" cy="58" rx="21" ry="7" fill="#FCD34D" />
@@ -139,11 +177,12 @@ function CardBlendedSVG({ id }: { id: string }) {
       );
     case "mehendi":
       return (
-        <div className="relative flex items-center justify-center w-20 h-20 sm:w-24 sm:h-24 my-0.5">
-          <div className="absolute inset-0 rounded-full bg-emerald-400/25 blur-xl scale-125" />
-          <svg viewBox="0 0 100 100" className="w-16 h-16 sm:w-20 sm:h-20 relative z-10 drop-shadow-xs">
-            <circle cx="50" cy="50" r="38" fill="none" stroke="#34D399" strokeWidth="1" strokeDasharray="3 3" opacity="0.5" />
-            <circle cx="50" cy="50" r="28" fill="rgba(52, 211, 153, 0.12)" />
+        <div className={`relative flex items-center justify-center w-20 h-20 sm:w-24 sm:h-24 my-0.5 transition-transform duration-500 ${isFocused ? "scale-110" : ""}`}>
+          <div className="absolute inset-0 rounded-full bg-emerald-400/30 blur-xl scale-125 animate-pulse" />
+          <RotatingMandalaAura color="#34D399" />
+          <svg viewBox="0 0 100 100" className="w-16 h-16 sm:w-20 sm:h-20 relative z-10 drop-shadow-md">
+            <circle cx="50" cy="50" r="38" fill="none" stroke="#34D399" strokeWidth="1.2" strokeDasharray="3 3" opacity="0.6" />
+            <circle cx="50" cy="50" r="28" fill="rgba(52, 211, 153, 0.18)" />
             <g stroke="#059669" strokeWidth="1.5" fill="none">
               <polygon points="50,22 58,36 74,36 62,46 66,62 50,52 34,62 38,46 26,36 42,36" fill="rgba(16, 185, 129, 0.15)" />
               <circle cx="50" cy="44" r="8" fill="#10B981" />
@@ -154,11 +193,12 @@ function CardBlendedSVG({ id }: { id: string }) {
       );
     case "sangeet":
       return (
-        <div className="relative flex items-center justify-center w-20 h-20 sm:w-24 sm:h-24 my-0.5">
-          <div className="absolute inset-0 rounded-full bg-purple-400/25 blur-xl scale-125" />
-          <svg viewBox="0 0 100 100" className="w-16 h-16 sm:w-20 sm:h-20 relative z-10 drop-shadow-xs">
-            <circle cx="50" cy="50" r="38" fill="none" stroke="#C084FC" strokeWidth="1" strokeDasharray="3 3" opacity="0.5" />
-            <circle cx="50" cy="50" r="28" fill="rgba(192, 132, 252, 0.12)" />
+        <div className={`relative flex items-center justify-center w-20 h-20 sm:w-24 sm:h-24 my-0.5 transition-transform duration-500 ${isFocused ? "scale-110" : ""}`}>
+          <div className="absolute inset-0 rounded-full bg-purple-400/30 blur-xl scale-125 animate-pulse" />
+          <RotatingMandalaAura color="#C084FC" />
+          <svg viewBox="0 0 100 100" className="w-16 h-16 sm:w-20 sm:h-20 relative z-10 drop-shadow-md">
+            <circle cx="50" cy="50" r="38" fill="none" stroke="#C084FC" strokeWidth="1.2" strokeDasharray="3 3" opacity="0.6" />
+            <circle cx="50" cy="50" r="28" fill="rgba(192, 132, 252, 0.18)" />
             <path d="M22 28 Q50 36 78 28" fill="none" stroke="#8B5CF6" strokeWidth="1.5" />
             <circle cx="34" cy="31" r="3" fill="#EC4899" />
             <circle cx="50" cy="33" r="3" fill="#F472B6" />
@@ -171,11 +211,12 @@ function CardBlendedSVG({ id }: { id: string }) {
       );
     case "shaadi":
       return (
-        <div className="relative flex items-center justify-center w-20 h-20 sm:w-24 sm:h-24 my-0.5">
-          <div className="absolute inset-0 rounded-full bg-red-500/25 blur-xl scale-125" />
-          <svg viewBox="0 0 100 100" className="w-16 h-16 sm:w-20 sm:h-20 relative z-10 drop-shadow-xs">
-            <circle cx="50" cy="50" r="38" fill="none" stroke="#F87171" strokeWidth="1" strokeDasharray="3 3" opacity="0.5" />
-            <circle cx="50" cy="50" r="28" fill="rgba(248, 113, 113, 0.12)" />
+        <div className={`relative flex items-center justify-center w-20 h-20 sm:w-24 sm:h-24 my-0.5 transition-transform duration-500 ${isFocused ? "scale-110" : ""}`}>
+          <div className="absolute inset-0 rounded-full bg-red-500/30 blur-xl scale-125 animate-pulse" />
+          <RotatingMandalaAura color="#F87171" />
+          <svg viewBox="0 0 100 100" className="w-16 h-16 sm:w-20 sm:h-20 relative z-10 drop-shadow-md">
+            <circle cx="50" cy="50" r="38" fill="none" stroke="#F87171" strokeWidth="1.2" strokeDasharray="3 3" opacity="0.6" />
+            <circle cx="50" cy="50" r="28" fill="rgba(248, 113, 113, 0.18)" />
             <path d="M26 68 V38 Q50 22 74 38 V68" fill="none" stroke="#991B1B" strokeWidth="2.5" />
             <rect x="22" y="66" width="56" height="5" fill="#7F1D1D" rx="2" />
             <path d="M50 42 Q42 56 50 64 Q58 56 50 42 Z" fill="#EF4444" />
@@ -185,11 +226,12 @@ function CardBlendedSVG({ id }: { id: string }) {
       );
     case "reception":
       return (
-        <div className="relative flex items-center justify-center w-20 h-20 sm:w-24 sm:h-24 my-0.5">
-          <div className="absolute inset-0 rounded-full bg-amber-500/25 blur-xl scale-125" />
-          <svg viewBox="0 0 100 100" className="w-16 h-16 sm:w-20 sm:h-20 relative z-10 drop-shadow-xs">
-            <circle cx="50" cy="50" r="38" fill="none" stroke="#F59E0B" strokeWidth="1" strokeDasharray="3 3" opacity="0.5" />
-            <circle cx="50" cy="50" r="28" fill="rgba(245, 158, 11, 0.12)" />
+        <div className={`relative flex items-center justify-center w-20 h-20 sm:w-24 sm:h-24 my-0.5 transition-transform duration-500 ${isFocused ? "scale-110" : ""}`}>
+          <div className="absolute inset-0 rounded-full bg-amber-500/30 blur-xl scale-125 animate-pulse" />
+          <RotatingMandalaAura color="#F59E0B" />
+          <svg viewBox="0 0 100 100" className="w-16 h-16 sm:w-20 sm:h-20 relative z-10 drop-shadow-md">
+            <circle cx="50" cy="50" r="38" fill="none" stroke="#F59E0B" strokeWidth="1.2" strokeDasharray="3 3" opacity="0.6" />
+            <circle cx="50" cy="50" r="28" fill="rgba(245, 158, 11, 0.18)" />
             <path d="M28 68 V40 C28 26 72 26 72 40 V68" fill="none" stroke="#D97706" strokeWidth="2" />
             <circle cx="34" cy="34" r="2" fill="#FDE68A" />
             <circle cx="50" cy="28" r="2.5" fill="#FDE68A" />
@@ -200,11 +242,12 @@ function CardBlendedSVG({ id }: { id: string }) {
       );
     case "banquet":
       return (
-        <div className="relative flex items-center justify-center w-20 h-20 sm:w-24 sm:h-24 my-0.5">
-          <div className="absolute inset-0 rounded-full bg-yellow-400/25 blur-xl scale-125" />
-          <svg viewBox="0 0 100 100" className="w-16 h-16 sm:w-20 sm:h-20 relative z-10 drop-shadow-xs">
-            <circle cx="50" cy="50" r="38" fill="none" stroke="#CA8A04" strokeWidth="1" strokeDasharray="3 3" opacity="0.5" />
-            <circle cx="50" cy="50" r="28" fill="rgba(202, 138, 4, 0.12)" />
+        <div className={`relative flex items-center justify-center w-20 h-20 sm:w-24 sm:h-24 my-0.5 transition-transform duration-500 ${isFocused ? "scale-110" : ""}`}>
+          <div className="absolute inset-0 rounded-full bg-yellow-400/30 blur-xl scale-125 animate-pulse" />
+          <RotatingMandalaAura color="#CA8A04" />
+          <svg viewBox="0 0 100 100" className="w-16 h-16 sm:w-20 sm:h-20 relative z-10 drop-shadow-md">
+            <circle cx="50" cy="50" r="38" fill="none" stroke="#CA8A04" strokeWidth="1.2" strokeDasharray="3 3" opacity="0.6" />
+            <circle cx="50" cy="50" r="28" fill="rgba(202, 138, 4, 0.18)" />
             <g stroke="#854D0E" strokeWidth="1.2" fill="none">
               <circle cx="50" cy="50" r="14" fill="rgba(234, 179, 8, 0.2)" />
               <circle cx="50" cy="50" r="6" fill="#CA8A04" />
@@ -311,8 +354,8 @@ function MatterFloralCanvas({ ceremonyId }: { ceremonyId: string }) {
     const Bodies = Matter.Bodies;
     const Body = Matter.Body;
 
-    const engine = Engine.create({ gravity: { x: 0, y: 0.08, scale: 0.001 } });
-    const flowerCount = 30;
+    const engine = Engine.create({ gravity: { x: 0, y: 0.015, scale: 0.0005 } });
+    const flowerCount = 24;
     const flowerBodies: {
       body: Matter.Body;
       radius: number;
@@ -324,12 +367,12 @@ function MatterFloralCanvas({ ceremonyId }: { ceremonyId: string }) {
     }[] = [];
 
     for (let i = 0; i < flowerCount; i++) {
-      const radius = 10 + Math.random() * 22;
+      const radius = 10 + Math.random() * 20;
       const x = Math.random() * width;
       const y = Math.random() * height;
       const type: "full" | "petal" = i % 3 === 0 ? "petal" : "full";
 
-      const body = Bodies.circle(x, y, radius, { frictionAir: 0.02, restitution: 0.4 });
+      const body = Bodies.circle(x, y, radius, { frictionAir: 0.065, restitution: 0.2 });
       Body.setAngle(body, Math.random() * Math.PI * 2);
 
       flowerBodies.push({
@@ -338,7 +381,7 @@ function MatterFloralCanvas({ ceremonyId }: { ceremonyId: string }) {
         colorIndex: Math.floor(Math.random() * 5),
         petalCount: 5 + Math.floor(Math.random() * 3),
         type,
-        swaySpeed: 0.01 + Math.random() * 0.02,
+        swaySpeed: 0.006 + Math.random() * 0.01,
         swayPhase: Math.random() * Math.PI * 2,
       });
 
@@ -354,18 +397,19 @@ function MatterFloralCanvas({ ceremonyId }: { ceremonyId: string }) {
       flowerBodies.forEach(({ body, radius, colorIndex, petalCount, type, swaySpeed, swayPhase }) => {
         swayPhase += swaySpeed;
         Body.setVelocity(body, {
-          x: body.velocity.x + Math.sin(swayPhase) * 0.06,
-          y: body.velocity.y,
+          x: body.velocity.x * 0.95 + Math.sin(swayPhase) * 0.035,
+          y: Math.min(Math.max(body.velocity.y, 0.2), 0.65),
         });
 
         if (body.position.y > height + 40) {
           Body.setPosition(body, { x: Math.random() * width, y: -30 });
+          Body.setVelocity(body, { x: 0, y: 0.3 });
         }
 
         ctx.save();
         ctx.translate(body.position.x, body.position.y);
         ctx.rotate(body.angle);
-        ctx.globalAlpha = radius > 20 ? 0.25 : 0.35;
+        ctx.globalAlpha = radius > 20 ? 0.22 : 0.32;
 
         drawRealisticFlower(ctx, radius, petalCount, activePalette, colorIndex, type, swayPhase);
         ctx.restore();
@@ -391,25 +435,49 @@ export default function CeremoniesScene() {
   const reduced = usePrefersReducedMotion();
   const rootRef = useRef<HTMLDivElement>(null);
   const touchStartX = useRef<number>(0);
+  const touchDeltaX = useRef<number>(0);
+  const isDragging = useRef<boolean>(false);
 
   const [activeId, setActiveId] = useState<string>("shaadi");
-  const [mobileIndex, setMobileIndex] = useState<number>(0);
+  const [mobileIndex, setMobileIndex] = useState<number>(3); // default Shaadi
+  const [dragOffset, setDragOffset] = useState<number>(0);
   const [isModalOpen, setIsModalOpen] = useState(false);
   const active = ceremonyDetails.find((c) => c.id === activeId) || ceremonyDetails[3]!;
 
+  const triggerSparkles = (ceremony: CeremonyDetail) => {
+    try {
+      const palette = CEREMONY_FLORAL_PALETTES[ceremony.id] || ["#CBA135", "#F59E0B", "#DC2626", "#FDE68A"];
+      confetti({
+        particleCount: 24,
+        spread: 55,
+        origin: { y: 0.48 },
+        colors: palette,
+        scalar: 0.75,
+        ticks: 160,
+        disableForReducedMotion: true,
+      });
+    } catch (e) {
+      // safe fallback
+    }
+  };
+
+  const selectMobileIndex = (newIdx: number, burst = true) => {
+    const wrappedIdx = (newIdx + ceremonyDetails.length) % ceremonyDetails.length;
+    setMobileIndex(wrappedIdx);
+    const targetCeremony = ceremonyDetails[wrappedIdx]!;
+    setActiveId(targetCeremony.id);
+    if (burst) {
+      triggerSparkles(targetCeremony);
+    }
+  };
+
   const handlePrevMobileCard = () => {
-    setMobileIndex((prev) => (prev > 0 ? prev - 1 : ceremonyDetails.length - 1));
+    selectMobileIndex(mobileIndex - 1);
   };
 
   const handleNextMobileCard = () => {
-    setMobileIndex((prev) => (prev < ceremonyDetails.length - 1 ? prev + 1 : 0));
+    selectMobileIndex(mobileIndex + 1);
   };
-
-  const prevIndex = (mobileIndex - 1 + ceremonyDetails.length) % ceremonyDetails.length;
-  const nextIndex = (mobileIndex + 1) % ceremonyDetails.length;
-  const prevMobileCard = ceremonyDetails[prevIndex]!;
-  const currentMobileCard = ceremonyDetails[mobileIndex] || ceremonyDetails[0]!;
-  const nextMobileCard = ceremonyDetails[nextIndex]!;
 
   // Generate Google Calendar Event Link
   const getGoogleCalendarUrl = (item: CeremonyDetail) => {
@@ -424,7 +492,7 @@ export default function CeremoniesScene() {
       ref={rootRef}
       data-lenis-prevent
       onTouchMove={(e) => e.stopPropagation()}
-      className="ceremonies-scene-root relative w-full h-[100svh] overflow-y-auto overscroll-contain touch-pan-y flex flex-col justify-start items-center py-4 sm:py-2 pb-32 sm:pb-20 px-3 sm:px-8 select-none z-10"
+      className="ceremonies-scene-root relative w-full h-[100svh] overflow-y-auto overscroll-contain touch-pan-y flex flex-col justify-start items-center py-4 sm:py-2 pb-20 sm:pb-16 px-3 sm:px-8 select-none z-10"
     >
       <style>{`
         .ceremonies-scene-root {
@@ -454,6 +522,45 @@ export default function CeremoniesScene() {
           z-index: 1;
           pointer-events: none;
         }
+
+        @keyframes gold-shimmer-sweep {
+          0% { transform: translateX(-160%) rotate(25deg); opacity: 0; }
+          20% { opacity: 0.7; }
+          60% { opacity: 0.9; }
+          100% { transform: translateX(260%) rotate(25deg); opacity: 0; }
+        }
+
+        .gold-shimmer-sweep-fx {
+          position: absolute;
+          top: -60%;
+          left: -60%;
+          width: 220%;
+          height: 220%;
+          background: linear-gradient(
+            110deg,
+            transparent 30%,
+            rgba(255, 235, 170, 0.4) 45%,
+            rgba(255, 255, 255, 0.8) 50%,
+            rgba(255, 235, 170, 0.4) 55%,
+            transparent 70%
+          );
+          pointer-events: none;
+          animation: gold-shimmer-sweep 4.5s cubic-bezier(0.4, 0, 0.2, 1) infinite;
+          z-index: 15;
+        }
+
+        @keyframes active-card-pulse {
+          0%, 100% {
+            box-shadow: 0 16px 40px rgba(0,0,0,0.18), 0 0 25px rgba(203,161,53,0.35);
+          }
+          50% {
+            box-shadow: 0 20px 48px rgba(0,0,0,0.24), 0 0 35px rgba(203,161,53,0.6);
+          }
+        }
+
+        .active-3d-card-glow {
+          animation: active-card-pulse 3.5s ease-in-out infinite;
+        }
       `}</style>
 
       {/* White & Grey Paper Noise Texture & Vignette Background */}
@@ -464,104 +571,212 @@ export default function CeremoniesScene() {
       <MatterFloralCanvas ceremonyId={activeId} />
 
       {/* Top Header Section with Enriched Font Size and Generous Gap */}
-      <header className="relative z-20 text-center mt-3 sm:mt-2 mb-6 sm:mb-5 px-2">
-        <span className="font-['Cinzel',serif] text-xs sm:text-sm font-extrabold uppercase tracking-[0.35em] text-[#7A1C1C]">
-          Royal Celebrations & Events
+      <header className="relative z-20 text-center mt-1 sm:mt-3 mb-2.5 sm:mb-7 px-2">
+        <span className="font-['Cinzel',serif] text-[10px] sm:text-sm font-extrabold uppercase tracking-[0.3em] text-[#7A1C1C] flex items-center justify-center gap-1.5">
+          <Sparkles className="w-3 h-3 sm:w-3.5 sm:h-3.5 text-[#CBA135] animate-pulse" />
+          <span>Royal Celebrations & Events</span>
+          <Sparkles className="w-3 h-3 sm:w-3.5 sm:h-3.5 text-[#CBA135] animate-pulse" />
         </span>
-        <h1 className="font-['Playfair_Display',serif] text-3xl sm:text-4xl lg:text-5xl font-black text-[#3B0D1A] tracking-widest uppercase mt-1 sm:mt-1.5 drop-shadow-xs">
+        <h1 className="font-['Playfair_Display',serif] text-2xl sm:text-4xl lg:text-5xl font-black text-[#3B0D1A] tracking-widest uppercase mt-0.5 sm:mt-1.5 drop-shadow-xs">
           THE CEREMONIES
         </h1>
+        {/* Subtle Ornate Gold Divider */}
+        <div className="flex items-center justify-center gap-2 mt-1.5 select-none opacity-85">
+          <span className="w-6 sm:w-12 h-[1px] bg-gradient-to-r from-transparent to-[#CBA135]" />
+          <span className="w-1.5 h-1.5 rotate-45 bg-[#CBA135]" />
+          <span className="w-6 sm:w-12 h-[1px] bg-gradient-to-l from-transparent to-[#CBA135]" />
+        </div>
       </header>
 
       {/* Main Responsive Layout Container */}
-      <div className="relative z-20 w-full max-w-6xl h-auto sm:h-full sm:max-h-[calc(100svh-175px)] my-auto flex flex-col lg:grid lg:grid-cols-12 gap-6 sm:gap-4 items-stretch pb-4 sm:pb-2">
+      <div className="relative z-20 w-full max-w-6xl h-auto sm:h-full sm:max-h-[calc(100svh-175px)] my-auto flex flex-col lg:grid lg:grid-cols-12 gap-5 sm:gap-5 items-stretch pb-2 sm:pb-2">
         
-        {/* MOBILE VIEW: Clean Single Card Carousel with Left & Right Arrow Controls */}
-        <div className="block sm:hidden w-full flex flex-col items-center justify-center my-1 px-1">
+        {/* MOBILE VIEW: Luxury 3D Coverflow Perspective Carousel & Interactive Effects */}
+        <div className="block sm:hidden w-full flex flex-col items-center justify-center my-0 px-0">
           
-          <div className="relative w-full flex items-center justify-between gap-1.5 px-0.5 min-h-[380px] py-1">
+          {/* Quick Ceremony Category Pills in Wrapped Multi-Row Format */}
+          <div className="w-full flex flex-wrap items-center justify-center gap-1.5 sm:gap-2 px-1 mb-2.5">
+            {ceremonyDetails.map((item, idx) => {
+              const isSelected = idx === mobileIndex;
+              return (
+                <button
+                  key={item.id}
+                  type="button"
+                  onClick={() => selectMobileIndex(idx)}
+                  className={`px-3 py-1 rounded-full font-['Cinzel',serif] text-[10px] font-bold tracking-wider uppercase transition-all duration-300 flex items-center gap-1.5 border cursor-pointer ${
+                    isSelected
+                      ? "bg-[#7A1C1C] text-[#FFFDF8] border-[#CBA135] shadow-[0_4px_12px_rgba(122,28,28,0.4)] scale-105"
+                      : "bg-[#FFFDF8] text-[#3D261A] border-[#CBA135]/60 hover:border-[#7A1C1C] shadow-xs"
+                  }`}
+                >
+                  <span
+                    className="w-2 h-2 rounded-full shrink-0 shadow-xs"
+                    style={{ backgroundColor: item.themeColor }}
+                  />
+                  <span className="whitespace-nowrap">{item.name}</span>
+                </button>
+              );
+            })}
+          </div>
+
+          {/* 3D Coverflow Card Stage */}
+          <div
+            className="relative w-full h-[335px] flex items-center justify-center overflow-hidden"
+            style={{ perspective: "1000px" }}
+            onTouchStart={(e) => {
+              isDragging.current = true;
+              touchStartX.current = e.touches[0]?.clientX || 0;
+              touchDeltaX.current = 0;
+            }}
+            onTouchMove={(e) => {
+              if (!isDragging.current) return;
+              const currentX = e.touches[0]?.clientX || 0;
+              touchDeltaX.current = currentX - touchStartX.current;
+              setDragOffset(touchDeltaX.current);
+            }}
+            onTouchEnd={() => {
+              isDragging.current = false;
+              if (touchDeltaX.current > 40) {
+                handlePrevMobileCard();
+              } else if (touchDeltaX.current < -40) {
+                handleNextMobileCard();
+              }
+              setDragOffset(0);
+              touchDeltaX.current = 0;
+            }}
+          >
+            {/* Render 3D Stack Cards */}
+            {ceremonyDetails.map((item, idx) => {
+              const count = ceremonyDetails.length;
+              let diff = (idx - mobileIndex + count) % count;
+              if (diff > count / 2) diff -= count;
+
+              const isVisible = Math.abs(diff) <= 2;
+              if (!isVisible) return null;
+
+              const isCurrent = diff === 0;
+
+              const dragFactor = isDragging.current ? dragOffset / 260 : 0;
+              const effectiveDiff = diff - dragFactor;
+
+              let translateX = effectiveDiff * 76; // % offset
+              let rotateY = effectiveDiff * -24; // deg 3d rotation
+              let translateZ = Math.abs(effectiveDiff) * -85; // px depth
+              let scale = Math.max(0.8, 1 - Math.abs(effectiveDiff) * 0.16);
+              let opacity = Math.max(0, 1 - Math.abs(effectiveDiff) * 0.5);
+              let zIndex = 20 - Math.round(Math.abs(effectiveDiff) * 5);
+
+              return (
+                <div
+                  key={item.id}
+                  onClick={() => {
+                    if (isCurrent) {
+                      setActiveId(item.id);
+                      setIsModalOpen(true);
+                    } else {
+                      selectMobileIndex(idx);
+                    }
+                  }}
+                  style={{
+                    transform: `translateX(${translateX}%) translateZ(${translateZ}px) rotateY(${rotateY}deg) scale(${scale})`,
+                    opacity: opacity,
+                    zIndex: zIndex,
+                    transition: isDragging.current ? "none" : "transform 0.45s cubic-bezier(0.2, 0.8, 0.2, 1), opacity 0.45s ease",
+                  }}
+                  className={`absolute w-[265px] max-w-[82vw] h-[315px] bg-gradient-to-b from-[#FFFDF8] via-[#FAF6F0] to-[#F5EFE6] rounded-[24px] p-3.5 border-2 flex flex-col items-center justify-between text-center select-none cursor-pointer overflow-hidden ${
+                    isCurrent
+                      ? "border-[#CBA135] active-3d-card-glow shadow-[0_16px_40px_rgba(0,0,0,0.18)]"
+                      : "border-[#CBA135]/40 shadow-[0_6px_16px_rgba(0,0,0,0.08)] pointer-events-auto"
+                  }`}
+                >
+                  {/* Luxury Gold Shimmer Sweep Effect on Current Card */}
+                  {isCurrent && <div className="gold-shimmer-sweep-fx" />}
+
+                  {/* Inner Gold Filigree Frame Line */}
+                  <div className="absolute inset-1.5 rounded-[18px] border border-[#7A1C1C]/25 pointer-events-none" />
+
+                  {/* Top Ceremony Category Tag */}
+                  <div className="relative z-10 pt-0.5 flex items-center justify-center">
+                    <span className="px-2 py-0.5 rounded-full bg-[#7A1C1C]/10 text-[#7A1C1C] border border-[#7A1C1C]/20 font-['Cinzel',serif] text-[8.5px] font-extrabold uppercase tracking-wider">
+                      {item.tagline}
+                    </span>
+                  </div>
+
+                  {/* Blended SVG Header Icon with Glowing Aura & Spinning Mandala */}
+                  <div className="relative z-10 py-0.5 scale-90">
+                    <CardBlendedSVG id={item.id} isFocused={isCurrent} />
+                  </div>
+
+                  {/* Ceremony Title & Quote */}
+                  <div className="relative z-10 flex flex-col items-center my-0 px-1">
+                    <h3 className="font-['Cinzel',serif] text-sm font-black tracking-[0.22em] text-[#3B0D1A] uppercase">
+                      {item.name}
+                    </h3>
+                    <p className="font-['Cormorant_Garamond',serif] text-[12px] italic text-[#634331] font-semibold mt-0.5 leading-snug px-1 line-clamp-2">
+                      "{item.quote}"
+                    </p>
+                  </div>
+
+                  {/* Date & Time Stamp Badge */}
+                  <div className="relative z-10 py-1 border-y border-[#CBA135]/60 w-full my-0.5 bg-[#FFFDF8]/40">
+                    <p className="font-['Cinzel',serif] text-[10px] font-bold text-[#3D261A] tracking-wider uppercase">
+                      {item.date} • {item.time}
+                    </p>
+                  </div>
+
+                  {/* Explore Ceremony Glowing Button */}
+                  <div className="relative z-10 w-full pb-0.5">
+                    <button
+                      type="button"
+                      className="w-full py-1.5 px-3 rounded-full bg-gradient-to-r from-[#7A1C1C] via-[#8C2338] to-[#7A1C1C] text-[#FFFDF8] border border-[#CBA135] font-['Cinzel',serif] text-[9.5px] font-black uppercase tracking-widest flex items-center justify-center gap-1.5 shadow-md active:scale-95 transition-transform"
+                    >
+                      <Sparkles className="w-3 h-3 text-[#FDE68A]" />
+                      <span>EXPLORE CEREMONY</span>
+                      <span className="text-xs">→</span>
+                    </button>
+                  </div>
+                </div>
+              );
+            })}
+
             {/* Left Carousel Arrow Button */}
             <button
               type="button"
-              onClick={handlePrevMobileCard}
-              className="p-3 rounded-full bg-[#FFFDF8] border-2 border-[#CBA135] text-[#7A1C1C] shadow-xl active:scale-90 transition-transform z-30 flex-shrink-0 cursor-pointer"
+              onClick={(e) => {
+                e.stopPropagation();
+                handlePrevMobileCard();
+              }}
+              className="absolute left-1 z-30 p-2 rounded-full bg-[#FFFDF8]/90 backdrop-blur-xs border-2 border-[#CBA135] text-[#7A1C1C] shadow-lg active:scale-90 transition-transform cursor-pointer"
               aria-label="Previous Ceremony"
             >
-              <ChevronLeft className="w-5 h-5 stroke-[2.5]" />
+              <ChevronLeft className="w-4 h-4 stroke-[2.5]" />
             </button>
-
-            {/* Mobile Active Ceremony Card - Full Height, Unclipped */}
-            <div
-              onTouchStart={(e) => {
-                touchStartX.current = e.touches[0]?.clientX || 0;
-              }}
-              onTouchEnd={(e) => {
-                const touchEndX = e.changedTouches[0]?.clientX || 0;
-                const diff = touchStartX.current - touchEndX;
-                if (diff > 40) handleNextMobileCard();
-                if (diff < -40) handlePrevMobileCard();
-              }}
-              onClick={() => {
-                setActiveId(currentMobileCard.id);
-                setIsModalOpen(true);
-              }}
-              className="group relative flex-1 bg-gradient-to-b from-[#FFFDF8] via-[#FAF6F0] to-[#F5EFE6] rounded-[28px] p-4 border-2 border-[#CBA135] shadow-[0_16px_40px_rgba(0,0,0,0.14)] flex flex-col items-center justify-between text-center cursor-pointer select-none min-h-[360px] my-1"
-            >
-              {/* Inner Gold Filigree Frame Line */}
-              <div className="absolute inset-2 rounded-[22px] border border-[#7A1C1C]/25 pointer-events-none" />
-
-              {/* Blended SVG Header Icon */}
-              <div className="pt-1">
-                <CardBlendedSVG id={currentMobileCard.id} />
-              </div>
-
-              {/* Ceremony Title & Quote */}
-              <div className="flex flex-col items-center my-2">
-                <h3 className="font-['Cinzel',serif] text-base font-black tracking-[0.25em] text-[#3B0D1A] uppercase">
-                  {currentMobileCard.name}
-                </h3>
-                <p className="font-['Cormorant_Garamond',serif] text-sm italic text-[#634331] font-semibold mt-1 leading-relaxed px-2">
-                  "{currentMobileCard.quote}"
-                </p>
-              </div>
-
-              {/* Date & Time Stamp */}
-              <div className="py-2 border-y border-[#CBA135]/50 w-full my-2">
-                <p className="font-['Cinzel',serif] text-xs font-bold text-[#3D261A] tracking-wider uppercase">
-                  {currentMobileCard.date} • {currentMobileCard.time}
-                </p>
-              </div>
-
-              {/* Explore Ceremony Button Link */}
-              <button
-                type="button"
-                className="inline-flex items-center gap-2 font-['Cinzel',serif] text-xs font-black text-[#A37326] uppercase tracking-widest pb-1"
-              >
-                <span>EXPLORE CEREMONY</span>
-                <span className="text-sm">→</span>
-              </button>
-            </div>
 
             {/* Right Carousel Arrow Button */}
             <button
               type="button"
-              onClick={handleNextMobileCard}
-              className="p-3 rounded-full bg-[#FFFDF8] border-2 border-[#CBA135] text-[#7A1C1C] shadow-xl active:scale-90 transition-transform z-30 flex-shrink-0 cursor-pointer"
+              onClick={(e) => {
+                e.stopPropagation();
+                handleNextMobileCard();
+              }}
+              className="absolute right-1 z-30 p-2 rounded-full bg-[#FFFDF8]/90 backdrop-blur-xs border-2 border-[#CBA135] text-[#7A1C1C] shadow-lg active:scale-90 transition-transform cursor-pointer"
               aria-label="Next Ceremony"
             >
-              <ChevronRight className="w-5 h-5 stroke-[2.5]" />
+              <ChevronRight className="w-4 h-4 stroke-[2.5]" />
             </button>
           </div>
 
           {/* Carousel Indicators */}
-          <div className="flex items-center justify-center gap-2 mt-3">
+          <div className="flex items-center justify-center gap-1.5 mt-1.5 mb-1">
             {ceremonyDetails.map((item, idx) => (
               <button
                 key={item.id}
                 type="button"
-                onClick={() => setMobileIndex(idx)}
-                className={`h-2.5 rounded-full transition-all ${
-                  idx === mobileIndex ? "w-7 bg-[#7A1C1C]" : "w-2.5 bg-[#CBA135]/40"
+                onClick={() => selectMobileIndex(idx)}
+                className={`h-2 rounded-full transition-all duration-300 ${
+                  idx === mobileIndex
+                    ? "w-7 bg-[#7A1C1C] shadow-[0_0_8px_rgba(122,28,28,0.5)]"
+                    : "w-2 bg-[#CBA135]/40 hover:bg-[#CBA135]"
                 }`}
                 aria-label={`Go to slide ${idx + 1}`}
               />
@@ -616,8 +831,8 @@ export default function CeremoniesScene() {
           ))}
         </div>
 
-        {/* RIGHT COLUMN: Large Featured Venue & Mandap Card (Scrollable below carousel on Mobile, side-by-side on Desktop) */}
-        <div className="lg:col-span-5 xl:col-span-5 relative w-full h-full min-h-[340px] sm:min-h-[280px] rounded-[28px] overflow-hidden border-2 border-[#CBA135] shadow-[0_20px_50px_rgba(0,0,0,0.22)] flex flex-col justify-between p-4 sm:p-4 text-white group select-none mt-2 sm:mt-0">
+        {/* RIGHT COLUMN: Featured Venue & Mandap Card (Fills height down to navbar on Mobile, Full Height on Desktop) */}
+        <div className="lg:col-span-5 xl:col-span-5 relative w-full min-h-[460px] sm:min-h-[400px] lg:min-h-[480px] rounded-[28px] sm:rounded-[32px] overflow-hidden border-2 border-[#CBA135] shadow-[0_20px_50px_rgba(0,0,0,0.25)] flex flex-col justify-between p-5 sm:p-6 text-white group select-none mt-3 sm:mt-0 mb-1">
           {/* Real Jaipur Royal Palace Mandap Background Image */}
           <img
             src="/assets/royal-palace-mandap.png"
@@ -626,38 +841,38 @@ export default function CeremoniesScene() {
           />
 
           {/* Dark Luxury Vignette & Radiant Gradient Overlay */}
-          <div className="absolute inset-0 bg-gradient-to-t from-[#1C050E]/95 via-[#1C050E]/45 to-black/25 z-10 pointer-events-none" />
+          <div className="absolute inset-0 bg-gradient-to-t from-[#1C050E]/95 via-[#1C050E]/50 to-black/35 z-10 pointer-events-none" />
 
           {/* Top Tag & Ornament */}
           <div className="relative z-20 flex items-center justify-between">
-            <span className="px-2.5 py-0.5 rounded-full bg-[#CBA135]/95 text-[#1C050E] font-['Cinzel',serif] text-[8px] sm:text-[9px] font-bold uppercase tracking-widest shadow-md">
+            <span className="px-3 py-1 rounded-full bg-[#CBA135]/95 text-[#1C050E] font-['Cinzel',serif] text-[9px] sm:text-[10px] font-bold uppercase tracking-widest shadow-md">
               ROYAL VENUE & MANDAP
             </span>
-            <span className="font-['Cinzel',serif] text-[9px] text-[#FDE68A] uppercase tracking-widest font-bold">
+            <span className="font-['Cinzel',serif] text-[9.5px] sm:text-[10px] text-[#FDE68A] uppercase tracking-widest font-bold">
               JAIPUR, RAJASTHAN
             </span>
           </div>
 
           {/* Bottom Content Area */}
-          <div className="relative z-20 flex flex-col gap-1 mt-auto">
-            <h2 className="font-['Playfair_Display',serif] text-lg sm:text-xl lg:text-2xl font-bold text-[#FFFBEB] leading-tight tracking-wide drop-shadow-md">
+          <div className="relative z-20 flex flex-col gap-1.5 sm:gap-2 mt-auto pt-4">
+            <h2 className="font-['Playfair_Display',serif] text-xl sm:text-2xl lg:text-3xl font-bold text-[#FFFBEB] leading-tight tracking-wide drop-shadow-md">
               Suvarna Mahal & The Grand Palace Lawns
             </h2>
-            <p className="font-['Cormorant_Garamond',serif] text-[11px] sm:text-xs italic text-[#FDE68A] font-medium leading-snug">
+            <p className="font-['Cormorant_Garamond',serif] text-xs sm:text-sm italic text-[#FDE68A] font-medium leading-relaxed">
               "Where royal heritage meets sacred traditions, hosting our Shaadi Mandap and Royal Reception Banquet."
             </p>
 
-            <div className="w-12 h-[1.5px] bg-[#CBA135] my-0.5" />
+            <div className="w-16 h-[1.5px] bg-[#CBA135] my-1 sm:my-1.5" />
 
             {/* Venue Action Buttons */}
-            <div className="flex flex-col sm:flex-row items-center gap-1.5 mt-0.5 w-full">
+            <div className="flex flex-col sm:flex-row items-center gap-2 sm:gap-2.5 mt-1 sm:mt-1.5 w-full">
               <a
                 href="https://maps.google.com/?q=Suvarna+Mahal+Jaipur"
                 target="_blank"
                 rel="noreferrer"
-                className="w-full sm:w-auto flex-1 py-1.5 px-3 rounded-full bg-gradient-to-r from-[#CBA135] to-[#D97706] text-[#1C050E] font-['Cinzel',serif] text-[9px] sm:text-[9.5px] font-bold uppercase tracking-wider flex items-center justify-center gap-1 shadow-lg hover:brightness-110 transition-all cursor-pointer"
+                className="w-full sm:w-auto flex-1 py-3 px-4 sm:py-3.5 sm:px-5 rounded-full bg-gradient-to-r from-[#CBA135] to-[#D97706] text-[#1C050E] font-['Cinzel',serif] text-[9.5px] sm:text-[11px] font-bold uppercase tracking-wider flex items-center justify-center gap-1.5 shadow-md hover:brightness-110 active:scale-95 transition-all cursor-pointer"
               >
-                <Navigation className="w-3 h-3" />
+                <Navigation className="w-3.5 h-3.5" />
                 <span>GET DIRECTIONS</span>
               </a>
 
@@ -667,9 +882,9 @@ export default function CeremoniesScene() {
                   setActiveId("shaadi");
                   setIsModalOpen(true);
                 }}
-                className="w-full sm:w-auto flex-1 py-1.5 px-3 rounded-full bg-[#3B0D1A]/85 hover:bg-[#3B0D1A] border border-[#CBA135]/60 text-[#FBF1DE] font-['Cinzel',serif] text-[9px] sm:text-[9.5px] font-bold uppercase tracking-wider flex items-center justify-center gap-1 transition-all cursor-pointer shadow-lg"
+                className="w-full sm:w-auto flex-1 py-3 px-4 sm:py-3.5 sm:px-5 rounded-full bg-[#3B0D1A]/85 hover:bg-[#3B0D1A] border border-[#CBA135]/60 text-[#FBF1DE] font-['Cinzel',serif] text-[9.5px] sm:text-[11px] font-bold uppercase tracking-wider flex items-center justify-center gap-1.5 transition-all active:scale-95 cursor-pointer shadow-md"
               >
-                <CalendarPlus className="w-3 h-3 text-[#CBA135]" />
+                <CalendarPlus className="w-3.5 h-3.5 text-[#CBA135]" />
                 <span>VIEW DETAILS</span>
               </button>
             </div>
@@ -752,7 +967,7 @@ export default function CeremoniesScene() {
                 href={active.mapUrl}
                 target="_blank"
                 rel="noreferrer"
-                className="flex-1 py-2.5 px-3 rounded-full bg-gradient-to-r from-[#CBA135] to-[#D97706] text-[#1C050E] font-['Cinzel',serif] text-[10.5px] font-bold uppercase tracking-wider flex items-center justify-center gap-1.5 shadow-md cursor-pointer"
+                className="flex-1 py-3 px-3 sm:py-3.5 rounded-full bg-gradient-to-r from-[#CBA135] to-[#D97706] text-[#1C050E] font-['Cinzel',serif] text-[10.5px] font-bold uppercase tracking-wider flex items-center justify-center gap-1.5 shadow-md active:scale-95 transition-all cursor-pointer"
               >
                 <Navigation className="w-3.5 h-3.5" />
                 <span>GET DIRECTIONS</span>
@@ -762,7 +977,7 @@ export default function CeremoniesScene() {
                 href={getGoogleCalendarUrl(active)}
                 target="_blank"
                 rel="noreferrer"
-                className="flex-1 py-2.5 px-3 rounded-full bg-[#3B0D1A] text-[#FBF1DE] border border-[#CBA135]/60 font-['Cinzel',serif] text-[10.5px] font-bold uppercase tracking-wider flex items-center justify-center gap-1.5 shadow-md cursor-pointer"
+                className="flex-1 py-3 px-3 sm:py-3.5 rounded-full bg-[#3B0D1A] text-[#FBF1DE] border border-[#CBA135]/60 font-['Cinzel',serif] text-[10.5px] font-bold uppercase tracking-wider flex items-center justify-center gap-1.5 shadow-md active:scale-95 transition-all cursor-pointer"
               >
                 <CalendarPlus className="w-3.5 h-3.5 text-[#CBA135]" />
                 <span>ADD CALENDAR</span>
@@ -772,7 +987,7 @@ export default function CeremoniesScene() {
         </div>
       )}
 
-      <AmbientLayer dust={6} petals={2} />
+      <AmbientLayer dust={6} petals={0} />
     </section>
   );
 }

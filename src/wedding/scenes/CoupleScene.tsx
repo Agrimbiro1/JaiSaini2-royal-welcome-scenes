@@ -267,7 +267,7 @@ export default function CoupleScene() {
       <div className="scroll-jaali-overlay" aria-hidden="true" />
       <div className="scroll-vignette" aria-hidden="true" />
       <WarmGlow className="left-1/2 top-1/2 h-[500px] w-[500px] -translate-x-1/2 -translate-y-1/2 opacity-30 pointer-events-none" />
-      <AmbientLayer dust={8} petals={3} />
+      <AmbientLayer dust={8} petals={8} />
 
       {/* Wax Seal Crest Button */}
       <button
@@ -283,13 +283,13 @@ export default function CoupleScene() {
       </button>
 
       {/* Live Calligraphy Overlay - Fixed Single Screen (Non-Scrollable) */}
-      <div
-        data-enter
-        data-enter-order="1"
-        className="scroll-calligraphy-single-screen"
-      >
+      <div className="scroll-calligraphy-single-screen">
         {/* Header Tag */}
-        <div className="flex flex-col items-center shrink-0">
+        <div
+          data-enter
+          data-enter-order="1"
+          className="flex flex-col items-center shrink-0"
+        >
           <span className="scroll-header-tag">
             शाही पैगाम • Chapter Two • The Royal Proclamation
           </span>
@@ -298,13 +298,21 @@ export default function CoupleScene() {
 
         {/* Sacred Devanagari Sanskrit Shloka */}
         {shloka && (
-          <p className="scroll-shloka-text shrink-0">
+          <p
+            data-enter
+            data-enter-order="2"
+            className="scroll-shloka-text shrink-0"
+          >
             {shloka}
           </p>
         )}
 
         {/* Rectangular Couple Portrait Frame */}
-        <div className="flex items-center justify-center shrink-0 my-0.5">
+        <div
+          data-enter
+          data-enter-order="3"
+          className="flex items-center justify-center shrink-0 my-0.5"
+        >
           <div className="w-36 sm:w-52 h-20 sm:h-28 rounded-lg sm:rounded-xl overflow-hidden border-1.5 sm:border-3 border-[#cba135] shadow-lg ring-1 sm:ring-2 ring-[#7a1d36]/30 bg-[#1c0a02]">
             <img
               src={couplePhoto}
@@ -315,7 +323,11 @@ export default function CoupleScene() {
         </div>
 
         {/* Main Calligraphy Couple Names */}
-        <div className="flex flex-col items-center shrink-0 my-0">
+        <div
+          data-enter
+          data-enter-order="4"
+          className="flex flex-col items-center shrink-0 my-0"
+        >
           <h1 className="groom-title text-xl sm:text-4xl lg:text-5xl">
             {groomFull || wedding.couple.groom}
           </h1>
@@ -328,7 +340,11 @@ export default function CoupleScene() {
         </div>
 
         {/* Parentage & Royal Lineage */}
-        <div className="lineage-text-box shrink-0">
+        <div
+          data-enter
+          data-enter-order="5"
+          className="lineage-text-box shrink-0"
+        >
           <p className="text-[10px] sm:text-[15px] font-bold text-[#541221]">
             {groomParents}
           </p>
@@ -342,18 +358,28 @@ export default function CoupleScene() {
 
         {/* Royal Announcement Quote */}
         {royalAnnouncement && (
-          <p className="royal-announcement-quote hidden sm:block shrink-0">
+          <p
+            data-enter
+            data-enter-order="6"
+            className="royal-announcement-quote hidden sm:block shrink-0"
+          >
             "{royalAnnouncement}"
           </p>
         )}
 
         {/* Wedding Date & Venue Stamp */}
-        <div className="wedding-date-stamp shrink-0">
+        <div
+          data-enter
+          data-enter-order="7"
+          className="wedding-date-stamp shrink-0"
+        >
           {weddingDate} • {venue?.split("•")[0]}
         </div>
 
         {/* Action Button to Next Chapter */}
         <button
+          data-enter
+          data-enter-order="8"
           type="button"
           onClick={goNext}
           className="group inline-flex items-center gap-1 bg-gradient-to-r from-[#6E1B34] via-[#430E1F] to-[#2C0714] text-[#EAD59A] border border-[#CBA135] px-3.5 sm:px-5 py-1 sm:py-1.5 rounded-full font-sans text-[9.5px] sm:text-xs font-bold tracking-widest uppercase shadow-xl hover:shadow-[0_0_20px_rgba(203,161,53,0.7)] hover:border-[#F5D77F] transition-all duration-300 cursor-pointer active:scale-95 shrink-0"

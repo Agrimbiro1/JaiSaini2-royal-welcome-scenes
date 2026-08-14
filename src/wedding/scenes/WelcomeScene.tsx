@@ -239,7 +239,7 @@ export default function WelcomeScene() {
   return (
     <section
       ref={rootRef}
-      className="relative w-full h-full min-h-screen overflow-hidden bg-[#0d0f07] text-[#e3e3d5] font-sans select-none"
+      className="relative w-full h-[100svh] max-h-[100svh] overflow-hidden bg-[#0d0f07] text-[#e3e3d5] font-sans select-none"
     >
       {/* Background Ornaments */}
       <JaaliPanel className="absolute inset-0 opacity-[0.07] pointer-events-none" />
@@ -261,27 +261,27 @@ export default function WelcomeScene() {
           welcomeRevealed ? "pointer-events-none opacity-0" : "opacity-100"
         }`}
       >
-        {/* Handwriting Title "Rohan & Ananya" Staggered Big Fonts with Writing Animation (NO top margin on PC) */}
+        {/* Handwriting Title "Rohan & Ananya" Positioned Elegantly on Top of Centered Couple Frame */}
         <div
           ref={handwritingTitleRef}
-          className="absolute top-6 sm:top-2 md:top-4 inset-x-0 z-30 flex justify-center opacity-0 pointer-events-none px-4 pt-4 sm:pt-0"
+          className="absolute bottom-[calc(50%+85px)] sm:bottom-[calc(50%+110px)] md:bottom-[calc(50%+140px)] inset-x-0 z-30 flex justify-center opacity-0 pointer-events-none px-4"
         >
-          <div className="flex flex-col items-center select-none my-0 w-full max-w-xs sm:max-w-md overflow-visible">
+          <div className="flex flex-col items-center select-none my-0 w-full max-w-xs sm:max-w-sm md:max-w-md overflow-visible">
             <span
               ref={rohanRef}
-              className="font-script text-[44px] sm:text-[64px] md:text-[88px] text-[#e9c349] tracking-wider self-start pl-2 sm:pl-8 pt-1 pb-0 leading-tight overflow-visible drop-shadow-[0_4px_14px_rgba(0,0,0,0.95)]"
+              className="font-script text-[42px] sm:text-[58px] md:text-[70px] lg:text-[78px] text-[#e9c349] tracking-wider self-start pl-3 sm:pl-6 pt-1 pb-0 leading-tight overflow-visible drop-shadow-[0_4px_16px_rgba(0,0,0,0.95)]"
             >
               Rohan
             </span>
             <span
               ref={ampRef}
-              className="font-serif italic font-bold text-[24px] sm:text-[36px] md:text-[50px] text-[#FBF1DE] opacity-90 -my-3 sm:-my-5 md:-my-7 drop-shadow-[0_2px_8px_rgba(0,0,0,0.9)]"
+              className="font-serif italic font-bold text-[22px] sm:text-[32px] md:text-[40px] text-[#FBF1DE] opacity-95 -my-2.5 sm:-my-4 md:-my-5 drop-shadow-[0_2px_10px_rgba(0,0,0,0.9)]"
             >
               &
             </span>
             <span
               ref={ananyaRef}
-              className="font-script text-[44px] sm:text-[64px] md:text-[88px] text-[#e9c349] tracking-wider self-end pr-2 sm:pr-8 pt-1 pb-0 leading-tight overflow-visible drop-shadow-[0_4px_14px_rgba(0,0,0,0.95)]"
+              className="font-script text-[42px] sm:text-[58px] md:text-[70px] lg:text-[78px] text-[#e9c349] tracking-wider self-end pr-3 sm:pr-6 pt-1 pb-0 leading-tight overflow-visible drop-shadow-[0_4px_16px_rgba(0,0,0,0.95)]"
             >
               Ananya
             </span>
@@ -291,10 +291,10 @@ export default function WelcomeScene() {
         {/* Vintage Reel Silhouette */}
         <div
           ref={filmReelRef}
-          className="absolute w-[300px] h-[300px] sm:w-[340px] sm:h-[340px] md:w-[480px] md:h-[480px] opacity-0 scale-50 z-10 rounded-full border-[5px] sm:border-[6px] md:border-[10px] border-[#e9c349]/30 flex items-center justify-center shadow-[0_0_60px_rgba(233,195,73,0.15)] pointer-events-none"
+          className="absolute w-[250px] h-[250px] sm:w-[340px] sm:h-[340px] md:w-[480px] md:h-[480px] opacity-0 scale-50 z-10 rounded-full border-[4px] sm:border-[6px] md:border-[10px] border-[#e9c349]/30 flex items-center justify-center shadow-[0_0_60px_rgba(233,195,73,0.15)] pointer-events-none"
         >
-          <div className="absolute inset-0 border-3 md:border-4 border-dashed border-[#e9c349]/40 rounded-full animate-[spin_20s_linear_infinite]" />
-          <div className="w-8 h-8 sm:w-10 sm:h-10 md:w-20 md:h-20 bg-[#e9c349]/80 rounded-full shadow-[0_0_30px_rgba(233,195,73,0.5)]" />
+          <div className="absolute inset-0 border-2 sm:border-3 md:border-4 border-dashed border-[#e9c349]/40 rounded-full animate-[spin_20s_linear_infinite]" />
+          <div className="w-7 h-7 sm:w-10 sm:h-10 md:w-20 md:h-20 bg-[#e9c349]/80 rounded-full shadow-[0_0_30px_rgba(233,195,73,0.5)]" />
         </div>
 
         {/* 6-Frame Film Strip */}
@@ -307,18 +307,18 @@ export default function WelcomeScene() {
             {reelFrames.map((frame) => {
               if (frame.hero) {
                 return (
-                  /* Frame 6 (Final Hero Frame - Couple Photo) */
+                  /* Frame 6 (Final Hero Frame - Couple Photo: Same size as other frames) */
                   <div
                     key={frame.id}
                     ref={heroFrameRef}
-                    className="w-[360px] h-[240px] sm:w-[380px] sm:h-[253px] md:w-[600px] md:h-[400px] relative shrink-0 border-y-[6px] sm:border-y-[8px] md:border-y-[14px] border-x-[2.5px] sm:border-x-[3px] md:border-x-[5px] border-[#12140c] bg-[#12140c] p-1 sm:p-1.5 md:p-2.5 flex items-center justify-center overflow-hidden transition-all duration-1000 origin-center"
+                    className="w-[280px] h-[186px] sm:w-[360px] sm:h-[240px] md:w-[500px] md:h-[333px] relative shrink-0 border-y-[5px] sm:border-y-[8px] md:border-y-[14px] border-x-[2px] sm:border-x-[3px] md:border-x-[5px] border-[#12140c] bg-[#12140c] p-1 sm:p-1.5 md:p-2.5 flex items-center justify-center overflow-hidden transition-all duration-1000 origin-center"
                     id="heroFrame"
                   >
                     <img
                       ref={heroImageRef}
                       src={frame.src}
                       alt={frame.alt}
-                      className="w-full h-full object-cover filter grayscale opacity-70 transition-all duration-1000 scale-105"
+                      className="w-full h-full object-cover filter grayscale opacity-70 transition-all duration-1000"
                     />
                     <div
                       ref={heroSpotlightRef}
@@ -329,10 +329,10 @@ export default function WelcomeScene() {
               }
 
               return (
-                /* Regular Film Frames 1 to 5 - ENLARGED ON MOBILE */
+                /* Regular Film Frames 1 to 5 */
                 <div
                   key={frame.id}
-                  className="w-[340px] h-[226px] sm:w-[360px] sm:h-[240px] md:w-[500px] md:h-[333px] relative shrink-0 border-y-[6px] sm:border-y-[8px] md:border-y-[14px] border-x-[2.5px] sm:border-x-[3px] md:border-x-[5px] border-[#12140c] bg-[#12140c] p-1 sm:p-1.5 md:p-2.5 flex items-center justify-center"
+                  className="w-[280px] h-[186px] sm:w-[360px] sm:h-[240px] md:w-[500px] md:h-[333px] relative shrink-0 border-y-[5px] sm:border-y-[8px] md:border-y-[14px] border-x-[2px] sm:border-x-[3px] md:border-x-[5px] border-[#12140c] bg-[#12140c] p-1 sm:p-1.5 md:p-2.5 flex items-center justify-center"
                 >
                   <img
                     src={frame.src}
@@ -345,14 +345,15 @@ export default function WelcomeScene() {
           </div>
         </div>
 
-        {/* Skip Button */}
+        {/* Skip Button - Enlarged & Highly Clickable */}
         {!welcomeRevealed && (
           <button
             type="button"
             onClick={revealWelcomeCard}
-            className="fixed top-4 right-4 sm:top-6 sm:right-6 z-50 text-[#c4c7c7] font-sans text-[10px] sm:text-[11px] uppercase tracking-[0.25em] font-medium hover:text-[#e9c349] transition-colors cursor-pointer bg-[#12140c]/70 px-3 py-1.5 rounded-full border border-[#e9c349]/30 backdrop-blur-xs"
+            className="fixed top-4 right-4 sm:top-6 sm:right-6 z-50 text-[#FFFDF8] font-sans text-xs sm:text-[13px] uppercase tracking-[0.2em] font-bold hover:text-[#e9c349] transition-all cursor-pointer bg-[#1c1917]/90 hover:bg-[#1c1917] px-4 py-2 sm:px-5 sm:py-2.5 rounded-full border-2 border-[#e9c349]/70 shadow-[0_6px_20px_rgba(0,0,0,0.85),0_0_15px_rgba(233,195,73,0.3)] hover:shadow-[0_0_22px_rgba(233,195,73,0.6)] backdrop-blur-md active:scale-95 flex items-center gap-1.5"
           >
-            Skip Intro →
+            <span>Skip Intro</span>
+            <span className="text-sm font-extrabold text-[#e9c349]">→</span>
           </button>
         )}
       </div>
@@ -360,7 +361,7 @@ export default function WelcomeScene() {
       {/* ── STAGE 2: Welcome Page & Open Invitation Button ─────── */}
       <div
         ref={welcomeCardRef}
-        className="absolute inset-0 z-20 flex flex-col items-center justify-center px-4 sm:px-6 pb-12 sm:pb-20 pt-6 sm:pt-10 opacity-0 scale-95 transition-all duration-700 overflow-hidden"
+        className="absolute inset-0 z-20 flex flex-col items-center justify-center px-4 sm:px-6 pb-16 sm:pb-20 pt-4 sm:pt-8 opacity-0 scale-95 transition-all duration-700 overflow-y-auto"
       >
         {/* Full Cover Welcome Background Image (z-0) */}
         <div className="absolute inset-0 z-0 pointer-events-none overflow-hidden">
@@ -370,7 +371,7 @@ export default function WelcomeScene() {
             className="w-full h-full object-cover object-center scale-105"
           />
           {/* Elegant dark vignette overlay */}
-          <div className="absolute inset-0 bg-gradient-to-t from-[#0d0f07]/85 via-[#0d0f07]/50 to-[#0d0f07]/65" />
+          <div className="absolute inset-0 bg-gradient-to-t from-[#0d0f07]/90 via-[#0d0f07]/50 to-[#0d0f07]/70" />
         </div>
 
         {/* Falling Particles Layer (z-10): Peacock Feathers & Golden Petals */}
@@ -381,7 +382,7 @@ export default function WelcomeScene() {
         {/* ==================== CORNER WELCOME IMAGES LAYERED ON TOP (z-30) ==================== */}
 
         {/* Left Corner: Royal Rajasthani Welcome Man - LAYERED ON TOP OF CARD (z-30) */}
-        <div className="absolute left-0 bottom-0 z-30 pointer-events-none max-w-[130px] sm:max-w-[200px] md:max-w-[320px] lg:max-w-[340px] max-h-[38vh] sm:max-h-[55vh] md:max-h-[65vh]">
+        <div className="absolute left-0 bottom-0 z-30 pointer-events-none max-w-[105px] sm:max-w-[200px] md:max-w-[320px] lg:max-w-[340px] max-h-[32vh] sm:max-h-[55vh] md:max-h-[65vh]">
           <img
             src={welcomeMan}
             alt="Royal Rajasthani Welcome Man"
@@ -390,7 +391,7 @@ export default function WelcomeScene() {
         </div>
 
         {/* Right Corner: Royal Rajasthani Welcome Woman - LAYERED ON TOP OF CARD (z-30) */}
-        <div className="absolute right-0 bottom-0 z-30 pointer-events-none max-w-[130px] sm:max-w-[200px] md:max-w-[320px] lg:max-w-[340px] max-h-[38vh] sm:max-h-[55vh] md:max-h-[65vh]">
+        <div className="absolute right-0 bottom-0 z-30 pointer-events-none max-w-[105px] sm:max-w-[200px] md:max-w-[320px] lg:max-w-[340px] max-h-[32vh] sm:max-h-[55vh] md:max-h-[65vh]">
           <img
             src={welcomeWomen}
             alt="Royal Rajasthani Welcome Woman"
@@ -399,9 +400,9 @@ export default function WelcomeScene() {
         </div>
 
         {/* Foreground Content Layer (z-20): Couple Image, Text & Button */}
-        <div className="relative z-20 flex flex-col items-center justify-center w-full max-w-xl">
-          {/* Royal Couple Frame (couple-frame.png) */}
-          <div className="relative w-[82%] max-w-[17rem] sm:max-w-[22rem] md:max-w-[27rem] aspect-[4/3] flex items-center justify-center my-1.5 sm:my-2">
+        <div className="relative z-20 flex flex-col items-center justify-center w-full max-w-xl my-auto">
+          {/* Royal Couple Frame (couple-frame.png) - Grand & Screen Covering */}
+          <div className="relative w-[92%] sm:w-[86%] max-w-[19.5rem] sm:max-w-[24rem] md:max-w-[28rem] aspect-[4/3] flex items-center justify-center my-1.5 sm:my-2.5">
             {/* Inner Photo */}
             <div className="absolute top-[16%] bottom-[16%] left-[16%] right-[16%] overflow-hidden rounded-xs z-0 bg-[#0d0f07]">
               <img
@@ -418,36 +419,36 @@ export default function WelcomeScene() {
             <img
               src={coupleFrame}
               alt="Royal Couple Frame"
-              className="absolute inset-0 w-full h-full object-contain pointer-events-none z-10 filter drop-shadow-[0_6px_25px_rgba(233,195,73,0.45)]"
+              className="absolute inset-0 w-full h-full object-contain pointer-events-none z-10 filter drop-shadow-[0_8px_30px_rgba(233,195,73,0.5)]"
             />
           </div>
 
           {/* Guest Greeting */}
-          <p className="mt-3 sm:mt-5 font-display text-lg sm:text-xl md:text-2xl tracking-wide text-[#e3e3d5] text-center">
+          <p className="mt-2.5 sm:mt-4 font-display text-xl sm:text-2xl md:text-3xl tracking-wide text-[#e3e3d5] text-center font-medium">
             Dear <span className="text-[#e9c349]">{guestName}</span>
           </p>
-          <Divider className="mt-2 h-2.5 sm:h-3 w-28 sm:w-32 text-[#e9c349]/70" />
+          <Divider className="mt-1.5 sm:mt-2 h-2.5 sm:h-3 w-28 sm:w-36 text-[#e9c349]/80" />
 
-          <p className="mt-2.5 max-w-[17rem] sm:max-w-[20rem] md:max-w-[24rem] text-center font-display text-xs sm:text-sm md:text-base italic leading-relaxed text-[#e9c349]/90 px-2">
+          <p className="mt-2 sm:mt-2.5 max-w-[19rem] sm:max-w-[22rem] md:max-w-[26rem] text-center font-display text-[13px] sm:text-base md:text-lg italic leading-snug sm:leading-relaxed text-[#e9c349]/95 px-2">
             “{quote}”
           </p>
-          <p className="mt-2 max-w-[18rem] sm:max-w-[21rem] md:max-w-[26rem] text-center font-sans text-[0.72rem] sm:text-[0.75rem] md:text-[0.82rem] leading-relaxed text-[#e3e3d5]/70 px-2">
+          <p className="mt-1.5 sm:mt-2 max-w-[20rem] sm:max-w-[23rem] md:max-w-[27rem] text-center font-sans text-[0.8rem] sm:text-[0.85rem] md:text-[0.92rem] leading-relaxed text-[#e3e3d5]/85 px-2">
             {message}
           </p>
 
-          {/* Open Invitation Button */}
+          {/* Open Invitation Button - Grand & Full Width */}
           <button
             type="button"
             onClick={goNext}
-            className="mt-4 sm:mt-6 group relative inline-flex items-center gap-2.5 sm:gap-3 px-6 sm:px-8 py-3 sm:py-3.5 rounded-full bg-gradient-to-r from-[#e9c349] via-[#f7e08b] to-[#e9c349] text-[#12140c] font-sans text-[11px] sm:text-[12px] md:text-[13px] font-semibold uppercase tracking-[0.25em] sm:tracking-[0.3em] shadow-[0_0_25px_rgba(233,195,73,0.4)] hover:shadow-[0_0_35px_rgba(233,195,73,0.7)] hover:scale-105 active:scale-95 transition-all duration-300 cursor-pointer z-20"
+            className="mt-3.5 sm:mt-6 group relative inline-flex items-center justify-center gap-2.5 sm:gap-3 w-[82%] sm:w-auto max-w-xs px-7 sm:px-9 py-3 sm:py-3.5 rounded-full bg-gradient-to-r from-[#e9c349] via-[#f7e08b] to-[#e9c349] text-[#12140c] font-sans text-[11.5px] sm:text-[13px] font-bold uppercase tracking-[0.25em] sm:tracking-[0.3em] shadow-[0_0_30px_rgba(233,195,73,0.5)] hover:shadow-[0_0_40px_rgba(233,195,73,0.8)] hover:scale-105 active:scale-95 transition-all duration-300 cursor-pointer z-20"
           >
             <span>Open Invitation</span>
-            <span className="text-[13px] sm:text-[14px] group-hover:translate-x-1 transition-transform">→</span>
+            <span className="text-[13px] sm:text-[15px] group-hover:translate-x-1 transition-transform font-bold">→</span>
           </button>
         </div>
       </div>
 
-      <AmbientLayer dust={9} petals={3} />
+      <AmbientLayer dust={9} petals={8} />
     </section>
   );
 }

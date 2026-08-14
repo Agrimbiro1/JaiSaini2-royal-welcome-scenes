@@ -78,6 +78,18 @@ export default function GalleryScene() {
   // Array of gallery items in state to support swapping clicked items into center position (index 2)
   const [items, setItems] = useState<GalleryItem[]>(wedding.gallery);
   const [focusedItem, setFocusedItem] = useState<GalleryItem | null>(null);
+  const [isAutoPlay, setIsAutoPlay] = useState<boolean>(true);
+
+  // Automatic Carousel for mobile view (cycles every 3.5s)
+  useEffect(() => {
+    if (!isAutoPlay || focusedItem || reduced) return;
+
+    const timer = setInterval(() => {
+      handleNextPhoto();
+    }, 3500);
+
+    return () => clearInterval(timer);
+  }, [isAutoPlay, focusedItem, reduced]);
 
   // Physical Entrance Animation: Frames drop IMMEDIATELY when section opens
   useEffect(() => {
@@ -426,7 +438,7 @@ export default function GalleryScene() {
         </div>
       )}
 
-      <AmbientLayer dust={8} petals={2} />
+      <AmbientLayer dust={8} petals={8} />
     </section>
   );
 }
