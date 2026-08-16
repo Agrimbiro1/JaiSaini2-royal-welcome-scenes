@@ -75,21 +75,31 @@ export default function GalleryScene() {
 
   const mobileShowcaseRef = useRef<HTMLDivElement>(null);
 
-  // Array of gallery items in state to support swapping clicked items into center position (index 2)
   const [items, setItems] = useState<GalleryItem[]>(wedding.gallery);
   const [focusedItem, setFocusedItem] = useState<GalleryItem | null>(null);
   const [isAutoPlay, setIsAutoPlay] = useState<boolean>(true);
+  const [isMobile, setIsMobile] = useState<boolean>(false);
 
-  // Automatic Carousel for mobile view (cycles every 3.5s)
   useEffect(() => {
-    if (!isAutoPlay || focusedItem || reduced) return;
+    const checkMobile = () => {
+      setIsMobile(typeof window !== "undefined" && window.innerWidth < 640);
+    };
+    checkMobile();
+    window.addEventListener("resize", checkMobile);
+    return () => window.removeEventListener("resize", checkMobile);
+  }, []);
+
+  // Automatic Carousel ONLY for mobile view (< 640px)
+  // Disabled on PC/Desktop so the 5 Haveli wall frames stay steady and interactive
+  useEffect(() => {
+    if (!isMobile || !isAutoPlay || focusedItem || reduced) return;
 
     const timer = setInterval(() => {
       handleNextPhoto();
     }, 3500);
 
     return () => clearInterval(timer);
-  }, [isAutoPlay, focusedItem, reduced]);
+  }, [isMobile, isAutoPlay, focusedItem, reduced]);
 
   // Physical Entrance Animation: Frames drop IMMEDIATELY when section opens
   useEffect(() => {

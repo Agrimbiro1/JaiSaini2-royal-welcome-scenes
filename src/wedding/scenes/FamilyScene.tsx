@@ -6,14 +6,19 @@ import familyBg from "/assets/family-tree-bg.jpg";
 import familyCardFrame from "/assets/family-card-frame.png";
 import groomFamilyPhoto from "/assets/groom-family.png";
 import brideFamilyPhoto from "/assets/bride-family.png";
-import couplePhoto from "/assets/couple.jpg";
+import couplePhoto from "/assets/couple-namaste.jpg";
+import familyFatherPhoto from "/assets/family-father.jpg";
+import familyMotherPhoto from "/assets/family-mother.jpg";
+import familyBrotherPhoto from "/assets/family-brother.jpg";
+import familyBridePhoto from "/assets/family-bride.jpg";
+import familyGroomPhoto from "/assets/family-groom.jpg";
 import { X, ChevronLeft, ChevronRight } from "lucide-react";
 
-interface FamilyMemberDetail {
+interface MemberCardInfo {
+  role: string;
   name: string;
-  relation: string;
-  relationshipToGroomOrBride: string;
-  roleDescription: string;
+  photo: string;
+  isMain?: boolean;
 }
 
 interface FamilyData {
@@ -25,88 +30,71 @@ interface FamilyData {
   sideName: string;
   subtitle: string;
   parentsSummary: string;
-  grandparents: string[];
-  siblings: string[];
   photo: string;
-  members: FamilyMemberDetail[];
+  parents: MemberCardInfo[];
+  children: MemberCardInfo[];
 }
 
 const brideFamilyData: FamilyData = {
   id: "bride",
-  title: `${wedding.couple.bride}'s Family`,
+  title: "Bride's Family",
   cardTitle: "THE BRIDE'S FAMILY",
   headingLine1: "THE BRIDE'S",
   headingLine2: "FAMILY",
   sideName: "Bride's Lineage",
   subtitle: "The Graceful House of Sharma",
   parentsSummary: "Mr. & Mrs. Rajesh Sharma",
-  grandparents: ["Late Shri Mohanlal Sharma", "Late Smt. Kamla Sharma"],
-  siblings: ["Ritika Sharma (Sister)", "Rohit Sharma (Brother)"],
   photo: brideFamilyPhoto,
-  members: [
+  parents: [
     {
-      name: "Rajesh Sharma",
-      relation: "Father",
-      relationshipToGroomOrBride: `Father of the Bride (${wedding.couple.bride})`,
-      roleDescription: "Proud father, extending warm hospitality and royal honor to all guests.",
+      role: "FATHER",
+      name: "Mr. Rajesh Sharma",
+      photo: familyFatherPhoto,
     },
     {
-      name: "Sunita Sharma",
-      relation: "Mother",
-      relationshipToGroomOrBride: `Mother of the Bride (${wedding.couple.bride})`,
-      roleDescription: "Loving mother, welcoming the groom with warmth and divine auspiciousness.",
+      role: "MOTHER",
+      name: "Mrs. Sunita Sharma",
+      photo: familyMotherPhoto,
     },
+  ],
+  children: [
     {
-      name: "Late Shri Mohanlal Sharma & Smt. Kamla Sharma",
-      relation: "Grandparents",
-      relationshipToGroomOrBride: `Maternal Grandparents of ${wedding.couple.bride}`,
-      roleDescription: "Treasured matriarchs and patriarchs, blessing the new couple's sacred union.",
-    },
-    {
-      name: "Ritika Sharma & Rohit Sharma",
-      relation: "Siblings",
-      relationshipToGroomOrBride: `Sister & Brother of ${wedding.couple.bride}`,
-      roleDescription: "Bringing festive joy, cheerful laughter, and heartfelt blessings.",
+      role: "BRIDE",
+      name: `${wedding.couple.bride} Sharma`,
+      photo: familyBridePhoto,
+      isMain: true,
     },
   ],
 };
 
 const groomFamilyData: FamilyData = {
   id: "groom",
-  title: `${wedding.couple.groom}'s Family`,
+  title: "Groom's Family",
   cardTitle: "THE GROOM'S FAMILY",
   headingLine1: "THE GROOM'S",
   headingLine2: "FAMILY",
   sideName: "Groom's Lineage",
   subtitle: "The Esteemed House of Verma",
   parentsSummary: "Mr. & Mrs. Amit Verma",
-  grandparents: ["Late Shri Suresh Verma", "Late Smt. Lata Verma"],
-  siblings: ["Ankit Verma (Brother)", "Neha Verma (Sister)"],
   photo: groomFamilyPhoto,
-  members: [
+  parents: [
     {
-      name: "Amit Verma",
-      relation: "Father",
-      relationshipToGroomOrBride: `Father of the Groom (${wedding.couple.groom})`,
-      roleDescription: "Guiding pillar of the Verma family, extending a warm welcome to all guests.",
+      role: "FATHER",
+      name: "Mr. Amit Verma",
+      photo: familyFatherPhoto,
     },
     {
-      name: "Meena Verma",
-      relation: "Mother",
-      relationshipToGroomOrBride: `Mother of the Groom (${wedding.couple.groom})`,
-      roleDescription: "Heart of the household, bestowing unconditional love and motherly blessings.",
+      role: "MOTHER",
+      name: "Mrs. Meena Verma",
+      photo: familyMotherPhoto,
     },
+  ],
+  children: [
     {
-      name: "Late Shri Suresh Verma & Smt. Lata Verma",
-      relation: "Grandparents",
-      relationshipToGroomOrBride: `Paternal Grandparents of ${wedding.couple.groom}`,
-      roleDescription: "Elders of the family tree, sharing eternal wisdom and heritage traditions.",
-    },
-    {
-      name: "Ankit Verma & Neha Verma",
-      relation: "Siblings",
-      relationshipToGroomOrBride: `Brother & Sister of ${wedding.couple.groom}`,
-      roleDescription: "Bringing warmth, enthusiasm, and royal fanfare to the celebration.",
+      role: "GROOM",
+      name: `${wedding.couple.groom} Verma`,
+      photo: familyGroomPhoto,
+      isMain: true,
     },
   ],
 };
@@ -1090,121 +1078,118 @@ export default function FamilyScene() {
 
       </div>
 
-      {/* POPUP MODAL: ENHANCED DETAILED FAMILY MEMBERS */}
+      {/* POPUP MODAL: EXACT ROYAL FAMILY TREE MATCHING REFERENCE */}
       {selectedFamily && (
         <div
           onClick={() => setActiveModal(null)}
-          className="fixed inset-0 z-50 flex items-center justify-center bg-[#15030B]/85 backdrop-blur-md px-3 sm:px-4 py-4 sm:py-8 animate-in fade-in duration-300 select-none"
+          className="fixed inset-0 z-50 flex items-center justify-center bg-[#15030B]/85 backdrop-blur-md px-3 sm:px-4 py-4 sm:py-6 animate-in fade-in duration-300 select-none"
         >
           <div
             onClick={(e) => e.stopPropagation()}
-            className="relative w-full max-w-2xl max-h-[88vh] bg-gradient-to-b from-[#FFFDF9] via-[#FAF2E2] to-[#F3E3C3] text-[#3B0D1A] p-4 sm:p-7 rounded-2xl border-2 border-[#CBA135] shadow-[0_25px_60px_rgba(0,0,0,0.85),0_0_40px_rgba(203,161,53,0.3)] flex flex-col overflow-hidden animate-in zoom-in-95 duration-300"
+            className="relative w-full max-w-lg max-h-[92vh] sm:max-h-[88vh] bg-gradient-to-b from-[#FFFDF9] via-[#FAF4E8] to-[#F5EBD6] text-[#3B0D1A] p-5 sm:p-8 rounded-[28px] sm:rounded-[36px] border border-[#E2D2B5] shadow-[0_25px_70px_rgba(0,0,0,0.85),0_0_40px_rgba(203,161,53,0.25)] flex flex-col items-center overflow-y-auto animate-in zoom-in-95 duration-300 custom-scrollbar"
           >
-            {/* Ornate Filigree Corner Accents */}
-            <div className="absolute top-2.5 left-2.5 w-5 h-5 border-t-2 border-l-2 border-[#A37326] rounded-tl-sm pointer-events-none opacity-80" />
-            <div className="absolute top-2.5 right-2.5 w-5 h-5 border-t-2 border-r-2 border-[#A37326] rounded-tr-sm pointer-events-none opacity-80" />
-            <div className="absolute bottom-2.5 left-2.5 w-5 h-5 border-b-2 border-l-2 border-[#A37326] rounded-bl-sm pointer-events-none opacity-80" />
-            <div className="absolute bottom-2.5 right-2.5 w-5 h-5 border-b-2 border-r-2 border-[#A37326] rounded-br-sm pointer-events-none opacity-80" />
-
-            {/* Close Button */}
+            {/* Top-Right Circle Close Button */}
             <button
               type="button"
               onClick={() => setActiveModal(null)}
-              className="absolute top-3 right-3 z-30 w-8 h-8 rounded-full bg-[#3B0D1A] text-[#FBF1DE] hover:bg-[#8C2338] border border-[#CBA135] flex items-center justify-center cursor-pointer shadow-md transition-all active:scale-95"
+              className="absolute top-4 right-4 z-30 w-8 h-8 rounded-full border border-[#CBA135]/40 bg-white/70 hover:bg-[#CBA135]/20 text-[#3B0D1A] flex items-center justify-center cursor-pointer shadow-xs transition-all active:scale-95 text-xs font-bold"
               aria-label="Close modal"
             >
-              <X className="w-4 h-4" />
+              ✕
             </button>
 
-            {/* Modal Header */}
-            <div className="relative z-10 text-center pb-3 border-b border-[#A37326]/30">
-              {/* Auspicious Lineage Badge */}
-              <div className="inline-flex items-center gap-1.5 px-3.5 py-0.5 rounded-full bg-[#3B0D1A] text-[#FBF1DE] text-[10px] font-['Cinzel',serif] tracking-[0.24em] uppercase font-bold border border-[#CBA135]/60 shadow-xs mb-1">
-                <span>✦</span>
-                <span>{selectedFamily.sideName}</span>
-                <span>✦</span>
-              </div>
-
-              {/* Family Title */}
-              <h2 className="font-['Cormorant_Garamond',serif] text-2xl sm:text-3xl font-bold text-[#3B0D1A] tracking-wide mt-0.5">
-                {selectedFamily.title}
+            {/* Modal Title */}
+            <div className="text-center w-full mt-1 mb-3 sm:mb-4">
+              <h2 className="font-['Cormorant_Garamond',serif] text-3xl sm:text-4xl font-bold text-[#A87932] tracking-wide">
+                {selectedFamily.id === "bride" ? "Bride's Family" : "Groom's Family"}
               </h2>
-
-              {/* Subtitle */}
-              <p className="font-['Cormorant_Garamond',serif] italic text-sm sm:text-base text-[#591426] font-medium">
-                {selectedFamily.subtitle}
-              </p>
-
-              {/* Ornate Gold Divider */}
-              <div className="flex items-center justify-center gap-2 mt-1.5 text-[#A37326] text-[9px] opacity-80">
-                <span className="w-8 h-[1px] bg-[#A37326]" />
-                <span>❖</span>
-                <span className="w-8 h-[1px] bg-[#A37326]" />
-              </div>
+              <div className="w-16 h-[1.5px] bg-[#CBA135]/50 mx-auto mt-2" />
             </div>
 
-            {/* Scrollable Members List */}
-            <div className="relative z-10 mt-3.5 flex-1 overflow-y-auto pr-1 grid grid-cols-1 sm:grid-cols-2 gap-3 custom-scrollbar">
-              {selectedFamily.members.map((m, idx) => {
-                const getRoleIcon = (rel: string) => {
-                  if (rel.toLowerCase().includes("father") || rel.toLowerCase().includes("mother") || rel.toLowerCase().includes("parent")) return "👑";
-                  if (rel.toLowerCase().includes("grandparent")) return "🕊️";
-                  if (rel.toLowerCase().includes("sibling") || rel.toLowerCase().includes("sister") || rel.toLowerCase().includes("brother")) return "🌸";
-                  return "✨";
-                };
+            {/* ── PARENTS SECTION ── */}
+            <div className="w-full flex flex-col items-center">
+              <p className="font-['Cinzel',serif] text-[10.5px] sm:text-xs tracking-[0.3em] text-[#A87932] uppercase font-bold text-center mb-2 sm:mb-3">
+                PARENTS
+              </p>
 
-                return (
+              <div className="grid grid-cols-2 gap-3 sm:gap-4 w-full">
+                {selectedFamily.parents.map((parent, idx) => (
                   <div
                     key={idx}
-                    className="p-3.5 sm:p-4 rounded-xl bg-gradient-to-br from-[#FFFDF9]/90 via-[#FAF1DD]/80 to-[#F5E5C4]/70 border border-[#CBA135]/50 shadow-xs flex flex-col justify-between hover:border-[#8C2338]/70 hover:shadow-md transition-all duration-300 group"
+                    className="rounded-2xl sm:rounded-3xl bg-[#FAF4E8]/90 border border-[#E8DCB8] p-3 sm:p-5 flex flex-col items-center text-center shadow-[0_2px_10px_rgba(0,0,0,0.04)] hover:shadow-md transition-all duration-300"
                   >
-                    <div>
-                      <div className="flex items-center gap-3 mb-2">
-                        {/* Royal Medallion Avatar */}
-                        <div className="relative w-11 h-11 rounded-full p-[2px] bg-gradient-to-br from-[#CBA135] via-[#FBF1DE] to-[#8C2338] shadow-sm shrink-0">
-                          <div className="w-full h-full rounded-full bg-[#3B0D1A] flex items-center justify-center text-[#FBF1DE] font-['Cinzel',serif] font-bold text-sm">
-                            {m.name.charAt(0)}
-                          </div>
-                          <span className="absolute -bottom-1 -right-1 text-xs" title={m.relation}>
-                            {getRoleIcon(m.relation)}
-                          </span>
-                        </div>
-
-                        {/* Name & Relation */}
-                        <div className="min-w-0 flex-1">
-                          <h3 className="font-['Cormorant_Garamond',serif] text-base sm:text-lg font-bold text-[#3B0D1A] leading-snug truncate group-hover:text-[#8C2338] transition-colors">
-                            {m.name}
-                          </h3>
-                          <p className="font-['Cinzel',serif] text-[9.5px] uppercase tracking-wider font-bold text-[#8C2338]">
-                            {m.relation}
-                          </p>
-                        </div>
-                      </div>
-
-                      {/* Relationship Pill */}
-                      <div className="mb-2">
-                        <span className="inline-block px-2.5 py-0.5 rounded-full bg-[#3B0D1A]/8 border border-[#A37326]/30 text-[#3B0D1A] font-['Cinzel',serif] text-[9px] uppercase tracking-wider font-bold">
-                          {m.relationshipToGroomOrBride}
-                        </span>
-                      </div>
+                    {/* Circular Photo with Gold Ring */}
+                    <div className="w-16 h-16 sm:w-20 sm:h-20 rounded-full border-2 border-[#CBA135] overflow-hidden p-0.5 shadow-sm bg-[#1c0a02]">
+                      <img
+                        src={parent.photo}
+                        alt={parent.name}
+                        className="w-full h-full object-cover object-top rounded-full"
+                      />
                     </div>
 
-                    {/* Role Description Quote */}
-                    <div className="pt-2 border-t border-[#A37326]/20 mt-auto">
-                      <p className="font-['Cormorant_Garamond',serif] italic text-xs sm:text-[13px] text-[#2E0B15]/90 leading-snug">
-                        "{m.roleDescription}"
-                      </p>
-                    </div>
+                    {/* Role Label */}
+                    <span className="font-['Cinzel',serif] text-[9.5px] sm:text-[10.5px] tracking-widest text-[#A87932] uppercase font-bold mt-2.5 sm:mt-3">
+                      {parent.role}
+                    </span>
+
+                    {/* Name */}
+                    <h3 className="font-sans text-xs sm:text-[15px] font-bold text-[#2A1017] mt-0.5 sm:mt-1 leading-tight">
+                      {parent.name}
+                    </h3>
                   </div>
-                );
-              })}
+                ))}
+              </div>
             </div>
 
-            {/* Modal Bottom Auspicious Ribbon */}
-            <div className="relative z-10 pt-2.5 mt-2 border-t border-[#A37326]/30 text-center">
-              <p className="font-['Cinzel',serif] text-[9px] sm:text-[10px] tracking-[0.18em] uppercase text-[#3B0D1A]/80 font-bold">
-                ✦ Two Noble Families United in Eternal Love & Harmony ✦
+            {/* Tree Connecting Vertical Line */}
+            <div className="flex flex-col items-center my-2 sm:my-3">
+              <div className="w-[1.5px] h-5 sm:h-7 bg-[#CBA135]/60" />
+            </div>
+
+            {/* ── CHILDREN SECTION ── */}
+            <div className="w-full flex flex-col items-center">
+              <p className="font-['Cinzel',serif] text-[10.5px] sm:text-xs tracking-[0.3em] text-[#A87932] uppercase font-bold text-center mb-2 sm:mb-3">
+                CHILDREN
               </p>
+
+              <div className="flex justify-center w-full">
+                {selectedFamily.children.map((child, idx) => (
+                  <div
+                    key={idx}
+                    className="w-full max-w-[200px] sm:max-w-[225px] rounded-2xl sm:rounded-3xl p-3 sm:p-5 flex flex-col items-center text-center bg-[#FDF9EE] border-2 border-[#CBA135] shadow-[0_4px_16px_rgba(203,161,53,0.22)] ring-1 ring-[#CBA135]/30 transition-all duration-300 hover:shadow-lg"
+                  >
+                    {/* Circular Photo with Gold Ring */}
+                    <div className="w-16 h-16 sm:w-20 sm:h-20 rounded-full border-2 border-[#CBA135] overflow-hidden p-0.5 shadow-sm bg-[#1c0a02]">
+                      <img
+                        src={child.photo}
+                        alt={child.name}
+                        className="w-full h-full object-cover object-top rounded-full"
+                      />
+                    </div>
+
+                    {/* Role Label */}
+                    <span className="font-['Cinzel',serif] text-[9.5px] sm:text-[10.5px] tracking-widest text-[#A87932] uppercase font-bold mt-2.5 sm:mt-3">
+                      {child.role}
+                    </span>
+
+                    {/* Name */}
+                    <h3 className="font-sans text-xs sm:text-[15px] font-bold text-[#2A1017] mt-0.5 sm:mt-1 leading-tight">
+                      {child.name}
+                    </h3>
+                  </div>
+                ))}
+              </div>
+            </div>
+
+            {/* Bottom Pill Close Button */}
+            <div className="mt-5 sm:mt-6 flex justify-center w-full">
+              <button
+                type="button"
+                onClick={() => setActiveModal(null)}
+                className="px-8 sm:px-10 py-1.5 sm:py-2 rounded-full border border-[#CBA135]/70 bg-white/70 hover:bg-[#CBA135]/15 text-[#2A1017] font-['Cinzel',serif] text-xs font-semibold tracking-wider transition-all shadow-xs active:scale-95 cursor-pointer"
+              >
+                Close
+              </button>
             </div>
           </div>
         </div>

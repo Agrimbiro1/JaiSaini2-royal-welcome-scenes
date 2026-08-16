@@ -6,7 +6,7 @@ import { Divider } from "../ui/Ornaments";
 import { AmbientLayer, WarmGlow } from "../ui/Ambient";
 
 import scrollTableBg from "/assets/royal-scroll-table.png";
-import couplePhoto from "/assets/couple.jpg";
+import couplePhoto from "/assets/couple-namaste.jpg";
 
 export default function CoupleScene() {
   const { goNext } = useScene();
@@ -307,17 +307,17 @@ export default function CoupleScene() {
           </p>
         )}
 
-        {/* Rectangular Couple Portrait Frame */}
+        {/* Square Couple Portrait Frame */}
         <div
           data-enter
           data-enter-order="3"
-          className="flex items-center justify-center shrink-0 my-0.5"
+          className="flex items-center justify-center shrink-0 my-0.5 sm:my-1"
         >
-          <div className="w-36 sm:w-52 h-20 sm:h-28 rounded-lg sm:rounded-xl overflow-hidden border-1.5 sm:border-3 border-[#cba135] shadow-lg ring-1 sm:ring-2 ring-[#7a1d36]/30 bg-[#1c0a02]">
+          <div className="w-28 sm:w-40 h-28 sm:h-40 aspect-square rounded-xl sm:rounded-2xl overflow-hidden border-1.5 sm:border-2 border-[#cba135] shadow-xl ring-2 sm:ring-3 ring-[#7a1d36]/30 bg-[#1c0a02]">
             <img
               src={couplePhoto}
               alt="Rohan & Ananya Royal Portrait"
-              className="w-full h-full object-cover object-top"
+              className="w-full h-full object-cover object-[center_20%]"
             />
           </div>
         </div>
