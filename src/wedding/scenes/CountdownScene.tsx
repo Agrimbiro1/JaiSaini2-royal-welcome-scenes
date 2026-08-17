@@ -2,7 +2,7 @@ import { useEffect, useRef, useState } from "react";
 import { wedding } from "../data/wedding";
 import { usePrefersReducedMotion } from "../engine/SceneProvider";
 import { AmbientLayer, WarmGlow } from "../ui/Ambient";
-import countdownGardenBg from "/assets/countdown-garden-background.png";
+import countdownGardenBg from "/assets/countdown-garden-background.webp";
 import { Calendar, MapPin, Sparkles } from "lucide-react";
 
 interface TimeUnits {
@@ -753,7 +753,7 @@ export default function CountdownScene() {
             className="save-date-btn"
           >
             <Sparkles className="w-3.5 h-3.5 text-[#8C2338]" />
-            Save The Auspicious Date
+            Save in Calendar
           </button>
         </div>
 

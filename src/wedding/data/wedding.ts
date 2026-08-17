@@ -1,9 +1,9 @@
-import couplePhoto from "/assets/couple.jpg?url";
-import palaceNight from "/assets/palace-night.jpg";
-import prewedding1 from "/assets/prewedding-1.jpg";
-import prewedding2 from "/assets/prewedding-2.jpg";
-import prewedding3 from "/assets/prewedding-3.jpg";
-import prewedding4 from "/assets/prewedding-4.jpg";
+import couplePhoto from "/assets/couple.webp?url";
+import palaceNight from "/assets/palace-night.webp";
+import prewedding1 from "/assets/prewedding-1.webp";
+import prewedding2 from "/assets/prewedding-2.webp";
+import prewedding3 from "/assets/prewedding-3.webp";
+import prewedding4 from "/assets/prewedding-4.webp";
 
 
 export type Milestone = {

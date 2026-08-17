@@ -4,11 +4,11 @@ import { usePrefersReducedMotion } from "../engine/SceneProvider";
 import { AmbientLayer, WarmGlow } from "../ui/Ambient";
 import { Divider } from "../ui/Ornaments";
 
-import rajasthanMapBg from "/assets/rajasthan-vintage-map.png";
-import prewedding1 from "/assets/prewedding-1.jpg";
-import prewedding2 from "/assets/prewedding-2.jpg";
-import prewedding3 from "/assets/prewedding-3.jpg";
-import couplePhoto from "/assets/couple.jpg";
+import rajasthanMapBg from "/assets/rajasthan-vintage-map.webp";
+import prewedding1 from "/assets/prewedding-1.webp";
+import prewedding2 from "/assets/prewedding-2.webp";
+import prewedding3 from "/assets/prewedding-3.webp";
+import couplePhoto from "/assets/couple.webp";
 
 interface StoryWaypoint {
   id: string;

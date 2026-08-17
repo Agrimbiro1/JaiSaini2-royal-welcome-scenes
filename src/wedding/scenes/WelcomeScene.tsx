@@ -1,22 +1,99 @@
 import { useEffect, useRef, useState } from "react";
 import gsap from "gsap";
+import confetti from "canvas-confetti";
 import { useScene, usePrefersReducedMotion } from "../engine/SceneProvider";
 import { wedding } from "../data/wedding";
 import { Divider, JaaliPanel } from "../ui/Ornaments";
 import { AmbientLayer, WarmGlow } from "../ui/Ambient";
 import { PeacockFeathers } from "../ui/PeacockFeathers";
 
-import welcomeBg from "/assets/welcome-background.png";
-import welcomeMan from "/assets/welcome-man.png";
-import welcomeWomen from "/assets/welcome-women.png";
-import coupleFrame from "/assets/couple-frame.png";
+const FLORAL_COLORS = [
+  "#FF8C00", // Marigold Orange
+  "#FFA500", // Warm Amber
+  "#FFD700", // Royal Gold
+  "#E11D48", // Rose Red
+  "#F59E0B", // Golden Marigold
+  "#FDE047", // Yellow Petal
+];
 
-import reelMehendi from "/assets/reel-mehendi.jpg";
-import reelJewellery from "/assets/reel-jewellery.jpg";
-import reelMarigold from "/assets/reel-marigold.jpg";
-import reelPalace from "/assets/reel-palace.jpg";
-import palaceNight from "/assets/palace-night.jpg";
-import couplePhoto from "/assets/couple.jpg?url";
+let cachedPetalShape: confetti.Shape | null = null;
+
+function getPetalShape(): confetti.Shape | null {
+  if (typeof window === "undefined") return null;
+  if (!cachedPetalShape) {
+    try {
+      cachedPetalShape = confetti.shapeFromPath({
+        path: "M 0 -18 C 12 -12 16 4 0 20 C -16 4 -12 -12 0 -18 Z",
+      });
+    } catch {
+      cachedPetalShape = null;
+    }
+  }
+  return cachedPetalShape;
+}
+
+/**
+ * Fires optimized, high-fps bursts of flowers and petals from the bottom-left and bottom-right
+ * corners aiming upward into the center where the names appear.
+ */
+function fireCornerFlowerBursts(intensity: "medium" | "grand" = "medium") {
+  if (typeof window === "undefined") return;
+  try {
+    const isGrand = intensity === "grand";
+    const count = isGrand ? 35 : 24;
+    const velocity = isGrand ? 65 : 55;
+    const petal = getPetalShape();
+    const shapes: confetti.Shape[] = petal ? [petal, "circle"] : ["circle"];
+
+    // Left Bottom -> Center
+    confetti({
+      particleCount: count,
+      angle: 55,
+      spread: 50,
+      origin: { x: 0, y: 1 },
+      startVelocity: velocity,
+      gravity: 0.75,
+      drift: 0.1,
+      scalar: isGrand ? 1.3 : 1.1,
+      ticks: 180,
+      colors: FLORAL_COLORS,
+      shapes: shapes,
+      zIndex: 40,
+      disableForReducedMotion: true,
+    });
+
+    // Right Bottom -> Center
+    confetti({
+      particleCount: count,
+      angle: 125,
+      spread: 50,
+      origin: { x: 1, y: 1 },
+      startVelocity: velocity,
+      gravity: 0.75,
+      drift: -0.1,
+      scalar: isGrand ? 1.3 : 1.1,
+      ticks: 180,
+      colors: FLORAL_COLORS,
+      shapes: shapes,
+      zIndex: 40,
+      disableForReducedMotion: true,
+    });
+  } catch (e) {
+    // Safe fallback
+  }
+}
+
+import welcomeBg from "/assets/welcome-background.webp";
+import welcomeMan from "/assets/welcome-man.webp";
+import welcomeWomen from "/assets/welcome-women.webp";
+import coupleFrame from "/assets/couple-frame.webp";
+
+import reelMehendi from "/assets/reel-mehendi.webp";
+import reelJewellery from "/assets/reel-jewellery.webp";
+import reelMarigold from "/assets/reel-marigold.webp";
+import reelPalace from "/assets/reel-palace.webp";
+import palaceNight from "/assets/palace-night.webp";
+import couplePhoto from "/assets/couple.webp?url";
 
 /** 6-frame film strip ending with couple photo */
 const reelFrames = [
@@ -188,18 +265,24 @@ export default function WelcomeScene() {
 
     // Writing Animation for Staggered Rohan & Ananya Heading
     if (rohanRef.current && ampRef.current && ananyaRef.current) {
-      tl.fromTo(
-        rohanRef.current,
-        { clipPath: "inset(-25px 100% -25px 0)" },
-        { clipPath: "inset(-25px -25px -25px -25px)", duration: 0.85, ease: "power1.inOut" },
-        "-=0.2"
-      )
+      tl.add(() => {
+        fireCornerFlowerBursts("medium");
+      })
+        .fromTo(
+          rohanRef.current,
+          { clipPath: "inset(-25px 100% -25px 0)" },
+          { clipPath: "inset(-25px -25px -25px -25px)", duration: 0.85, ease: "power1.inOut" },
+          "-=0.2"
+        )
         .fromTo(
           ampRef.current,
           { opacity: 0, scale: 0.4 },
           { opacity: 1, scale: 1, duration: 0.35, ease: "back.out(1.7)" },
           "-=0.15"
         )
+        .add(() => {
+          fireCornerFlowerBursts("grand");
+        }, "-=0.1")
         .fromTo(
           ananyaRef.current,
           { clipPath: "inset(-25px 100% -25px 0)" },
@@ -264,24 +347,26 @@ export default function WelcomeScene() {
         {/* Handwriting Title "Rohan & Ananya" Positioned Elegantly on Top of Centered Couple Frame */}
         <div
           ref={handwritingTitleRef}
-          className="absolute bottom-[calc(50%+108px)] sm:bottom-[calc(50%+135px)] md:bottom-[calc(50%+178px)] inset-x-0 z-30 flex justify-center opacity-0 pointer-events-none px-4"
+          className="absolute bottom-[calc(50%+108px)] sm:bottom-[calc(50%+135px)] md:bottom-[calc(50%+178px)] inset-x-0 z-30 flex justify-center opacity-0 pointer-events-none px-4 will-change-[opacity,transform]"
         >
           <div className="flex flex-col items-center select-none my-0 w-full max-w-[280px] sm:max-w-sm md:max-w-md overflow-visible">
             <span
               ref={rohanRef}
-              className="font-script text-[36px] sm:text-[50px] md:text-[66px] lg:text-[74px] text-[#e9c349] tracking-wider self-start pl-3 sm:pl-6 pt-0 pb-0 leading-tight overflow-visible drop-shadow-[0_4px_16px_rgba(0,0,0,0.95)]"
+              style={{ fontFamily: "'Great Vibes', cursive" }}
+              className="text-[38px] sm:text-[52px] md:text-[68px] lg:text-[76px] text-[#e9c349] tracking-wider self-start pl-3 sm:pl-6 pt-0 pb-0 leading-tight overflow-visible drop-shadow-[0_4px_16px_rgba(0,0,0,0.95)] will-change-[clip-path]"
             >
               Rohan
             </span>
             <span
               ref={ampRef}
-              className="font-serif italic font-bold text-[18px] sm:text-[26px] md:text-[36px] text-[#FBF1DE] opacity-95 -my-2 sm:-my-3 md:-my-4 drop-shadow-[0_2px_10px_rgba(0,0,0,0.9)]"
+              className="font-serif italic font-bold text-[18px] sm:text-[26px] md:text-[36px] text-[#FBF1DE] opacity-95 -my-2 sm:-my-3 md:-my-4 drop-shadow-[0_2px_10px_rgba(0,0,0,0.9)] will-change-[opacity,transform]"
             >
               &
             </span>
             <span
               ref={ananyaRef}
-              className="font-script text-[36px] sm:text-[50px] md:text-[66px] lg:text-[74px] text-[#e9c349] tracking-wider self-end pr-3 sm:pr-6 pt-0 pb-0 leading-tight overflow-visible drop-shadow-[0_4px_16px_rgba(0,0,0,0.95)]"
+              style={{ fontFamily: "'Great Vibes', cursive" }}
+              className="text-[38px] sm:text-[52px] md:text-[68px] lg:text-[76px] text-[#e9c349] tracking-wider self-end pr-3 sm:pr-6 pt-0 pb-0 leading-tight overflow-visible drop-shadow-[0_4px_16px_rgba(0,0,0,0.95)] will-change-[clip-path]"
             >
               Ananya
             </span>
@@ -291,7 +376,7 @@ export default function WelcomeScene() {
         {/* Vintage Reel Silhouette */}
         <div
           ref={filmReelRef}
-          className="absolute w-[250px] h-[250px] sm:w-[340px] sm:h-[340px] md:w-[480px] md:h-[480px] opacity-0 scale-50 z-10 rounded-full border-[4px] sm:border-[6px] md:border-[10px] border-[#e9c349]/30 flex items-center justify-center shadow-[0_0_60px_rgba(233,195,73,0.15)] pointer-events-none"
+          className="absolute w-[250px] h-[250px] sm:w-[340px] sm:h-[340px] md:w-[480px] md:h-[480px] opacity-0 scale-50 z-10 rounded-full border-[4px] sm:border-[6px] md:border-[10px] border-[#e9c349]/30 flex items-center justify-center shadow-[0_0_60px_rgba(233,195,73,0.15)] pointer-events-none will-change-[opacity,transform] transform-gpu"
         >
           <div className="absolute inset-0 border-2 sm:border-3 md:border-4 border-dashed border-[#e9c349]/40 rounded-full animate-[spin_20s_linear_infinite]" />
           <div className="w-7 h-7 sm:w-10 sm:h-10 md:w-20 md:h-20 bg-[#e9c349]/80 rounded-full shadow-[0_0_30px_rgba(233,195,73,0.5)]" />
@@ -301,7 +386,7 @@ export default function WelcomeScene() {
         <div className="relative w-full h-full flex items-center justify-center overflow-hidden z-0">
           <div
             ref={filmStripRef}
-            className="absolute flex gap-3 sm:gap-4 md:gap-10 items-center"
+            className="absolute flex gap-3 sm:gap-4 md:gap-10 items-center will-change-transform transform-gpu"
             id="filmStrip"
           >
             {reelFrames.map((frame) => {
@@ -311,7 +396,7 @@ export default function WelcomeScene() {
                   <div
                     key={frame.id}
                     ref={heroFrameRef}
-                    className="w-[280px] h-[186px] sm:w-[360px] sm:h-[240px] md:w-[500px] md:h-[333px] relative shrink-0 border-y-[5px] sm:border-y-[8px] md:border-y-[14px] border-x-[2px] sm:border-x-[3px] md:border-x-[5px] border-[#12140c] bg-[#12140c] p-1 sm:p-1.5 md:p-2.5 flex items-center justify-center overflow-hidden transition-all duration-1000 origin-center"
+                    className="w-[280px] h-[186px] sm:w-[360px] sm:h-[240px] md:w-[500px] md:h-[333px] relative shrink-0 border-y-[5px] sm:border-y-[8px] md:border-y-[14px] border-x-[2px] sm:border-x-[3px] md:border-x-[5px] border-[#12140c] bg-[#12140c] p-1 sm:p-1.5 md:p-2.5 flex items-center justify-center overflow-hidden transition-all duration-1000 origin-center will-change-transform transform-gpu"
                     id="heroFrame"
                   >
                     <img

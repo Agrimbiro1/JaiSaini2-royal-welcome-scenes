@@ -4,8 +4,13 @@ import { scenes } from "../engine/scenes";
 import { Menu, X, ChevronLeft, ChevronRight } from "lucide-react";
 
 export function Navigation({ onOpenChapters }: { onOpenChapters?: () => void }) {
-  const { index, prev, next, goTo, goPrev, goNext, isAnimating } = useScene();
+  const { scene, index, prev, next, goTo, goPrev, goNext, isAnimating } = useScene();
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
+
+  // Hide the navbar on the opening animation and welcome page
+  if (scene.id === "welcome" || index === 0) {
+    return null;
+  }
 
   const toggleMobileMenu = () => {
     setMobileMenuOpen((v) => !v);

@@ -1,6 +1,6 @@
 import React from "react";
 import type { GalleryItem } from "../data/wedding";
-import coupleFrame from "/assets/couple-frame.png";
+import coupleFrame from "/assets/couple-frame.webp";
 
 export function RoyalFrame({
   item,

@@ -1,8 +1,17 @@
-@import url('https://fonts.googleapis.com/css2?family=Cinzel:wght@500;600;700&family=Cormorant+Garamond:ital,wght@0,500;0,600;1,500;1,600&family=Rajdhani:wght@500;600;700&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Cinzel:wght@500;600;700&family=Cormorant+Garamond:ital,wght@0,500;0,600;1,500;1,600&family=DM+Serif+Display:ital@0;1&family=Rajdhani:wght@500;600;700&display=swap');
 @import "tailwindcss" source(none);
 @source "../src";
 @import "tw-animate-css";
 
+@font-face {
+  font-family: "Family Prosperity";
+  src: url("https://db.onlinewebfonts.com/t/e4f68c758a34459620e5ad564b23b522.woff2") format("woff2"),
+       url("https://db.onlinewebfonts.com/t/e4f68c758a34459620e5ad564b23b522.woff") format("woff"),
+       url("https://db.onlinewebfonts.com/t/e4f68c758a34459620e5ad564b23b522.ttf") format("truetype");
+  font-weight: normal;
+  font-style: normal;
+  font-display: swap;
+}
 
 @custom-variant dark (&:is(.dark *));
 
@@ -21,7 +30,8 @@
  */
 
 @theme inline {
-  --font-display: "Playfair Display", "Cormorant Garamond", Georgia, serif;
+  --font-display: "DM Serif Display", "Playfair Display", "Cormorant Garamond", Georgia, serif;
+  --font-dm: "DM Serif Display", serif;
   --font-sans: "Manrope", system-ui, sans-serif;
   --font-script: "Great Vibes", cursive;
   --color-ivory: var(--ivory);

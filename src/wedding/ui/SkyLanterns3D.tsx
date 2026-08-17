@@ -2,7 +2,24 @@ import { useEffect, useRef } from "react";
 import * as THREE from "three";
 import { usePrefersReducedMotion } from "../engine/SceneProvider";
 
-import skyLanternTexture from "/assets/sky-lantern.png";
+function createLanternCanvasTexture(): THREE.CanvasTexture {
+  const canvas = document.createElement("canvas");
+  canvas.width = 128;
+  canvas.height = 128;
+  const ctx = canvas.getContext("2d");
+  if (ctx) {
+    const grad = ctx.createRadialGradient(64, 64, 8, 64, 64, 64);
+    grad.addColorStop(0, "#fff59d");
+    grad.addColorStop(0.35, "#ffb300");
+    grad.addColorStop(0.7, "#e65100");
+    grad.addColorStop(1, "#bf360c");
+    ctx.fillStyle = grad;
+    ctx.fillRect(0, 0, 128, 128);
+  }
+  const tex = new THREE.CanvasTexture(canvas);
+  tex.colorSpace = THREE.SRGBColorSpace;
+  return tex;
+}
 
 interface SkyLanterns3DProps {
   count?: number;
@@ -46,9 +63,7 @@ export function SkyLanterns3D({ count = 32, interactive = false }: SkyLanterns3D
     scene.add(pointLight);
 
     // 5. Texture Loader
-    const textureLoader = new THREE.TextureLoader();
-    const lanternTex = textureLoader.load(skyLanternTexture);
-    lanternTex.colorSpace = THREE.SRGBColorSpace;
+    const lanternTex = createLanternCanvasTexture();
 
     // 6. Create 3D Lantern Geometry & Materials
     // Cylinder geometry tapered at top & bottom for realistic sky lantern shape

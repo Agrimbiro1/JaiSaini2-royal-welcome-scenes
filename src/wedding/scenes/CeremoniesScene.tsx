@@ -327,10 +327,10 @@ function drawRealisticFlower(
 // Matter.js Interactive Floral Physics Canvas
 function MatterFloralCanvas({ ceremonyId }: { ceremonyId: string }) {
   const canvasRef = useRef<HTMLCanvasElement>(null);
-  const colorTargetRef = useRef<string[]>(CEREMONY_FLORAL_PALETTES[ceremonyId] || CEREMONY_FLORAL_PALETTES.shaadi!);
+  const colorTargetRef = useRef<string[]>(CEREMONY_FLORAL_PALETTES[ceremonyId] || CEREMONY_FLORAL_PALETTES["shaadi"]!);
 
   useEffect(() => {
-    colorTargetRef.current = CEREMONY_FLORAL_PALETTES[ceremonyId] || CEREMONY_FLORAL_PALETTES.shaadi!;
+    colorTargetRef.current = CEREMONY_FLORAL_PALETTES[ceremonyId] || CEREMONY_FLORAL_PALETTES["shaadi"]!;
   }, [ceremonyId]);
 
   useEffect(() => {
@@ -822,7 +822,7 @@ export default function CeremoniesScene() {
         <div className="lg:col-span-5 xl:col-span-5 relative w-full min-h-[460px] sm:min-h-[400px] lg:min-h-[480px] rounded-[28px] sm:rounded-[32px] overflow-hidden border-2 border-[#CBA135] shadow-[0_20px_50px_rgba(0,0,0,0.25)] flex flex-col justify-between p-5 sm:p-6 text-white group select-none mt-3 sm:mt-0 mb-1">
           {/* Real Jaipur Royal Palace Mandap Background Image */}
           <img
-            src="/assets/royal-palace-mandap.png"
+            src="/assets/royal-palace-mandap.webp"
             alt="Royal Jaipur Palace Mandap & Reception Venue"
             className="absolute inset-0 w-full h-full object-cover object-center group-hover:scale-105 transition-transform duration-700 pointer-events-none z-0"
           />
@@ -845,9 +845,6 @@ export default function CeremoniesScene() {
             <h2 className="font-['Playfair_Display',serif] text-xl sm:text-2xl lg:text-3xl font-bold text-[#FFFBEB] leading-tight tracking-wide drop-shadow-md">
               Suvarna Mahal & The Grand Palace Lawns
             </h2>
-            <p className="font-['Cormorant_Garamond',serif] text-xs sm:text-sm italic text-[#FDE68A] font-medium leading-relaxed">
-              "Where royal heritage meets sacred traditions, hosting our Shaadi Mandap and Royal Reception Banquet."
-            </p>
 
             <div className="w-16 h-[1.5px] bg-[#CBA135] my-1 sm:my-1.5" />
 

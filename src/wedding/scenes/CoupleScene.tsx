@@ -5,8 +5,8 @@ import { wedding } from "../data/wedding";
 import { Divider } from "../ui/Ornaments";
 import { AmbientLayer, WarmGlow } from "../ui/Ambient";
 
-import scrollTableBg from "/assets/royal-scroll-table.png";
-import couplePhoto from "/assets/couple-namaste.jpg";
+import scrollTableBg from "/assets/royal-scroll-table.webp";
+import couplePhoto from "/assets/couple-namaste.webp";
 
 export default function CoupleScene() {
   const { goNext } = useScene();

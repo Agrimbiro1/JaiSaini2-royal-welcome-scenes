@@ -10,8 +10,8 @@ import {
 import { wedding, type Blessing } from "../data/wedding";
 import { usePrefersReducedMotion } from "../engine/SceneProvider";
 import { AmbientLayer } from "../ui/Ambient";
-import bookBgImage from "/assets/blessings-open-book-bg.jpg";
-import mobileBlessingsBg from "/assets/mobile-blessings-bg.jpg";
+import bookBgImage from "/assets/blessings-open-book-bg.webp";
+import mobileBlessingsBg from "/assets/mobile-blessings-bg.webp";
 
 interface TagItem extends Blessing {
   id: string;
@@ -169,7 +169,11 @@ export default function BlessingsScene() {
   };
 
   return (
-    <section className="relative w-full h-full min-h-screen flex flex-col items-center justify-center select-none overflow-hidden p-0 bg-[#1C050E]">
+    <section
+      data-lenis-prevent
+      onTouchMove={(e) => e.stopPropagation()}
+      className="blessings-scene-root relative w-full h-[100svh] min-h-[100svh] flex flex-col items-center justify-start sm:justify-center select-none overflow-y-auto sm:overflow-hidden touch-pan-y overscroll-contain p-0 bg-[#1C050E]"
+    >
       <style>{`
         .printed-heading {
           font-family: 'Cinzel', 'Playfair Display', serif;
@@ -482,13 +486,13 @@ export default function BlessingsScene() {
       </div>
 
       {/* ── MOBILE FIRST VIEW (< 640px): INTEGRATED WITH USER'S EXACT DESIGN ARTWORK ───── */}
-      <div className="flex sm:hidden relative z-10 w-full h-[100svh] min-h-screen flex-col overflow-hidden select-none">
+      <div className="flex sm:hidden relative z-10 w-full min-h-[620px] h-full flex-col select-none pb-20">
         
         {/* Fullscreen Mobile Background Image matching user's exact artwork */}
         <img
           src={mobileBlessingsBg}
           alt="Royal Manuscript Book & Parchment Background"
-          className="absolute inset-0 w-full h-full object-cover object-center pointer-events-none z-0"
+          className="absolute inset-0 w-full h-full min-h-[620px] object-cover object-center pointer-events-none z-0"
         />
 
         {/* 1. TOP BOOK AREA: LEAVE A BLESSING FORM (Positioned strictly inside upper open book page) */}

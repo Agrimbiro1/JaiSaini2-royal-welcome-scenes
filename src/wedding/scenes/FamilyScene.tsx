@@ -2,16 +2,16 @@ import { useState, useEffect, useRef } from "react";
 import { wedding } from "../data/wedding";
 import { usePrefersReducedMotion } from "../engine/SceneProvider";
 import { AmbientLayer, WarmGlow } from "../ui/Ambient";
-import familyBg from "/assets/family-tree-bg.jpg";
-import familyCardFrame from "/assets/family-card-frame.png";
-import groomFamilyPhoto from "/assets/groom-family.png";
-import brideFamilyPhoto from "/assets/bride-family.png";
-import couplePhoto from "/assets/couple-namaste.jpg";
-import familyFatherPhoto from "/assets/family-father.jpg";
-import familyMotherPhoto from "/assets/family-mother.jpg";
-import familyBrotherPhoto from "/assets/family-brother.jpg";
-import familyBridePhoto from "/assets/family-bride.jpg";
-import familyGroomPhoto from "/assets/family-groom.jpg";
+import familyBg from "/assets/family-tree-bg.webp";
+import familyCardFrame from "/assets/family-card-frame.webp";
+import groomFamilyPhoto from "/assets/groom-family.webp";
+import brideFamilyPhoto from "/assets/bride-family.webp";
+import couplePhoto from "/assets/couple-namaste.webp";
+import familyFatherPhoto from "/assets/family-father.webp";
+import familyMotherPhoto from "/assets/family-mother.webp";
+import familyBrotherPhoto from "/assets/family-brother.webp";
+import familyBridePhoto from "/assets/family-bride.webp";
+import familyGroomPhoto from "/assets/family-groom.webp";
 import { X, ChevronLeft, ChevronRight } from "lucide-react";
 
 interface MemberCardInfo {
@@ -456,12 +456,12 @@ export default function FamilyScene() {
   };
 
   const handleTouchStart = (e: React.TouchEvent) => {
-    touchStartX.current = e.touches[0].clientX;
+    touchStartX.current = e.touches[0]?.clientX || 0;
     setIsPaused(true);
   };
 
   const handleTouchEnd = (e: React.TouchEvent) => {
-    const touchEndX = e.changedTouches[0].clientX;
+    const touchEndX = e.changedTouches[0]?.clientX || 0;
     const diff = touchStartX.current - touchEndX;
 
     if (diff > 40) {
@@ -1141,13 +1141,8 @@ export default function FamilyScene() {
               </div>
             </div>
 
-            {/* Tree Connecting Vertical Line */}
-            <div className="flex flex-col items-center my-2 sm:my-3">
-              <div className="w-[1.5px] h-5 sm:h-7 bg-[#CBA135]/60" />
-            </div>
-
             {/* ── CHILDREN SECTION ── */}
-            <div className="w-full flex flex-col items-center">
+            <div className="w-full flex flex-col items-center mt-3 sm:mt-4">
               <p className="font-['Cinzel',serif] text-[10.5px] sm:text-xs tracking-[0.3em] text-[#A87932] uppercase font-bold text-center mb-2 sm:mb-3">
                 CHILDREN
               </p>

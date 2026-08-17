@@ -5,7 +5,7 @@ import { useSceneEnter } from "../engine/useSceneEnter";
 import { usePrefersReducedMotion } from "../engine/SceneProvider";
 import { RoyalFrame } from "../ui/RoyalFrame";
 import { AmbientLayer, WarmGlow } from "../ui/Ambient";
-import galleryBg from "/assets/gallery-background-wall.png";
+import galleryBg from "/assets/gallery-background-wall.webp";
 
 export default function GalleryScene() {
   const reduced = usePrefersReducedMotion();

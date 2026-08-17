@@ -5,7 +5,7 @@ import { usePrefersReducedMotion, useScene } from "../engine/SceneProvider";
 import { AmbientLayer, WarmGlow } from "../ui/Ambient";
 import { Divider } from "../ui/Ornaments";
 import { SkyLanterns3D } from "../ui/SkyLanterns3D";
-import thankYouBg from "/assets/thankyou-night-palace.png";
+import thankYouBg from "/assets/thankyou-night-palace.webp";
 import { Heart, RotateCcw } from "lucide-react";
 
 export default function ThankYouScene() {
