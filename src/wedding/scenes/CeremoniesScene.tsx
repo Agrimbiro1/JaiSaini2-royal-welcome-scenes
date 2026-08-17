@@ -581,31 +581,6 @@ export default function CeremoniesScene() {
         {/* MOBILE VIEW: Luxury 3D Coverflow Perspective Carousel Clean of Box Shadows */}
         <div className="block sm:hidden w-full flex flex-col items-center justify-center my-0 px-0">
           
-          {/* Quick Ceremony Category Pills in Wrapped Multi-Row Format */}
-          <div className="w-full flex flex-wrap items-center justify-center gap-1.5 sm:gap-2 px-1 mb-2.5">
-            {ceremonyDetails.map((item, idx) => {
-              const isSelected = idx === mobileIndex;
-              return (
-                <button
-                  key={item.id}
-                  type="button"
-                  onClick={() => selectMobileIndex(idx)}
-                  className={`px-3 py-1 rounded-full font-['Cinzel',serif] text-[10px] font-bold tracking-wider uppercase transition-all duration-300 flex items-center gap-1.5 border cursor-pointer ${
-                    isSelected
-                      ? "bg-[#7A1C1C] text-[#FFFDF8] border-[#CBA135] scale-105"
-                      : "bg-[#FFFDF8] text-[#3D261A] border-[#CBA135]/60 hover:border-[#7A1C1C]"
-                  }`}
-                >
-                  <span
-                    className="w-2 h-2 rounded-full shrink-0"
-                    style={{ backgroundColor: item.themeColor }}
-                  />
-                  <span className="whitespace-nowrap">{item.name}</span>
-                </button>
-              );
-            })}
-          </div>
-
           {/* 3D Coverflow Card Stage */}
           <div
             className="relative w-full h-[335px] flex items-center justify-center overflow-hidden"
@@ -709,6 +684,11 @@ export default function CeremoniesScene() {
                     <p className="font-['Cinzel',serif] text-[10px] font-bold text-[#3D261A] tracking-wider uppercase">
                       {item.date} • {item.time}
                     </p>
+                    {item.dressCode && (
+                      <p className="font-['Cormorant_Garamond',serif] text-[11px] italic text-[#7A1C1C] font-semibold tracking-wide mt-0.5">
+                        Attire: {item.dressCode}
+                      </p>
+                    )}
                   </div>
 
                   {/* Explore Ceremony Glowing Button */}
@@ -804,6 +784,11 @@ export default function CeremoniesScene() {
                 <p className="font-['Cinzel',serif] text-[9px] sm:text-[10.5px] font-bold text-[#3D261A] tracking-wider uppercase truncate">
                   {item.date} • {item.time}
                 </p>
+                {item.dressCode && (
+                  <p className="font-['Cormorant_Garamond',serif] text-[9.5px] sm:text-[10.5px] italic text-[#7A1C1C] font-semibold tracking-wide truncate mt-0.5">
+                    Attire: {item.dressCode}
+                  </p>
+                )}
               </div>
 
               {/* Explore Ceremony Button Link */}
@@ -943,6 +928,18 @@ export default function CeremoniesScene() {
                   <p className="font-['Inter',sans-serif] text-xs font-semibold text-[#7A5843]">{active.location}</p>
                 </div>
               </div>
+
+              {active.dressCode && (
+                <div className="flex items-center gap-3 p-2.5 rounded-xl bg-[#F8EBCD] border border-[#A37326]/30">
+                  <div className="w-8 h-8 rounded-full bg-[#CBA135]/20 flex items-center justify-center shrink-0">
+                    <Sparkles className="w-4 h-4 text-[#7A1C1C]" />
+                  </div>
+                  <div>
+                    <p className="font-['Cinzel',serif] text-[10px] uppercase font-bold text-[#3B0D1A]">DRESS CODE / ATTIRE</p>
+                    <p className="font-['Inter',sans-serif] text-xs font-semibold text-[#7A5843]">{active.dressCode}</p>
+                  </div>
+                </div>
+              )}
             </div>
 
             {/* Action Buttons */}
