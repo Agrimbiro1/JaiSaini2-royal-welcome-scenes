@@ -359,7 +359,8 @@ export default function WelcomeScene() {
             </span>
             <span
               ref={ampRef}
-              className="font-serif italic font-bold text-[18px] sm:text-[26px] md:text-[36px] text-[#FBF1DE] opacity-95 -my-2 sm:-my-3 md:-my-4 drop-shadow-[0_2px_10px_rgba(0,0,0,0.9)] will-change-[opacity,transform]"
+              style={{ fontFamily: "'Great Vibes', cursive" }}
+              className="text-[28px] sm:text-[38px] md:text-[48px] lg:text-[54px] text-[#FBF1DE] opacity-95 -my-2 sm:-my-3 md:-my-4 drop-shadow-[0_2px_10px_rgba(0,0,0,0.9)] will-change-[opacity,transform] leading-tight"
             >
               &
             </span>
@@ -509,10 +510,13 @@ export default function WelcomeScene() {
           </div>
 
           {/* Guest Greeting */}
-          <p className="mt-2.5 sm:mt-4 font-display text-xl sm:text-2xl md:text-3xl tracking-wide text-[#e3e3d5] text-center font-medium">
+          <p
+            style={{ fontFamily: "'Great Vibes', cursive" }}
+            className="mt-2 sm:mt-3.5 font-script text-3xl sm:text-4xl md:text-[44px] tracking-wider text-[#e3e3d5] text-center leading-tight drop-shadow-[0_4px_16px_rgba(0,0,0,0.95)]"
+          >
             Dear <span className="text-[#e9c349]">{guestName}</span>
           </p>
-          <Divider className="mt-1.5 sm:mt-2 h-2.5 sm:h-3 w-28 sm:w-36 text-[#e9c349]/80" />
+          <Divider className="mt-1 sm:mt-1.5 h-2.5 sm:h-3 w-28 sm:w-36 text-[#e9c349]/80" />
 
           <p className="mt-2 sm:mt-2.5 max-w-[19rem] sm:max-w-[22rem] md:max-w-[26rem] text-center font-display text-[13px] sm:text-base md:text-lg italic leading-snug sm:leading-relaxed text-[#e9c349]/95 px-2">
             “{quote}”

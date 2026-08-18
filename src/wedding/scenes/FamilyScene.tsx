@@ -490,11 +490,8 @@ export default function FamilyScene() {
           <img src={family.photo} alt={family.title} />
         </div>
 
-        {/* PARENTS Section */}
+        {/* Parents Names */}
         <div className="w-full text-center my-1.5">
-          <p className="font-['Cinzel',serif] text-[10px] sm:text-[10.5px] uppercase tracking-[0.2em] text-[#3B0D1A]/80 font-bold">
-            PARENTS
-          </p>
           <p className="font-['Cormorant_Garamond',serif] font-bold text-base sm:text-lg text-[#3B0D1A] mt-0.5">
             {family.parentsSummary}
           </p>
@@ -909,9 +906,6 @@ export default function FamilyScene() {
               </div>
 
               <div className="w-full text-center my-1.5">
-                <p className="font-['Cinzel',serif] text-[10px] sm:text-[10.5px] uppercase tracking-[0.2em] text-[#3B0D1A]/80 font-bold">
-                  PARENTS
-                </p>
                 <p className="font-['Cormorant_Garamond',serif] font-bold text-base sm:text-lg text-[#3B0D1A] mt-0.5">
                   {brideFamilyData.parentsSummary}
                 </p>
@@ -946,9 +940,6 @@ export default function FamilyScene() {
               </div>
 
               <div className="w-full text-center my-1.5">
-                <p className="font-['Cinzel',serif] text-[10px] sm:text-[10.5px] uppercase tracking-[0.2em] text-[#3B0D1A]/80 font-bold">
-                  PARENTS
-                </p>
                 <p className="font-['Cormorant_Garamond',serif] font-bold text-base sm:text-lg text-[#3B0D1A] mt-0.5">
                   {groomFamilyData.parentsSummary}
                 </p>
@@ -1012,9 +1003,6 @@ export default function FamilyScene() {
                       <img src={brideFamilyData.photo} alt={brideFamilyData.title} />
                     </div>
                     <div className="w-full text-center my-1">
-                      <p className="font-['Cinzel',serif] text-[9.5px] uppercase tracking-[0.2em] text-[#3B0D1A]/80 font-bold">
-                        PARENTS
-                      </p>
                       <p className="font-['Cormorant_Garamond',serif] font-bold text-sm sm:text-base text-[#3B0D1A] mt-0.5 leading-tight">
                         {brideFamilyData.parentsSummary}
                       </p>
@@ -1041,9 +1029,6 @@ export default function FamilyScene() {
                       <img src={groomFamilyData.photo} alt={groomFamilyData.title} />
                     </div>
                     <div className="w-full text-center my-1">
-                      <p className="font-['Cinzel',serif] text-[9.5px] uppercase tracking-[0.2em] text-[#3B0D1A]/80 font-bold">
-                        PARENTS
-                      </p>
                       <p className="font-['Cormorant_Garamond',serif] font-bold text-sm sm:text-base text-[#3B0D1A] mt-0.5 leading-tight">
                         {groomFamilyData.parentsSummary}
                       </p>
@@ -1106,74 +1091,37 @@ export default function FamilyScene() {
               <div className="w-16 h-[1.5px] bg-[#CBA135]/50 mx-auto mt-2" />
             </div>
 
-            {/* ── PARENTS SECTION ── */}
-            <div className="w-full flex flex-col items-center">
-              <p className="font-['Cinzel',serif] text-[10.5px] sm:text-xs tracking-[0.3em] text-[#A87932] uppercase font-bold text-center mb-2 sm:mb-3">
-                PARENTS
-              </p>
-
-              <div className="grid grid-cols-2 gap-3 sm:gap-4 w-full">
-                {selectedFamily.parents.map((parent, idx) => (
-                  <div
-                    key={idx}
-                    className="rounded-2xl sm:rounded-3xl bg-[#FAF4E8]/90 border border-[#E8DCB8] p-3 sm:p-5 flex flex-col items-center text-center shadow-[0_2px_10px_rgba(0,0,0,0.04)] hover:shadow-md transition-all duration-300"
-                  >
-                    {/* Circular Photo with Gold Ring */}
-                    <div className="w-16 h-16 sm:w-20 sm:h-20 rounded-full border-2 border-[#CBA135] overflow-hidden p-0.5 shadow-sm bg-[#1c0a02]">
-                      <img
-                        src={parent.photo}
-                        alt={parent.name}
-                        className="w-full h-full object-cover object-top rounded-full"
-                      />
-                    </div>
-
-                    {/* Role Label */}
-                    <span className="font-['Cinzel',serif] text-[9.5px] sm:text-[10.5px] tracking-widest text-[#A87932] uppercase font-bold mt-2.5 sm:mt-3">
-                      {parent.role}
-                    </span>
-
-                    {/* Name */}
-                    <h3 className="font-sans text-xs sm:text-[15px] font-bold text-[#2A1017] mt-0.5 sm:mt-1 leading-tight">
-                      {parent.name}
-                    </h3>
+            {/* All Member Cards Directly Without Category Headers */}
+            <div className="grid grid-cols-2 sm:grid-cols-3 gap-3 sm:gap-4 w-full">
+              {[...selectedFamily.parents, ...selectedFamily.children].map((member, idx) => (
+                <div
+                  key={idx}
+                  className={`rounded-2xl sm:rounded-3xl p-3.5 sm:p-5 flex flex-col items-center text-center transition-all duration-300 ${
+                    member.isMain
+                      ? "col-span-2 sm:col-span-1 max-w-[220px] sm:max-w-none justify-self-center w-full bg-[#FDF9EE] border-2 border-[#CBA135] shadow-[0_4px_16px_rgba(203,161,53,0.22)] ring-1 ring-[#CBA135]/30 hover:shadow-lg"
+                      : "bg-[#FAF4E8]/90 border border-[#E8DCB8] shadow-[0_2px_10px_rgba(0,0,0,0.04)] hover:shadow-md"
+                  }`}
+                >
+                  {/* Circular Photo with Gold Ring */}
+                  <div className="w-16 h-16 sm:w-20 sm:h-20 rounded-full border-2 border-[#CBA135] overflow-hidden p-0.5 shadow-sm bg-[#1c0a02]">
+                    <img
+                      src={member.photo}
+                      alt={member.name}
+                      className="w-full h-full object-cover object-top rounded-full"
+                    />
                   </div>
-                ))}
-              </div>
-            </div>
 
-            {/* ── CHILDREN SECTION ── */}
-            <div className="w-full flex flex-col items-center mt-3 sm:mt-4">
-              <p className="font-['Cinzel',serif] text-[10.5px] sm:text-xs tracking-[0.3em] text-[#A87932] uppercase font-bold text-center mb-2 sm:mb-3">
-                CHILDREN
-              </p>
+                  {/* Role Label */}
+                  <span className="font-['Cinzel',serif] text-[9.5px] sm:text-[10.5px] tracking-widest text-[#A87932] uppercase font-bold mt-2.5 sm:mt-3">
+                    {member.role}
+                  </span>
 
-              <div className="flex justify-center w-full">
-                {selectedFamily.children.map((child, idx) => (
-                  <div
-                    key={idx}
-                    className="w-full max-w-[200px] sm:max-w-[225px] rounded-2xl sm:rounded-3xl p-3 sm:p-5 flex flex-col items-center text-center bg-[#FDF9EE] border-2 border-[#CBA135] shadow-[0_4px_16px_rgba(203,161,53,0.22)] ring-1 ring-[#CBA135]/30 transition-all duration-300 hover:shadow-lg"
-                  >
-                    {/* Circular Photo with Gold Ring */}
-                    <div className="w-16 h-16 sm:w-20 sm:h-20 rounded-full border-2 border-[#CBA135] overflow-hidden p-0.5 shadow-sm bg-[#1c0a02]">
-                      <img
-                        src={child.photo}
-                        alt={child.name}
-                        className="w-full h-full object-cover object-top rounded-full"
-                      />
-                    </div>
-
-                    {/* Role Label */}
-                    <span className="font-['Cinzel',serif] text-[9.5px] sm:text-[10.5px] tracking-widest text-[#A87932] uppercase font-bold mt-2.5 sm:mt-3">
-                      {child.role}
-                    </span>
-
-                    {/* Name */}
-                    <h3 className="font-sans text-xs sm:text-[15px] font-bold text-[#2A1017] mt-0.5 sm:mt-1 leading-tight">
-                      {child.name}
-                    </h3>
-                  </div>
-                ))}
-              </div>
+                  {/* Name */}
+                  <h3 className="font-sans text-xs sm:text-[15px] font-bold text-[#2A1017] mt-0.5 sm:mt-1 leading-tight">
+                    {member.name}
+                  </h3>
+                </div>
+              ))}
             </div>
 
             {/* Bottom Pill Close Button */}
