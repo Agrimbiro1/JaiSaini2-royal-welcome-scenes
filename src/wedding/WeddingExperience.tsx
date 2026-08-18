@@ -47,7 +47,7 @@ function Stage() {
         Rohan and Ananya — Rajasthani Wedding Invitation, chapter {index + 1} of{" "}
         {scenes.length}: {scene.chapterTitle}
       </h1>
-      <div key={scene.id} className="absolute inset-0">
+      <div key={scene.id} className="absolute inset-0 will-change-[opacity,transform] animate-in fade-in duration-300">
         <Suspense fallback={<div className="w-full h-full bg-maroon-deep" />}>
           <Active />
         </Suspense>

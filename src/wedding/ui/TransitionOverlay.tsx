@@ -157,8 +157,8 @@ export function TransitionOverlay() {
       },
     });
     tl.add(playTransition(transition.name, root, "in"));
-    tl.call(() => overlayHooks.swap?.());
-    tl.add(playTransition(transition.name, root, "out"));
+    tl.call(() => overlayHooks.swap?.(), undefined, "+=0.03");
+    tl.add(playTransition(transition.name, root, "out"), "+=0.08");
     return () => {
       tl.kill();
       active.current = false;
