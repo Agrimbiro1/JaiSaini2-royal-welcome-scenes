@@ -272,6 +272,7 @@ export function SkyLanterns3D({ count = 32, interactive = false }: SkyLanterns3D
       }
       lanternGeo.dispose();
       lanternMat.dispose();
+      lanternTex.dispose();
       flameGeo.dispose();
       flameMat.dispose();
       haloGeo.dispose();

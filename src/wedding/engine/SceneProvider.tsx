@@ -115,11 +115,14 @@ export function SceneProvider({
     onSceneChange?.(scenes[index]!, index);
   }, [index, onSceneChange]);
 
-  // preload the neighbouring scenes' images
+  // preload the neighbouring scenes' JS chunks and assets in idle time
   useEffect(() => {
-    const urls = [scenes[index + 1], scenes[index - 1]]
-      .filter(Boolean)
-      .flatMap((s) => s!.assets ?? []);
+    const neighbours = [scenes[index + 1], scenes[index - 1]].filter(Boolean);
+    neighbours.forEach((s) => {
+      s?.preload();
+    });
+
+    const urls = neighbours.flatMap((s) => s?.assets ?? []);
     urls.forEach((u) => {
       const img = new Image();
       img.src = u;

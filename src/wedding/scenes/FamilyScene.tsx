@@ -140,6 +140,8 @@ const CouplePhotoMedallion = () => (
           <img
             src={couplePhoto}
             alt={`${wedding.couple.bride} & ${wedding.couple.groom}`}
+            loading="lazy"
+            decoding="async"
             className="w-full h-full object-cover object-center transform transition-transform duration-500 group-hover:scale-110"
           />
         </div>
@@ -474,7 +476,7 @@ export default function FamilyScene() {
 
   const renderFamilyCard = (family: FamilyData) => (
     <div key={family.id} className="royal-arch-card">
-      <img src={familyCardFrame} alt="Royal Arch Frame" className="royal-arch-card-frame" />
+      <img src={familyCardFrame} alt="Royal Arch Frame" loading="lazy" decoding="async" className="royal-arch-card-frame" />
 
       <div className="relative z-10 w-full flex flex-col items-center h-full justify-between">
         {/* Heading with extra top margin so it sits comfortably in the center blank parchment area */}
@@ -487,7 +489,7 @@ export default function FamilyScene() {
 
         {/* Family Photo */}
         <div className="family-photo-wrap">
-          <img src={family.photo} alt={family.title} />
+          <img src={family.photo} alt={family.title} loading="lazy" decoding="async" />
         </div>
 
         {/* Parents Names */}
@@ -824,6 +826,8 @@ export default function FamilyScene() {
         src={familyBg}
         alt="Royal Palace Courtyard Background"
         aria-hidden="true"
+        loading="lazy"
+        decoding="async"
         className="fixed inset-0 w-full h-full object-cover object-center select-none pointer-events-none z-0"
       />
 
@@ -892,7 +896,7 @@ export default function FamilyScene() {
         <div className="hidden md:flex items-center justify-center gap-5 w-full">
           {/* ==================== LEFT CARD: THE BRIDE'S FAMILY ==================== */}
           <div className="royal-arch-card">
-            <img src={familyCardFrame} alt="Royal Arch Frame" className="royal-arch-card-frame" />
+            <img src={familyCardFrame} alt="Royal Arch Frame" loading="lazy" decoding="async" className="royal-arch-card-frame" />
 
             <div className="relative z-10 w-full flex flex-col items-center h-full justify-between">
               <h2 className="font-['Cinzel',serif] text-lg sm:text-xl font-bold text-[#3B0D1A] tracking-[0.14em] uppercase leading-tight mt-1">
@@ -902,7 +906,7 @@ export default function FamilyScene() {
               <div className="w-10 h-[1px] bg-[#A37326]/40 my-1" />
 
               <div className="family-photo-wrap">
-                <img src={brideFamilyData.photo} alt={brideFamilyData.title} />
+                <img src={brideFamilyData.photo} alt={brideFamilyData.title} loading="lazy" decoding="async" />
               </div>
 
               <div className="w-full text-center my-1.5">
@@ -926,7 +930,7 @@ export default function FamilyScene() {
 
           {/* ==================== RIGHT CARD: THE GROOM'S FAMILY ==================== */}
           <div className="royal-arch-card">
-            <img src={familyCardFrame} alt="Royal Arch Frame" className="royal-arch-card-frame" />
+            <img src={familyCardFrame} alt="Royal Arch Frame" loading="lazy" decoding="async" className="royal-arch-card-frame" />
 
             <div className="relative z-10 w-full flex flex-col items-center h-full justify-between">
               <h2 className="font-['Cinzel',serif] text-lg sm:text-xl font-bold text-[#3B0D1A] tracking-[0.14em] uppercase leading-tight mt-1">
@@ -936,7 +940,7 @@ export default function FamilyScene() {
               <div className="w-10 h-[1px] bg-[#A37326]/40 my-1" />
 
               <div className="family-photo-wrap">
-                <img src={groomFamilyData.photo} alt={groomFamilyData.title} />
+                <img src={groomFamilyData.photo} alt={groomFamilyData.title} loading="lazy" decoding="async" />
               </div>
 
               <div className="w-full text-center my-1.5">
@@ -992,7 +996,7 @@ export default function FamilyScene() {
 
               {activeSlide === 0 ? (
                 <div className="royal-arch-card">
-                  <img src={familyCardFrame} alt="Royal Arch Frame" className="royal-arch-card-frame" />
+                  <img src={familyCardFrame} alt="Royal Arch Frame" loading="lazy" decoding="async" className="royal-arch-card-frame" />
 
                   <div className="relative z-10 w-full flex flex-col items-center h-full justify-between">
                     <h2 className="font-['Cinzel',serif] text-base sm:text-lg font-bold text-[#3B0D1A] tracking-[0.14em] uppercase leading-tight mt-0.5">
@@ -1000,7 +1004,7 @@ export default function FamilyScene() {
                     </h2>
                     <div className="w-9 h-[1px] bg-[#A37326]/40 my-0.5" />
                     <div className="family-photo-wrap">
-                      <img src={brideFamilyData.photo} alt={brideFamilyData.title} />
+                      <img src={brideFamilyData.photo} alt={brideFamilyData.title} loading="lazy" decoding="async" />
                     </div>
                     <div className="w-full text-center my-1">
                       <p className="font-['Cormorant_Garamond',serif] font-bold text-sm sm:text-base text-[#3B0D1A] mt-0.5 leading-tight">
@@ -1018,7 +1022,7 @@ export default function FamilyScene() {
                 </div>
               ) : (
                 <div className="royal-arch-card">
-                  <img src={familyCardFrame} alt="Royal Arch Frame" className="royal-arch-card-frame" />
+                  <img src={familyCardFrame} alt="Royal Arch Frame" loading="lazy" decoding="async" className="royal-arch-card-frame" />
 
                   <div className="relative z-10 w-full flex flex-col items-center h-full justify-between">
                     <h2 className="font-['Cinzel',serif] text-base sm:text-lg font-bold text-[#3B0D1A] tracking-[0.14em] uppercase leading-tight mt-0.5">
@@ -1026,7 +1030,7 @@ export default function FamilyScene() {
                     </h2>
                     <div className="w-9 h-[1px] bg-[#A37326]/40 my-0.5" />
                     <div className="family-photo-wrap">
-                      <img src={groomFamilyData.photo} alt={groomFamilyData.title} />
+                      <img src={groomFamilyData.photo} alt={groomFamilyData.title} loading="lazy" decoding="async" />
                     </div>
                     <div className="w-full text-center my-1">
                       <p className="font-['Cormorant_Garamond',serif] font-bold text-sm sm:text-base text-[#3B0D1A] mt-0.5 leading-tight">
@@ -1107,6 +1111,8 @@ export default function FamilyScene() {
                     <img
                       src={member.photo}
                       alt={member.name}
+                      loading="lazy"
+                      decoding="async"
                       className="w-full h-full object-cover object-top rounded-full"
                     />
                   </div>

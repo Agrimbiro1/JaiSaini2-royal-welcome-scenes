@@ -1,4 +1,4 @@
-import { useCallback, useEffect, useRef, useState } from "react";
+import { Suspense, useCallback, useEffect, useRef, useState } from "react";
 import { SceneProvider, useScene } from "./engine/SceneProvider";
 import { sceneIndexById, scenes } from "./engine/scenes";
 import { Navigation } from "./ui/Navigation";
@@ -48,7 +48,9 @@ function Stage() {
         {scenes.length}: {scene.chapterTitle}
       </h1>
       <div key={scene.id} className="absolute inset-0">
-        <Active />
+        <Suspense fallback={<div className="w-full h-full bg-maroon-deep" />}>
+          <Active />
+        </Suspense>
       </div>
       <Navigation onOpenChapters={() => setChaptersOpen(true)} />
       <ChapterMenu open={chaptersOpen} onClose={() => setChaptersOpen(false)} />

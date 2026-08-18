@@ -1,98 +1,77 @@
-import type { ComponentType } from "react";
+import { lazy, type ComponentType } from "react";
 import type { TransitionName } from "./transitions";
 
-import WelcomeScene from "../scenes/WelcomeScene";
-import CoupleScene from "../scenes/CoupleScene";
-import StoryScene from "../scenes/StoryScene";
-import GalleryScene from "../scenes/GalleryScene";
-import FamilyScene from "../scenes/FamilyScene";
-import CountdownScene from "../scenes/CountdownScene";
-import CeremoniesScene from "../scenes/CeremoniesScene";
-import RsvpScene from "../scenes/RsvpScene";
-import BlessingsScene from "../scenes/BlessingsScene";
-import ThankYouScene from "../scenes/ThankYouScene";
+export type SceneId =
+  | "welcome"
+  | "couple"
+  | "story"
+  | "gallery"
+  | "family"
+  | "countdown"
+  | "ceremonies"
+  | "rsvp"
+  | "blessings"
+  | "thankyou";
+
+const sceneLoaders: Record<SceneId, () => Promise<{ default: ComponentType }>> = {
+  welcome: () => import("../scenes/WelcomeScene"),
+  couple: () => import("../scenes/CoupleScene"),
+  story: () => import("../scenes/StoryScene"),
+  gallery: () => import("../scenes/GalleryScene"),
+  family: () => import("../scenes/FamilyScene"),
+  countdown: () => import("../scenes/CountdownScene"),
+  ceremonies: () => import("../scenes/CeremoniesScene"),
+  rsvp: () => import("../scenes/RsvpScene"),
+  blessings: () => import("../scenes/BlessingsScene"),
+  thankyou: () => import("../scenes/ThankYouScene"),
+};
 
 export type SceneDef = {
   id: string;
   label: string;
   chapterTitle: string;
   component: ComponentType;
+  preload: () => void;
   /** transition used when moving from this scene to the next one */
   transitionOut: TransitionName;
-  assets?: string[];
+  assets?: string[] | undefined;
 };
 
+function createScene(
+  id: SceneId,
+  label: string,
+  chapterTitle: string,
+  transitionOut: TransitionName,
+  assets?: string[],
+): SceneDef {
+  const loader = sceneLoaders[id];
+  const scene: SceneDef = {
+    id,
+    label,
+    chapterTitle,
+    component: lazy(loader),
+    preload: () => {
+      void loader();
+    },
+    transitionOut,
+  };
+  if (assets) {
+    scene.assets = assets;
+  }
+  return scene;
+}
+
 export const scenes: SceneDef[] = [
-  {
-    id: "welcome",
-    label: "Welcome",
-    chapterTitle: "A Royal Welcome",
-    component: WelcomeScene,
-    transitionOut: "curtain",
-  },
-  {
-    id: "couple",
-    label: "The Couple",
-    chapterTitle: "The Royal Proclamation",
-    component: CoupleScene,
-    transitionOut: "curtain",
-  },
-  {
-    id: "story",
-    label: "Our Story",
-    chapterTitle: "A Story Written in Gold",
-    component: StoryScene,
-    transitionOut: "line-draw",
-  },
-  {
-    id: "gallery",
-    label: "Gallery",
-    chapterTitle: "The Royal Memory Gallery",
-    component: GalleryScene,
-    transitionOut: "thread",
-  },
-  {
-    id: "family",
-    label: "Family Tree",
-    chapterTitle: "Two Families, One Beginning",
-    component: FamilyScene,
-    transitionOut: "light-sweep",
-  },
-  {
-    id: "countdown",
-    label: "Countdown",
-    chapterTitle: "The Moment Draws Near",
-    component: CountdownScene,
-    transitionOut: "jharokha",
-  },
-  {
-    id: "ceremonies",
-    label: "Ceremonies",
-    chapterTitle: "The Royal Celebration",
-    component: CeremoniesScene,
-    transitionOut: "envelope",
-  },
-  {
-    id: "rsvp",
-    label: "RSVP",
-    chapterTitle: "Will You Join Us?",
-    component: RsvpScene,
-    transitionOut: "light-sweep",
-  },
-  {
-    id: "blessings",
-    label: "Blessings",
-    chapterTitle: "The Wish Tree",
-    component: BlessingsScene,
-    transitionOut: "star",
-  },
-  {
-    id: "thankyou",
-    label: "Thank You",
-    chapterTitle: "The Story Continues",
-    component: ThankYouScene,
-    transitionOut: "light-sweep",
-  },
+  createScene("welcome", "Welcome", "A Royal Welcome", "curtain"),
+  createScene("couple", "The Couple", "The Royal Proclamation", "curtain"),
+  createScene("story", "Our Story", "A Story Written in Gold", "line-draw"),
+  createScene("gallery", "Gallery", "The Royal Memory Gallery", "thread"),
+  createScene("family", "Family Tree", "Two Families, One Beginning", "light-sweep"),
+  createScene("countdown", "Countdown", "The Moment Draws Near", "jharokha"),
+  createScene("ceremonies", "Ceremonies", "The Royal Celebration", "envelope"),
+  createScene("rsvp", "RSVP", "Will You Join Us?", "light-sweep"),
+  createScene("blessings", "Blessings", "The Wish Tree", "star"),
+  createScene("thankyou", "Thank You", "The Story Continues", "light-sweep"),
 ];
 
 export const totalScenes = scenes.length;

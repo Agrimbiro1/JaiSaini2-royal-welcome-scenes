@@ -400,6 +400,37 @@ body {
   animation: flicker 4s infinite alternate ease-in-out;
 }
 
+/* Natural swaying petals GPU-accelerated animation */
+@keyframes natural-swaying-petal {
+  0% {
+    transform: translate3d(0, -50px, 0) rotate(var(--rot-0));
+    opacity: 0;
+  }
+  10% {
+    opacity: var(--petal-op, 0.25);
+    transform: translate3d(var(--sway), 15vh, 0) rotate(calc(var(--rot-0) + 45deg));
+  }
+  35% {
+    transform: translate3d(calc(var(--sway) * -1 + var(--drift) * 0.3), 42vh, 0) rotate(calc(var(--rot-0) + 120deg));
+  }
+  65% {
+    transform: translate3d(calc(var(--sway) + var(--drift) * 0.65), 72vh, 0) rotate(calc(var(--rot-0) + 210deg));
+  }
+  90% {
+    opacity: var(--petal-op, 0.25);
+  }
+  100% {
+    transform: translate3d(var(--drift), 108vh, 0) rotate(var(--rot-end));
+    opacity: 0;
+  }
+}
+
+.ambient-petal-item {
+  will-change: transform, opacity;
+  transform-style: preserve-3d;
+  backface-visibility: hidden;
+}
+
 @media (prefers-reduced-motion: reduce) {
   *,
   *::before,

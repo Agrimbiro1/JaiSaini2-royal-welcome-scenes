@@ -347,27 +347,27 @@ export default function WelcomeScene() {
         {/* Handwriting Title "Rohan & Ananya" Positioned Elegantly on Top of Centered Couple Frame */}
         <div
           ref={handwritingTitleRef}
-          className="absolute bottom-[calc(50%+108px)] sm:bottom-[calc(50%+135px)] md:bottom-[calc(50%+178px)] inset-x-0 z-30 flex justify-center opacity-0 pointer-events-none px-4 will-change-[opacity,transform]"
+          className="absolute bottom-[calc(50%+100px)] sm:bottom-[calc(50%+134px)] md:bottom-[calc(50%+182px)] inset-x-0 z-30 flex justify-center opacity-0 pointer-events-none px-4 will-change-[opacity,transform]"
         >
-          <div className="flex flex-col items-center select-none my-0 w-full max-w-[280px] sm:max-w-sm md:max-w-md overflow-visible">
+          <div className="flex flex-col items-center select-none my-0 w-full max-w-[270px] sm:max-w-[320px] md:max-w-[380px] overflow-visible gap-1 sm:gap-1.5 md:gap-2">
             <span
               ref={rohanRef}
               style={{ fontFamily: "'Great Vibes', cursive" }}
-              className="text-[38px] sm:text-[52px] md:text-[68px] lg:text-[76px] text-[#e9c349] tracking-wider self-start pl-3 sm:pl-6 pt-0 pb-0 leading-tight overflow-visible drop-shadow-[0_4px_16px_rgba(0,0,0,0.95)] will-change-[clip-path]"
+              className="text-[36px] sm:text-[44px] md:text-[56px] lg:text-[64px] text-[#e9c349] tracking-wider self-start pl-2 sm:pl-4 pt-0 pb-0 leading-none overflow-visible drop-shadow-[0_4px_16px_rgba(0,0,0,0.95)] will-change-[clip-path]"
             >
               Rohan
             </span>
             <span
               ref={ampRef}
               style={{ fontFamily: "'Great Vibes', cursive" }}
-              className="text-[28px] sm:text-[38px] md:text-[48px] lg:text-[54px] text-[#FBF1DE] opacity-95 -my-2 sm:-my-3 md:-my-4 drop-shadow-[0_2px_10px_rgba(0,0,0,0.9)] will-change-[opacity,transform] leading-tight"
+              className="text-[24px] sm:text-[28px] md:text-[34px] lg:text-[40px] text-[#FBF1DE] opacity-95 drop-shadow-[0_2px_10px_rgba(0,0,0,0.9)] will-change-[opacity,transform] leading-none my-0"
             >
               &
             </span>
             <span
               ref={ananyaRef}
               style={{ fontFamily: "'Great Vibes', cursive" }}
-              className="text-[38px] sm:text-[52px] md:text-[68px] lg:text-[76px] text-[#e9c349] tracking-wider self-end pr-3 sm:pr-6 pt-0 pb-0 leading-tight overflow-visible drop-shadow-[0_4px_16px_rgba(0,0,0,0.95)] will-change-[clip-path]"
+              className="text-[36px] sm:text-[44px] md:text-[56px] lg:text-[64px] text-[#e9c349] tracking-wider self-end pr-2 sm:pr-4 pt-0 pb-0 leading-none overflow-visible drop-shadow-[0_4px_16px_rgba(0,0,0,0.95)] will-change-[clip-path]"
             >
               Ananya
             </span>
@@ -404,6 +404,7 @@ export default function WelcomeScene() {
                       ref={heroImageRef}
                       src={frame.src}
                       alt={frame.alt}
+                      decoding="async"
                       className="w-full h-full object-cover filter grayscale opacity-70 transition-all duration-1000"
                     />
                     <div
@@ -423,6 +424,7 @@ export default function WelcomeScene() {
                   <img
                     src={frame.src}
                     alt={frame.alt}
+                    decoding="async"
                     className="w-full h-full object-cover filter grayscale opacity-60"
                   />
                 </div>
@@ -454,6 +456,8 @@ export default function WelcomeScene() {
           <img
             src={welcomeBg}
             alt="Welcome Background"
+            fetchPriority="high"
+            decoding="async"
             className="w-full h-full object-cover object-center scale-105"
           />
           {/* Elegant dark vignette overlay */}
@@ -472,6 +476,8 @@ export default function WelcomeScene() {
           <img
             src={welcomeMan}
             alt="Royal Rajasthani Welcome Man"
+            loading="lazy"
+            decoding="async"
             className="w-full h-auto object-contain object-left-bottom filter drop-shadow-[0_10px_30px_rgba(0,0,0,0.9)]"
           />
         </div>
@@ -481,6 +487,8 @@ export default function WelcomeScene() {
           <img
             src={welcomeWomen}
             alt="Royal Rajasthani Welcome Woman"
+            loading="lazy"
+            decoding="async"
             className="w-full h-auto object-contain object-right-bottom filter drop-shadow-[0_10px_30px_rgba(0,0,0,0.9)]"
           />
         </div>
@@ -496,6 +504,7 @@ export default function WelcomeScene() {
                 alt={`${wedding.couple.groom} and ${wedding.couple.bride}`}
                 width={768}
                 height={1024}
+                decoding="async"
                 className="h-full w-full object-cover object-[center_25%]"
               />
               <div className="absolute inset-0 bg-gradient-to-t from-[#0d0f07]/30 via-transparent to-transparent pointer-events-none" />
@@ -505,6 +514,7 @@ export default function WelcomeScene() {
             <img
               src={coupleFrame}
               alt="Royal Couple Frame"
+              decoding="async"
               className="absolute inset-0 w-full h-full object-contain pointer-events-none z-10 filter drop-shadow-[0_8px_30px_rgba(233,195,73,0.5)]"
             />
           </div>

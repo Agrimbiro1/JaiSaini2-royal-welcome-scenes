@@ -48,35 +48,10 @@ export function Petals({ count = 28 }: { count?: number }) {
 
   return (
     <div className="pointer-events-none absolute inset-0 overflow-hidden z-1" aria-hidden="true">
-      <style>{`
-        @keyframes natural-swaying-petal {
-          0% {
-            transform: translate3d(0, -50px, 0) rotate(var(--rot-0));
-            opacity: 0;
-          }
-          10% {
-            opacity: var(--petal-op, 0.25);
-            transform: translate3d(var(--sway), 15vh, 0) rotate(calc(var(--rot-0) + 45deg));
-          }
-          35% {
-            transform: translate3d(calc(var(--sway) * -1 + var(--drift) * 0.3), 42vh, 0) rotate(calc(var(--rot-0) + 120deg));
-          }
-          65% {
-            transform: translate3d(calc(var(--sway) + var(--drift) * 0.65), 72vh, 0) rotate(calc(var(--rot-0) + 210deg));
-          }
-          90% {
-            opacity: var(--petal-op, 0.25);
-          }
-          100% {
-            transform: translate3d(var(--drift), 108vh, 0) rotate(var(--rot-end));
-            opacity: 0;
-          }
-        }
-      `}</style>
       {petals.map((p, i) => (
         <span
           key={i}
-          className="absolute -top-8 rounded-[70%_30%_60%_40%/60%_40%_70%_30%]"
+          className="absolute -top-8 rounded-[70%_30%_60%_40%/60%_40%_70%_30%] ambient-petal-item"
           style={{
             left: p.left,
             width: p.size,
