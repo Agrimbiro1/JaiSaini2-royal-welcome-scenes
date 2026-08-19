@@ -8,8 +8,9 @@ import {
   useState,
   type ReactNode,
 } from "react";
-import { scenes, totalScenes, type SceneDef } from "./scenes";
+import { scenes, totalScenes, preloadAllScenes, type SceneDef } from "./scenes";
 import type { TransitionName } from "./transitions";
+import { preloadAllAssets } from "./preloader";
 
 type SceneState = {
   index: number;
@@ -71,6 +72,9 @@ export function SceneProvider({
       const clamped = Math.max(0, Math.min(totalScenes - 1, target));
       if (busy.current || clamped === index) return;
 
+      // Pre-warm the target scene and its assets immediately before transition starts
+      scenes[clamped]?.preload();
+
       if (reducedMotion) {
         setIndex(clamped);
         setPhase("idle");
@@ -105,6 +109,12 @@ export function SceneProvider({
   const pending = useRef<(() => void) | null>(null);
   const done = useRef<(() => void) | null>(null);
 
+  // Preload all assets and code chunks on initial mount
+  useEffect(() => {
+    void preloadAllAssets();
+    void preloadAllScenes();
+  }, []);
+
   // exposed to the overlay through context-adjacent refs
   useEffect(() => {
     overlayHooks.swap = () => pending.current?.();
@@ -115,17 +125,16 @@ export function SceneProvider({
     onSceneChange?.(scenes[index]!, index);
   }, [index, onSceneChange]);
 
-  // preload the neighbouring scenes' JS chunks and assets in idle time
+  // Preload surrounding and upcoming scenes
   useEffect(() => {
-    const neighbours = [scenes[index + 1], scenes[index - 1]].filter(Boolean);
-    neighbours.forEach((s) => {
-      s?.preload();
-    });
+    const upcoming = [
+      scenes[index + 1],
+      scenes[index + 2],
+      scenes[index - 1],
+    ].filter(Boolean);
 
-    const urls = neighbours.flatMap((s) => s?.assets ?? []);
-    urls.forEach((u) => {
-      const img = new Image();
-      img.src = u;
+    upcoming.forEach((s) => {
+      s?.preload();
     });
   }, [index]);
 
